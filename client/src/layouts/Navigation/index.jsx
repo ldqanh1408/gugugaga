@@ -14,7 +14,7 @@ function Navigation() {
       <Row className="">
         <Navbar expand="lg" className="bg-body-tertiary nav-background">
           <Container >
-            <Navbar.Brand href="#home" className= "fw-bold">Gugugaga</Navbar.Brand>
+            <Navbar.Brand href="/" className= "fw-bold">Gugugaga</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="d-flex flex-grow-1">

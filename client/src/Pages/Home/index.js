@@ -52,33 +52,33 @@ function Home() {
           <Col className="member">
             <img src={developers} className="img-fluid member-img img"></img>
             <div className="description">
-              <p className="fw-bold">Thành viên</p>
-              <p>Lê Đắc Quốc Anh</p>
-              <p>Fullstack</p>
+              <p className="fs-5 fw-bold">Leader</p>
+              <p className="fw-bold ">Quốc Anh</p>
+              <p className="fw-bold opacity-50">AI</p>
             </div>
           </Col>
           <Col className="member">
             <img src={developers} className="img-fluid member-img img"></img>
             <div className="description">
-              <p className="fw-bold">Thành viên</p>
-              <p>Lê Đắc Quốc Anh</p>
-              <p>Fullstack</p>
+              <p className="fs-5 fw-bold">Thành viên</p>
+              <p className="fw-bold ">Ba Ka</p>
+              <p className="fw-bold opacity-50">Fullstack</p>
             </div>
           </Col>
           <Col className="member">
             <img src={developers} className="img-fluid member-img img"></img>
             <div className="description">
-              <p className="fw-bold">Thành viên</p>
-              <p>Lê Đắc Quốc Anh</p>
-              <p>Fullstack</p>
+              <p className="fs-5 fw-bold">Thành viên</p>
+              <p className="fw-bold ">Nguyệt Thanh</p>
+              <p className="fw-bold opacity-50">Frontend</p>
             </div>
           </Col>
           <Col className="member">
             <img src={developers} className="img-fluid member-img img"></img>
             <div className="description">
-              <p className="fw-bold">Thành viên</p>
-              <p>Lê Đắc Quốc Anh</p>
-              <p>Fullstack</p>
+              <p className="fs-5 fw-bold">Thành viên</p>
+              <p className="fw-bold ">Vũ Hảo</p>
+              <p className="fw-bold opacity-50">AI</p>
             </div>
           </Col>
         </Row>
