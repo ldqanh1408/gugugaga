@@ -1,4 +1,27 @@
 :root {
     --nav-color: #E8D9D1;
-    --back-ground-color: #FEFBFF;
+    --white-color: #FEFEFF;
+    --pink: #fefbff;
+    --secondary-color: #E5CAC2;
+    --primary-color: #cdaca0;
+}
+
+.pink-bg {
+    background-color: var(--pink);
+}
+
+.primary-bg {
+    background-color: var(--primary-color);
+}
+
+.secondary-bg {
+    background-color: var(--secondary-color);
+}
+
+.white-bg {
+    background-color: var(--white-color);
+}
+
+.nav-bg {
+    background-color: var(--nav-color);
 }

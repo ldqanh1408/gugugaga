@@ -1,4 +1,6 @@
 
 .nav-background {
   background-color: var(--nav-color)!important;
+  padding: 12px;
+  border-bottom: 1px solid #333;
 }

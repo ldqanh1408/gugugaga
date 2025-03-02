@@ -5,12 +5,13 @@ import React, { useState } from "react";
 import { UserAvatar } from "../../components";
 import '../../styles/common.css';
 import "./Navigation.css";
+import { Row } from "react-bootstrap";
 
 function Navigation() {
     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
 
     return (
-      <div className="nav-background">
+      <Row className="">
         <Navbar expand="lg" className="bg-body-tertiary nav-background">
           <Container >
             <Navbar.Brand href="#home" className= "fw-bold">Gugugaga</Navbar.Brand>
@@ -27,7 +28,7 @@ function Navigation() {
             </Navbar.Collapse>
           </Container>
         </Navbar>
-      </div>
+      </Row>
     );
 }
 
