@@ -1,7 +1,7 @@
 .footer {
     background-color: var(--nav-color);
     padding: 30px 25px 25px 25px;
-    margin-top: 100px;
+    border-top: 1px #333 solid;
 }
 
 .item1 {
