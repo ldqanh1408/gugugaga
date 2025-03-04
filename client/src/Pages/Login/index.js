@@ -4,38 +4,34 @@ import { Button, Form } from "react-bootstrap";
 import { getUsers } from "../../services/userService.js";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
+import {
+  handleLogin,
+  handleBlur,
+  handleFocus,
+} from "../../services";
+import {ACCOUNT, PASSWORD} from '../../constants'
+
 function Login() {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [accountError, setAccountError] = useState("");
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const users = await getUsers();
-      const user = users.find(
-        (user, index) =>
-          user.account === account && user.password === password
-      );
-      if (user) {
-        // Giả sử bạn có một token giả lập để lưu vào localStorage
-        const token = "fake-jwt-token";
-        localStorage.setItem("token", token);
-        // Chuyển hướng người dùng đến trang khác
-        console.log("Login successful:", user);
-        navigate("/");
-        window.location.reload();
-      }
-      // Lưu token vào localStorage hoặc state quản lý
-      // Chuyển hướng người dùng đến trang khác
-      else {
-        setError("Invalid username or password");
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setError("An error occurred. Please try again.");
-    }
+    await handleLogin({
+      account,
+      password,
+      accountError,
+      passwordError,
+      setError,
+      navigate,
+      setAccountError,
+      setPasswordError,
+    });
   };
+
   return (
     <div className="containter form-1">
       <div className="title">
@@ -50,17 +46,54 @@ function Login() {
                 placeholder="Nhập tên tài khoản..."
                 className="form-control"
                 onChange={(e) => setAccount(e.target.value)}
+                onBlur={() =>
+                  handleBlur({
+                    account,
+                    field: ACCOUNT,
+                    password,
+                    setAccountError,
+                    setPasswordError,
+                  })
+                }
+                onFocus={() =>
+                  handleFocus({
+                    account,
+                    field: ACCOUNT,
+                    password,
+                    setAccountError,
+                    setPasswordError,
+                  })
+                }
               ></Form.Control>
-              <Form.Text></Form.Text>
+              <Form.Text className="text-danger">{accountError}</Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
               <Form.Label className="fw-semibold">Password:</Form.Label>
               <Form.Control
+                type="password"
                 placeholder="Nhập mật khẩu..."
                 className="form-control"
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() =>
+                  handleBlur({
+                    account,
+                    field: PASSWORD,
+                    password,
+                    setAccountError,
+                    setPasswordError,
+                  })
+                }
+                onFocus={() =>
+                  handleFocus({
+                    account,
+                    field: PASSWORD,
+                    password,
+                    setAccountError,
+                    setPasswordError,
+                  })
+                }
               ></Form.Control>
-              <Form.Text></Form.Text>
+              <Form.Text className="text-danger">{passwordError}</Form.Text>
             </Form.Group>
           </div>
           <Button type="submit" onClick={handleSubmit}>

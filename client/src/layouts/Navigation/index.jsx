@@ -20,7 +20,7 @@ function Navigation() {
               <Nav className="d-flex flex-grow-1">
                 <Nav.Link href="calendar" className="fw-semibold">Calendar</Nav.Link>
                 <Nav.Link href="note" className="fw-semibold">Note</Nav.Link>
-                {!isAuthenticated ? <div className="d-flex flex-grow-1 justify-content-end "> 
+                {!isAuthenticated ? <div className="d-lg-flex d-none flex-grow-1 justify-content-end "> 
 
                       <Nav.Link href="sign-up">Sign up</Nav.Link>
                       <Nav.Link href="login">Login</Nav.Link>
