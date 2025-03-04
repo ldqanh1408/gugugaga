@@ -11,16 +11,8 @@ import {
 import avatar from "../../assets/imgs/avatar.svg";
 import smile from "../../assets/imgs/smile.svg";
 import "./UserAvatar.css";
-import {useNavigate} from 'react-router-dom'
 
 function UserAvatar() {
-  const navigate = useNavigate();
-  const Logout = () => {
-    localStorage.setItem("token","");
-    navigate('/');
-    window.location.reload();
-  };
-
   return (
     <div className="container justify-content-end d-flex">
       <Row>
@@ -43,7 +35,7 @@ function UserAvatar() {
             </DropdownToggle>
             <DropdownMenu>
               <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
-              <Dropdown.Item href="" onClick={Logout}>Logout</Dropdown.Item>
+              <Dropdown.Item href="#/action-3">Logout</Dropdown.Item>
             </DropdownMenu>
           </Dropdown>
         </Col>
