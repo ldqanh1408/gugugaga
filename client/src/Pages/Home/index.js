@@ -1,73 +1,88 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/common.css";
 import "./Home.css";
 import { Button, Row, Col } from "react-bootstrap";
 import sample from "../../assets/imgs/sample.webp";
+import developers from "../../assets/imgs/Developers.jpg";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+
 function Home() {
   return (
-    <div className="pink-bg vh-100">
-      <div className="container">
-        <Row>GUGUGAGA</Row>
-        <Row>Write your life</Row>
-        <Row>
-          <Button>Start Writing</Button>
-        </Row>
-        <Row>
-          <img src={sample} className="img-fluid"></img>
-        </Row>
-        <Row>
-          <Col>
-            <Row>Hôm nay bạn ổn không ?</Row>
-            <Row>
-              <Row>✨ Khoảnh Khắc Đặc Biệt</Row>
-              <Row>
-                Ghi lại những kỷ niệm đáng nhớ, những điều nhỏ bé nhưng ý nghĩa
-                trong ngày của bạn.
-              </Row>
-            </Row>
-            <Row>
-              <Row>💭 Suy Nghĩ Hôm Nay</Row>
-              <Row>
-                Chia sẻ cảm xúc, suy nghĩ, hoặc bất kỳ điều gì bạn muốn bày tỏ
-                ngay lúc này.
-              </Row>
-            </Row>
-            <Row>
-              <Row>🎯 Mục Tiêu & Dự Định</Row>
-              <Row>
-                Đặt ra mục tiêu mới hoặc theo dõi tiến trình của những kế hoạch
-                đang thực hiện.
-              </Row>
-            </Row>
-          </Col>
-          <Col>
-            <img src={sample} className="img-fluid"></img>
-          </Col>
-        </Row>
-        <Row>
-          <h2>Developers</h2>
+    <div className="container flex-grow-1">
+      <Row className="mt-4">
+        <h1 className="fw-bolder text">GUGUGAGA</h1>
+        <p className="opacity-75 text">Write your life</p>
+        <Button className="btn text">Write</Button>
+      </Row>
+      <Row>
+        <img src={sample} className="img-fluid section img full"></img>
+      </Row>
+      <Row className="second">
+        <Col>
+          <h2 className="fw-bold">Hôm nay bạn ổn không ?</h2>
           <Row>
-            <Col>
-              <img src={sample} className="img-fluid"></img>
-              <p>Leader</p>
-              <p>Lê Đắc Quốc Anh</p>
-              <p>Fullstack</p>
-            </Col>
-            <Col>
-              <img src={sample} className="img-fluid"></img>
-              <p>Leader</p>
-              <p>Lê Đắc Quốc Anh</p>
-              <p>Fullstack</p>
-            </Col>
-            <Col>
-            <img src={sample} className="img-fluid"></img>
-              <p>Leader</p>
-              <p>Lê Đắc Quốc Anh</p>
-              <p>Fullstack</p>
-            </Col>
+            <p className="fw-bold">✨ Khoảnh Khắc Đặc Biệt</p>
+            <p className="opacity-75">
+              Ghi lại những kỷ niệm đáng nhớ, những điều nhỏ bé nhưng ý nghĩa
+              trong ngày của bạn.
+            </p>
           </Row>
+          <Row>
+            <p className="fw-bold">💭 Suy Nghĩ Hôm Nay</p>
+            <p className="opacity-75">
+              Chia sẻ cảm xúc, suy nghĩ, hoặc bất kỳ điều gì bạn muốn bày tỏ
+              ngay lúc này.
+            </p>
+          </Row>
+          <Row>
+            <p className="fw-bold">🎯 Mục Tiêu & Dự Định</p>
+            <p className="opacity-75">
+              Đặt ra mục tiêu mới hoặc theo dõi tiến trình của những kế hoạch
+              đang thực hiện.
+            </p>
+          </Row>
+        </Col>
+        <Col>
+          <img src={sample} className="img-fluid img"></img>
+        </Col>
+      </Row>
+      <Row>
+        <h2 className="fw-bold second">Developers</h2>
+        <Row className="first">
+          <Col className="member">
+            <img src={developers} className="img-fluid member-img img"></img>
+            <div className="description">
+              <p className="fs-5 fw-bold">Leader</p>
+              <p className="fw-bold ">Quốc Anh</p>
+              <p className="fw-bold opacity-50">AI</p>
+            </div>
+          </Col>
+          <Col className="member">
+            <img src={developers} className="img-fluid member-img img"></img>
+            <div className="description">
+              <p className="fs-5 fw-bold">Thành viên</p>
+              <p className="fw-bold ">Ba Ka</p>
+              <p className="fw-bold opacity-50">Fullstack</p>
+            </div>
+          </Col>
+          <Col className="member">
+            <img src={developers} className="img-fluid member-img img"></img>
+            <div className="description">
+              <p className="fs-5 fw-bold">Thành viên</p>
+              <p className="fw-bold ">Nguyệt Thanh</p>
+              <p className="fw-bold opacity-50">Frontend</p>
+            </div>
+          </Col>
+          <Col className="member">
+            <img src={developers} className="img-fluid member-img img"></img>
+            <div className="description">
+              <p className="fs-5 fw-bold">Thành viên</p>
+              <p className="fw-bold ">Vũ Hảo</p>
+              <p className="fw-bold opacity-50">AI</p>
+            </div>
+          </Col>
         </Row>
-      </div>
+      </Row>
     </div>
   );
 }
