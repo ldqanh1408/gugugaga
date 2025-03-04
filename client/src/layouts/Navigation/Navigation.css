@@ -3,5 +3,6 @@
   background-color: var(--nav-color)!important;
   padding: 12px;
   border-bottom: 1px solid #333;
+  margin-bottom: 40px; /* Khoảng cách giữa navbar và các cột */
 }
 
