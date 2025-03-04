@@ -1,50 +1,61 @@
 {
-    "users" : [
+  "users": [
+    {
+      "_id": 1,
+      "user_name": "Ka",
+      "account": "KaaKaa",
+      "password": "123",
+      "avatar": "Link",
+      "email": "",
+      "phone_number": "",
+      "created_at": "",
+      "last_login": "",
+      "chat_id": 1,
+      "journal_id": 1,
+      "id": "d026"
+    },
+    {
+      "id": "7eb7",
+      "account": "123",
+      "user_name": "Ka",
+      "password": "123",
+      "email": "kaakaa3005@gmail.com",
+      "phone_number": "1561320"
+    }
+  ],
+  "journals": [
+    {
+      "_id": 1,
+      "user_id": 1,
+      "notes": [
         {
-            "_id": 1,
-            "name": "Ka",
-            "user_name": "KaaKaa",
-            "password": "123",
-            "avatar": "Link",
-            "email" : "",
-            "phone_number" : "",
-            "created_at": "",
-            "last_login": "",
-            "chat_id": 1,
-            "journal_id": 1
+          "date": "2025-03-01T10:05:05",
+          "mood": "happy",
+          "header": "Ngày tuyệt vời!",
+          "text": "Hôm nay tôi cảm thấy rất vui vì đạt được mục tiêu trong công việc."
         }
-    ],
-    "journals": [
+      ],
+      "id": "b2a0"
+    }
+  ],
+  "chats": [
+    {
+      "_id": 1,
+      "user_id": 1,
+      "messages": [
         {
-            "_id":1,
-            "user_id": 1,
-            "notes": [
-                {
-                    "date": "2025-03-01T10:05:05",
-                    "mood": "happy",
-                    "header": "Ngày tuyệt vời!",
-                    "text": "Hôm nay tôi cảm thấy rất vui vì đạt được mục tiêu trong công việc."
-                }
-            ]
+          "text": "mệt",
+          "time": "10:01",
+          "role": "user"
+        },
+        {
+          "text": "ừ",
+          "time": "10:02",
+          "role": "ai"
         }
-    ],
-    "chats": [
-        {
-            "_id": 1,
-            "user_id": 1,
-            "messages": [
-              {
-                "text": "mệt",
-                "time": "10:01",
-                "role": "user"
-              },
-              {
-                "text": "ừ",
-                "time": "10:02",
-                "role": "ai"
-              }
-            ],
-            "last_update": "2025-03-01T10:02:00"
-          }
-    ]
+      ],
+      "last_update": "2025-03-01T10:02:00",
+      "id": "f0a2"
+    }
+  ]
 }
