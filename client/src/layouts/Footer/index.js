@@ -13,11 +13,13 @@ import { Row, Col } from "react-bootstrap";
 const Footer = () => {
     return (
         <div className="footer">
-            <Row className="container">
-                <Col>
+            <Row className="">
+                <Col className="d-flex flex-column justify-content-around item1">
                     <h2>Gugugaga</h2>
-                    <div>
-                        <i>{faYoutube}</i>
+                    <div >
+                        <FontAwesomeIcon icon={faYoutube} className="icon"/>
+                        <FontAwesomeIcon icon={faGithub} className="icon"/>
+                        <FontAwesomeIcon icon={faFacebook} className="icon"/>
                     </div>
                 </Col>
                 <Col className="d-flex">
