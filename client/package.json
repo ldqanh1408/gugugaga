@@ -13,7 +13,6 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.1",
     "bootstrap": "^5.3.3",
-    "date-fns": "^4.1.0",
     "concurrently": "^9.1.2",
     "json-server": "^1.0.0-beta.3",
     "react": "^19.0.0",
