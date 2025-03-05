@@ -1,37 +1,114 @@
-/* Định dạng container chính */
-.note-editor {
+.note-editor-container {
+    width: 100%;
+    max-width: 90%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 30px;
+    background: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #CDACA0;
     display: flex;
     flex-direction: column;
-    gap: 10px;  /* Khoảng cách giữa các ô */
-    padding: 15px;
-    border: 1px solid #ddd;
+    gap: 10px;
+    margin-top: 30px; 
+  }
+  
+.note-diary {
+    font-size: 65px;
+    text-align: center;
+    background-color: #E8D9D1;
+    color: white;
+    display: inline-block;
+    width: auto; /* Không bị kéo dài */
+    max-width: fit-content; /* Chỉ rộng theo nội dung */
     border-radius: 8px;
+    margin: auto;
+    margin-top: -40px; 
+    padding: 0px 30px 0px 30px;
+    margin-bottom: 50px;
+}
+
+  .note-title, .note-date, .note-content {
     width: 100%;
-    max-width: 400px; /* Giới hạn chiều rộng */
-    background: #f9f9f9;
-  }
-  
-  /* Định dạng input và textarea */
-  .note-editor input, .note-editor textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  /* Nút lưu */
-  .note-editor button {
     padding: 10px;
-    background: #007bff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+.note-title {
+    border: none;
+    font-size: 30px;
+    font-weight: bold;
+    color: black;
+    padding-bottom: 0px;
+    outline: none;
+}
+
+.note-line {
+    border: none;
+    height: 1px;
+    background-color: #a87f70;
+    width: 25%; /* Chỉ dài 1/4 màn hình */
+    height: 2px;
+    margin-left: 9px;
+}
+
+.note-date {
+    outline: none;
+    border: none;
+    padding: 8px 70% 8px 10px; /* Tăng padding phải để tạo khoảng trống */
+}
+
+.date-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content; /* Tùy chỉnh chiều rộng */
+}
+
+.note-date {
+    outline: none;
+    border: none;
+    padding: 8px 40px 8px 10px; /* Để chừa chỗ cho icon */
+    font-size: 16px;
+}
+
+.note-content {
+    min-height: 150px;
+    outline: none;
+    resize: vertical;
+    border: none;
+    max-height: 500px; /* Độ cao tối đa (tuỳ chỉnh) */
+}
+
+.button-container { 
+    display: flex;
+    justify-content: flex-end; /* Đẩy nội dung về bên phải */
+}
+  
+.save-btn {
+    background: #E5CAC2;
     color: white;
     border: none;
-    border-radius: 4px;
+    padding: 10px;
+    margin-top: 15px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .note-editor button:hover {
-    background: #0056b3;
-  }
-  
+    transition: background 0.2s; 
+    box-shadow: 
+        inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
+        inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);   
+    display: inline-block;
+    width: auto; /* Không bị kéo dài */
+    max-width: fit-content; /* Chỉ rộng theo nội dung */
+    transition: all 0.2s ease-in-out; /* Hiệu ứng mượt */
+}
+
+.save-btn:hover {
+    background: #E5CAC2;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+    transform: translateY(-2px); /* Nhấc nút lên một chút */
+}

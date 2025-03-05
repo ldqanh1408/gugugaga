@@ -1,18 +1,34 @@
-import React from "react";
+import React, {useState} from "react";
+import "./NoteViewer.css";
+import EditButton from "../../assets/imgs/EditButton.svg";
 
-function NoteViewer({ note, onEdit, onPrev, onNext, hasPrev, hasNext }) {
+function NoteViewer() {
+  const [note, setNote] = useState("Nothing!!!");
+
   return (
-    <div>
-      <h2>{note.title}</h2>
-      <p>{note.date}</p>
-      <p>{note.content}</p>
+    <div className="note-viewer-container d-flex justify-content-center align-items-center">
+      <div className="note-viewer">
+        <div className="toolbar top">
 
-      {/* Nút chỉnh sửa */}
-      <button onClick={onEdit}>✏️ Chỉnh sửa</button>
+          <button className="btn edit-btn">
+            <img src={EditButton} alt="Edit" className="edit-icon"/>
+          </button>
 
-      {/* Nút điều hướng */}
-      <button onClick={onPrev} disabled={!hasPrev}>⬅️ Trước</button>
-      <button onClick={onNext} disabled={!hasNext}>➡️ Sau</button>
+          <div className="triangle-wrapper">
+            <button className="btn">▲</button>
+          </div>
+
+
+        </div>
+
+        <div className="note-data text-center">
+          <p>Nothing</p>
+        </div>
+
+        <div className="toolbar bottom">
+          <button className="btn">▼</button>
+        </div>  
+      </div>
     </div>
   );
 }
