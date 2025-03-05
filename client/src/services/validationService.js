@@ -1,4 +1,4 @@
-import { getUsers } from "./userService";
+import { getUsers, addUser } from "./userService";
 
 export const handleLogin = async ({
   account,
@@ -71,13 +71,50 @@ export const handleFocus = ({
 
 export const handleConfirm = ({
   password,
-  passwordConfirm,
+  confirmPassword,
   setConfirmPasswordError,
 }) => {
-  if(password !== passwordConfirm){
+  if(password !== confirmPassword){
     setConfirmPasswordError("Confirmation password does not match. Please try again.");
   }
   else{
     setConfirmPasswordError("");
+    
+  }
+}
+
+export const handleSignUp = async ({
+  password,
+  confirmPassword,
+  account,
+  userName = "",
+  email = "",
+  phoneNumber = "",
+  navigate,
+  setError,
+  setAccountError,
+  setPasswordError,
+  setConfirmPasswordError
+}) => {
+  try {
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    if(!password){setPasswordError("Account is required")}
+    if(!account){setAccountError("Password is required")}
+    if(!password  || !account) return;
+    const newUser = {
+      account,
+      user_name: userName,
+      password,
+      email,
+      phone_number: phoneNumber,
+    };
+    await addUser(newUser);
+    console.log("User added successfully");
+    navigate("/login");
+  } catch (error) {
+    setError("An error occurred. Please try again.");
   }
 }

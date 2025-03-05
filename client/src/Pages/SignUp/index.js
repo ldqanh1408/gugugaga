@@ -12,6 +12,7 @@ import {
     handleConfirm,
 }
 from '../../services'
+import { handleSignUp } from "../../services/validationService";
 
 function SignUp() {
   const [account, setAccount] = useState("");
@@ -29,24 +30,19 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
-      const newUser = {
-        account,
-        user_name: userName,
+    await handleSignUp({
         password,
+        confirmPassword,
+        navigate,
+        account,
+        userName,
+        phoneNumber,
         email,
-        phone_number: phoneNumber,
-      };
-      await addUser(newUser);
-      console.log("User added successfully");
-      navigate("/login");
-    } catch (error) {
-      setError("An error occurred. Please try again.");
-    }
+        setError,
+        setAccountError,
+        setPasswordError,
+        setConfirmPasswordError
+    });
   };
 
   return (
@@ -93,7 +89,7 @@ function SignUp() {
                 setAccountError,
                 setPasswordError,
               })}
-              onFocus={() => handleFocus({
+              onInput={() => handleFocus({
                 field : PASSWORD,
                 account,
                 password,
@@ -107,11 +103,12 @@ function SignUp() {
             <Form.Label className="fw-semibold">Confirm password:</Form.Label>
             <Form.Control
               type="password"
-              onChange={(e) => {
-                setConfirmPassword(e.target.value)
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              onKeyUp={(e) => {
                 handleConfirm({
                   password,
                   confirmPassword,
+                  confirmPasswordError,
                   setConfirmPasswordError,
                 })
               }}
