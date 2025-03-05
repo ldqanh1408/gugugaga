@@ -1,0 +1,37 @@
+/* Định dạng container chính */
+.note-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;  /* Khoảng cách giữa các ô */
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px; /* Giới hạn chiều rộng */
+    background: #f9f9f9;
+  }
+  
+  /* Định dạng input và textarea */
+  .note-editor input, .note-editor textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  /* Nút lưu */
+  .note-editor button {
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .note-editor button:hover {
+    background: #0056b3;
+  }
+  
