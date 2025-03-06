@@ -37,6 +37,14 @@
       "password": "",
       "email": "",
       "phone_number": ""
+    },
+    {
+      "id": "93ea",
+      "account": "linzie",
+      "user_name": "THANH",
+      "password": "123",
+      "email": "ng",
+      "phone_number": "s"
     }
   ],
   "journals": [

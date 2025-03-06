@@ -28,8 +28,145 @@
 
 .chat-toolbar {
     width: 100%;
+    height: 50px;
     display: flex;  
     padding: 0;
     margin: 0;
     background-color: #E8D9D1;
+}
+
+.chat-toolbar-text{
+    font-size: 25px;
+    margin-left: 10px;
+    margin-top: 5px;
+    font-weight: bold;   
+}
+
+/* Vùng chat */
+.chat-content {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background: #E5CAC2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-input {
+    flex: 0.9; /* Chỉ chiếm 70% khoảng trống */
+    max-width: 90%;       /* Chiều rộng full */
+    /*  padding: 10px;       /* Khoảng cách bên trong */
+    border: 2px solid #ddd; /* Viền */
+    border-radius: 10px; /* Bo góc */
+    font-size: 16px;     /* Cỡ chữ */
+    outline: none;       /* Xóa viền xanh khi focus */
+    transition: 0.3s;    /* Hiệu ứng mượt */
+    min-height: 40px;
+    max-height: 200px;
+    resize: none;
+    overflow-y: auto;  
+    overflow-x: hidden;
+    padding-right: 15px;
+    padding-left: 10px;
+    position: relative;
+    
+}
+/* Tùy chỉnh scrollbar */
+.chat-input::-webkit-scrollbar {
+    width: 6px; /* Thanh cuộn nhỏ gọn */
+    height: 6px;
+  }
+.chat-input::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+    margin-top: 3px; /* Đẩy track lên để khít trên dưới */
+    margin-bottom: 3px; /* Đẩy track xuống để khít trên dưới */
+    margin-left: 10px; /* Đẩy thanh cuộn sang trái */
+}
+  .chat-input:focus {
+    border-color: #CDACA0; /* Đổi màu viền khi focus */
+    box-shadow: 0 0 5px rgba(221, 100, 217, 0.5);
+  }
+
+
+  .chat-input::-webkit-scrollbar-thumb {
+    background: #ffc87ae7; /* Màu thanh cuộn */
+    border-radius: 10px; /* Bo tròn */
+    margin-right: 20px;
+  }
+
+/* Tạo một lớp giả để che mép phải và ép scrollbar vào trong */
+.chat-input::before {
+    content: "";
+    position: absolute;
+    right: 5px; /* Điều chỉnh khoảng cách để đẩy scrollbar vào */
+    top: 0;
+    width: 10px;
+    height: 100%;
+    background: transparent;
+}
+
+/* Dịch scrollbar qua trái bằng cách giả lập khoảng trống bên phải */
+.chat-input::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 10px; /* Điều chỉnh để đẩy scrollbar vào */
+    height: 100%;
+    background: transparent;
+  }
+.chat-toolbar.bottom {
+    display: flex;
+    padding: none;
+    justify-content: center;
+    gap: 10px;
+    border-top: 1px solid #ccc;
+}
+
+/*=================== Tin nhắn =================*/
+.message {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 25px; word-wrap: break-word;  /* Ngắt từ khi quá dài */
+    overflow-wrap: break-word;  /* Đảm bảo ngắt từ đúng */
+    white-space: pre-wrap;  /* Giữ khoảng trắng & xuống dòng tự nhiên */
+}
+
+.message.user {
+    align-self: flex-end;
+    background: #F2EDEB;
+    color: black;
+}
+
+.message.bot {
+    align-self: flex-start;
+    background: #CDACA0;
+}
+
+/*================Send====================*/
+.send-btn {
+    padding: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-icon {
+    width: 30px; /* Kích thước icon */
+    height: 30px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.send-btn:hover .send-icon {
+    transform: scale(1.1); /* Hiệu ứng phóng to nhẹ khi hover */
+}
+
+.send-btn:active .send-icon {
+    transform: scale(0.9); /* Hiệu ứng nhấn xuống */
 }
