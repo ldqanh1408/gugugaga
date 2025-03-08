@@ -1,0 +1,18 @@
+.footer {
+    background-color: var(--nav-color);
+    padding: 30px 25px 25px 25px;
+    border-top: 1px #333 solid;
+    margin-top: 48px;
+}
+
+.item1 {
+    margin-left: 5%;
+}
+
+.item2{
+
+}
+
+.icon {
+    padding: 8px;
+}

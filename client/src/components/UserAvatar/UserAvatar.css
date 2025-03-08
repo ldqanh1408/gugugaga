@@ -1,0 +1,24 @@
+.avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
+}
+
+.smile {
+    width: 20px;
+    margin-left: 10px;
+    margin-top: 10px;
+    height: 20px;
+    position: relative;
+    left: 10px;
+    top: 4px;
+}
+
+.dropdown-toggle::after {
+    display: none; /* Ẩn dấu mũi tên */
+}
+
+.dropdown-toggle:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}
