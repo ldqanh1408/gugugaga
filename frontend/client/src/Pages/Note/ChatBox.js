@@ -1,39 +1,41 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import "./ChatBox.css";
 import SaveButton from "../../assets/imgs/SaveButton.svg";
 
 function ChatBox() {
   const [messages, setMessages] = useState([
-    {text: "Hi! I'm your assistant :3 Let's chatting", sender: "bot"}
+    { text: "Hi! I'm your assistant :3 Let's chat!", sender: "bot" }
   ]);
   const [input, setInput] = useState("");
   const chatReference = useRef(null);
 
-  const sendMessage = () => {
-    if (input.trim() === "") return; //???
-    
-    setMessages([...messages, {text: input, sender: "user"}]); //them tn user
-    setInput(""); //xoa inp sau khi gui
+  const sendMessage = async () => {
+    if (input.trim() === "") return;
 
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { text: "Bot: " + input, sender: "bot"}]);
-    }, 300);
+    const userMessage = { text: input, sender: "user" };
+    setMessages([...messages, userMessage]);
+    setInput("");
+
+    try {
+      const response = await axios.post("http://localhost:5000/chat", { prompt: input });
+      const botMessage = { text: response.data.content, sender: "bot" };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      setMessages(prev => [...prev, { text: "Error: Could not connect to AI", sender: "bot" }]);
+    }
   };
 
-  //cuộn xuống mỗi khi gửi tn
   useEffect(() => {
     if (chatReference.current) {
       chatReference.current.scrollTop = chatReference.current.scrollHeight;
     }
-  }, [messages]
-  );
-
+  }, [messages]);
 
   return (
     <div className="chat-box-container d-flex justify-content-center align-items-center">
       <div className="chat-box">
-
-        <div className="chat-toolbar top">        
+        <div className="chat-toolbar top">
           <div className="chat-toolbar-text">Gugugaga</div>
         </div>
 
@@ -42,8 +44,8 @@ function ChatBox() {
             <div key={index} className={`message ${msg.sender}`}>
               {msg.text}
             </div>
-          ))}  
-        </div>      
+          ))}
+        </div>
 
         <div className="chat-toolbar bottom">
           <textarea
@@ -60,9 +62,8 @@ function ChatBox() {
           ></textarea>
 
           <button className="send-btn" onClick={sendMessage}>
-            <img src={SaveButton} alt="Send" className="send-icon"/>
+            <img src={SaveButton} alt="Send" className="send-icon" />
           </button>
-        
         </div>
       </div>
     </div>
