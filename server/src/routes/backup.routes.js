@@ -1,21 +1,35 @@
 const express = require("express");
 const router = express.Router();
 const { exec } = require("child_process");
+const User = require("../models/user.model");
+
+const dbName = "Diary"; // Thay bằng tên database của bạn
+const dumpPath = "./src/backup"; // Thay đường dẫn tới thư mục dump
 
 
-router.get("/export/dump",(req, res) => {
-    const dumpPath = "./dump/backup";
-    
-    exec(`mongodump --db Diary --out ${dumpPath}`, (error) => {
+router.get("/export/dump", async (req, res) => {
+    exec(`mongodump --db ${dbName} --out ${dumpPath}`, (error) => {
         if (error) {
             console.error("Lỗi khi tạo dump MongoDB:", error);
             return res.status(500).send("Lỗi khi tạo file dump.");
         }
-
-        res.download(`${dumpPath}/Diary`, "mongodb_backup.zip", (err) => {
-            if (err) console.error("Lỗi khi gửi file:", err);
-        });
     });
-});
+    return res.status(200).json({success: true, message: "backup success"})
+}); 
+ 
+router.get("/import/dump", async (req, res) => {
+      
+    const restoreCommand = `mongorestore --drop --db ${dbName} ${dumpPath}/Diary`;
 
-module.exports = router;
+    exec(restoreCommand, (error, stdout, stderr) => {
+        if (error) {
+            return res.status(500).json({message: `❌ Lỗi khi restore dữ liệu: ${error.message}`});
+        }
+        if (stderr) { 
+            return res.status(500).json({message: `Lỗi khi restore dữ liệu: ${error.message}`});
+        }
+    });
+    return res.status(200).json({success: true, message: "✅ Restore dữ liệu thành công!"})
+}) 
+ 
+module.exports = router; 
