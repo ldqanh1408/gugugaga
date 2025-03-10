@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { getChats, createChat } = require("../controllers/chat.controller");
+const authenticateJWT  = require("../middleware/authenticateJWT");
+const { addMessage, getMessages } = require("../controllers/chat.controller");
 
 // Định nghĩa route
-router.get("/", getChats);
-router.post("/", createChat);
-
+router.get("/:chatId/messages", authenticateJWT, getMessages);
+router.post("/:chatId/messages", addMessage);
 module.exports = router;

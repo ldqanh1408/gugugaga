@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { getJournals, createJournal } = require("../controllers/journal.controller");
+const { getNotes, addNote , updateNote } = require("../controllers/journal.controller");
 
 // Định nghĩa route
-router.get("/", getJournals);
-router.post("/", createJournal);
+router.get("/notes", getNotes);
+router.patch("/:journalId/notes/:noteId", updateNote)
+router.post("/journals/:journalId", addNote)
 
 module.exports = router;

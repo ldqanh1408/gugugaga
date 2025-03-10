@@ -1,23 +1,46 @@
-const Chat = require("../models/user.model");
+const Chat = require("../models/chat.model");
 
-// Lấy danh sách users
-exports.getChats = async (req, res) => {
+exports.getMessages = async (req, res) => {
   try {
-    const chats = await Chat.find();
-    res.json(chats);
+    const { chatId } = req.params;
+
+    const chat = await Chat.findOne({ _id: chatId });
+    const user = req.user;
+
+    if (!chat)
+      return res
+        .status(400)
+        .json({ success: false, message: "Chat not found" });
+
+    if (!user) return res.status(404).json({ success: false });
+    if (chat.userId.toString() !== user._id.toString()) {
+      return res.status(409).json({ success: false, message: "Conflict" });
+    }
+    const messages = chat.messages;
+    messages.sort((a, b) => Date(a.createdAt) - Date(b.createdAt));
+    res.json({ success: true, messages: messages });
   } catch (error) {
-    res.status(500).json({ message: "Lỗi server" });
+    res
+      .status(400)
+      .json({ message: "Lỗi khi lấy dữ liệu", error: error.message });
   }
 };
 
-// Tạo user mới
-exports.createChat = async (req, res) => {
+exports.addMessage = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const newChat = new Chat({ userId });
-    await newChat.save();
-    res.status(201).json(newChat);
+    const {chatId} = req.params;
+    const { message } = req.body;
+    const chat = await Chat.findOne({_id: chatId});
+    if(!message.role || !message.text) return res.status(400).json({success: false, message: "Not enough information"});
+    if (!chat)
+      return res
+        .status(404)
+        .json({ success: false, message: "Chat not found" });
+        console.log(chat);
+    chat.messages = [...chat.messages, message]
+    await chat.save();
+    return res.status(200).json({ success: true, messages: "add thành công" });
   } catch (error) {
-    res.status(400).json({ message: "Lỗi khi tạo user" });
+    return res.status(400).json({ success: false, message: error.message });
   }
 };
