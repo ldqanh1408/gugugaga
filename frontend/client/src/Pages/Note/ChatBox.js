@@ -18,11 +18,41 @@ function ChatBox() {
     setInput("");
 
     try {
-      const response = await axios.post("http://localhost:5000/chat", { prompt: input });
-      const botMessage = { text: response.data.content, sender: "bot" };
-      setMessages(prev => [...prev, botMessage]);
+      const history = messages.map(m => `${m.sender === "user" ? "User" : "llama"}: ${m.text}`).join("\n");
+
+      const response = await axios.post("http://127.0.0.1:8080/completion", {
+        "stream": false,
+        "n_predict": 30,
+        "temperature": 0.7,
+        "stop": ["</s>", "llama:", "User:"],
+        "repeat_last_n": 256,
+        "repeat_penalty": 1.18,
+        "top_k": 40,
+        "top_p": 0.5,
+        "tfs_z": 1,
+        "typical_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "mirostat": 0,
+        "mirostat_tau": 5,
+        "mirostat_eta": 0.1,
+        "prompt": history + `\nUser: ${input}\nllama:`
+      }, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      
+      const botText = response.data?.content || "No response";
+      
+      const botMessage = { text: botText, sender: "bot" };
+
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      setMessages(prev => [...prev, { text: "Error: Could not connect to AI", sender: "bot" }]);
+      setMessages((prev) => [
+        ...prev,
+        { text: "Error: Could not connect to AI", sender: "bot" }
+      ]);
     }
   };
 
