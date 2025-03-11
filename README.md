@@ -36,6 +36,11 @@
 git clone https://github.com/ldqanh1408/gugugaga.git
 cd gugugaga
 ```
+###Cài đặt MongoDB
+
+Dự án yêu cầu MongoDB. Nếu chưa cài đặt, hãy tải về từ trang chính thức và làm theo hướng dẫn cài đặt tại https://www.mongodb.com/try/download/community
+phiên bản 6.0.
+
 
 ### 2️⃣ **Cài đặt dependencies**
 ```sh
