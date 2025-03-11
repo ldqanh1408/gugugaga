@@ -14,6 +14,42 @@ async function hashPassword(password) {
   return hashedPassword;
 }
 
+/**
+ * @swagger
+ * /api/v1/register:
+ *   post:
+ *     summary: Đăng ký tài khoản mới
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - account
+ *               - userName
+ *               - password
+ *             properties:
+ *               account:
+ *                 type: string
+ *                 example: "newuser123"
+ *               userName:
+ *                 type: string
+ *                 example: "New User"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "password123"
+ *     responses:
+ *       201:
+ *         description: Đăng ký thành công
+ *       400:
+ *         description: Dữ liệu đầu vào không hợp lệ
+ *       500:
+ *         description: Lỗi máy chủ
+ */
+
 
 // // 📝 Đăng ký
 router.post("/register", async (req, res) => {
@@ -44,6 +80,50 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+/**
+ * @swagger
+ * /api/v1/login:
+ *   post:
+ *     summary: Đăng nhập vào hệ thống
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - account
+ *               - password
+ *             properties:
+ *               account:
+ *                 type: string
+ *                 example: "newuser123"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "password123"
+ *     responses:
+ *       200:
+ *         description: Đăng nhập thành công, trả về token được lưu vào cookie  (có thể get bằng api)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Đăng nhập thành công"
+ *                 token:
+ *                   type: string
+ *                   example: "eyJhbGciOiJIUzI1NiIsIn..."
+ *       400:
+ *         description: Sai tài khoản hoặc mật khẩu
+ *       500:
+ *         description: Lỗi máy chủ
+ */
+
 
 // 🔐 Đăng nhập
 router.post("/login", async (req, res) => {

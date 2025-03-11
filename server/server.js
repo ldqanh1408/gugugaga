@@ -2,8 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const connectDB = require("./src/config/db");
+const connectDB = require("./src/configs/db");
 const cookieParser = require("cookie-parser");
+const { swaggerUi, swaggerSpec } = require("./src/configs/swagger");
+
 // const authRoutes = require("./routes/auth"); // Import routes
 
 // Kết nối MongoDB
@@ -17,6 +19,9 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Cho phép frontend truy cập
 
+
+// Định tuyến tài liệu API Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 const {userRoutes, chatRoutes, journalRoutes, authRoutes, backupRoutes} = require('./src/routes');
