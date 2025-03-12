@@ -52,13 +52,12 @@
     text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3); /* Bóng đổ */;
 }
 
-.note-data {
+.note-viewer-data {
     flex: 1;
     padding: 15px;
     overflow: auto;
     font-size: 20px;
     line-height: 1.5;
-    text-align: center;
 }
 
 .edit-btn {
@@ -87,4 +86,50 @@
     height: 20px;
 }
 
+.note-viewer-title, .note-viewer-date, .note-viewer-content {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
   
+.note-viewer-title {
+    border: none;
+    font-size: 30px;
+    font-weight: bold;
+    color: black;
+    padding-bottom: 0px;
+    outline: none;
+    padding-top: 20px;
+}
+
+.note-viewer-line {
+    border: none;
+    height: 1px;
+    background-color: #a87f70;
+    width: 25%; /* Chỉ dài 1/4 màn hình */
+    height: 2px;
+    margin-left: 9px;
+}
+
+.date-viewer-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content; /* Tùy chỉnh chiều rộng */
+}
+
+.note-viewer-date {
+    outline: none;
+    border: none;
+    padding: 8px 40px 8px 10px; /* Để chừa chỗ cho icon */
+    font-size: 16px;
+}
+
+.note-viewer-content {
+    min-height: 150px;
+    outline: none;
+    resize: vertical;
+    border: none;
+    max-height: 500px; /* Độ cao tối đa (tuỳ chỉnh) */
+}

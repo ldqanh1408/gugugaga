@@ -1,13 +1,22 @@
 import "./NoteEditor.css";
 import React, { useState } from "react";
 
-function NoteEditor({ note = {}, onSave }) {
+function NoteEditor({ note = {}, onSave, isFromViewer = false }) {
   const [title, setTitle] = useState(note.title || "");
   const [date, setDate] = useState(note.date || "");
   const [content, setContent] = useState(note.content || "");
 
   const handleSubmit = () => {
-    onSave({ title, date, content });
+    if (!title.trim() || !date.trim() || !content.trim()){
+      alert("Please fill in all the required fields!!!");
+      return;
+    }
+
+    const updatedNote = { title, date, content };
+
+    localStorage.setItem('savedNote', JSON.stringify(updatedNote));
+
+    onSave(updatedNote);
   };
 
   const autoResizeTextArea = (event) => {
@@ -16,8 +25,8 @@ function NoteEditor({ note = {}, onSave }) {
   };
 
   return (
-    <div className="note-editor-container">
-      <div className="note-diary">Diary</div>
+    <div className={`note-editor-container ${isFromViewer ? "viewer-mode" : ""}`}>
+      <div className={`note-diary ${isFromViewer ? "viewer-diary" : ""}`}>Diary</div>
       <input className="note-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter title" />
       <hr class="note-line"></hr>
       
@@ -30,9 +39,10 @@ function NoteEditor({ note = {}, onSave }) {
         onChange={(e) => {
           setContent(e.target.value); 
           autoResizeTextArea(e);
-          }} 
+        }} 
         placeholder="Enter content">
       </textarea>
+      
       <div className="button-container">
         <button className="save-btn" onClick={handleSubmit}>Save</button>
       </div>
