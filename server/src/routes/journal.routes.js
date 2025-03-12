@@ -4,6 +4,107 @@ const {authenticateJWT} = require("../middleware")
 const { getNotes, addNote , updateNote } = require("../controllers/journal.controller");
 
 // Định nghĩa route
+/**
+ * @swagger
+ * /api/v1/journals/{journalId}/notes:
+ *   post:
+ *     summary: Lấy notes của một journal
+ *     tags: [Journal]
+ *     parameters:
+ *       - in: path
+ *         name: journalId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của journal cần lấy notes
+ *         example: "507f1f77bcf86cd799439011"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - journalId
+ *             properties:
+ *               journalId:
+ *                 type: string
+ *                 description: ID của journal cần lấy notes (trùng với path param)
+ *                 example: "507f1f77bcf86cd799439011"
+ *     responses:
+ *       200:
+ *         description: Lấy notes thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 required:
+ *                   - mood
+ *                   - header
+ *                   - text
+ *                 properties:
+ *                   mood:
+ *                     type: string
+ *                     enum: ["happy", "sad", "neutral", "excited", "angry"]
+ *                     example: "happy"
+ *                   header:
+ *                     type: string
+ *                     example: "Ngày tuyệt vời!"
+ *                   text:
+ *                     type: string
+ *                     example: "Hôm nay tôi cảm thấy rất vui..."
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2025-03-11T10:00:00Z"
+ *             example:
+ *               - mood: "happy"
+ *                 header: "Ngày tuyệt vời!"
+ *                 text: "Hôm nay tôi cảm thấy rất vui..."
+ *                 createdAt: "2025-03-11T10:00:00Z"
+ *               - mood: "sad"
+ *                 header: "Ngày buồn"
+ *                 text: "Mọi thứ không như mong đợi..."
+ *                 createdAt: "2025-03-11T12:00:00Z"
+ *       400:
+ *         description: Thiếu journalId trong request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *               example:
+ *                 message: "Vui lòng cung cấp journalId"
+ *       404:
+ *         description: Không tìm thấy journal
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *               example:
+ *                 message: "Không tìm thấy journal với ID đã cung cấp"
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *               example:
+ *                 message: "Lỗi server khi lấy notes"
+ *                 error: "Database connection failed"
+ */
 
 router.get("/notes", authenticateJWT , getNotes);
 /**
