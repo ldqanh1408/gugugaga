@@ -17,7 +17,6 @@
   
 .resize-handle:hover {
   background-color: rgba(255, 255, 255, 0.5); /* Làm sáng thanh để dễ thấy */
-  width: 8px; /* Nở ra một chút để rõ hơn */
 }
   
 .resize-handle {

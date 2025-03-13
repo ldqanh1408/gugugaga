@@ -12,7 +12,38 @@
     gap: 10px;
     margin-top: 30px; 
   }
-  
+
+.viewer-mode {
+    background-color: #ffffff;  /* Xanh nhạt */
+    border: 2px dashed #CDACA0; /* Viền chấm xanh */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
+    border-radius: 20px 0px 0px 20px;
+
+    margin-left: 50px;
+    margin-right: 0;
+    margin-top: 20px;
+
+    width: 90vw;
+    height: 90vh;
+    max-width: 1200px;
+    max-height: 600px;
+}
+
+.viewer-diary {
+    font-size: 25px ;
+    text-align: center;
+    background-color: #E5CAC2 !important;
+    color: white;
+    display: inline-block;
+    width: auto; /* Không bị kéo dài */
+    max-width: fit-content; /* Chỉ rộng theo nội dung */
+    border-radius: 8px;
+    margin: auto;
+    margin-top: 0px !important; 
+    padding: 0px 30px 0px 30px !important;
+    margin-bottom: 50px;    
+}
+
 .note-diary {
     font-size: 65px;
     text-align: center;
@@ -28,7 +59,7 @@
     margin-bottom: 50px;
 }
 
-  .note-title, .note-date, .note-content {
+.note-title, .note-date, .note-content {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -52,12 +83,6 @@
     width: 25%; /* Chỉ dài 1/4 màn hình */
     height: 2px;
     margin-left: 9px;
-}
-
-.note-date {
-    outline: none;
-    border: none;
-    padding: 8px 70% 8px 10px; /* Tăng padding phải để tạo khoảng trống */
 }
 
 .date-container {

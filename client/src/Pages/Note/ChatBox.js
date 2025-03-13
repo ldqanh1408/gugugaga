@@ -1,23 +1,59 @@
 import React, {useEffect, useState, useRef} from "react";
 import "./ChatBox.css";
+import axios from "axios";
 import SaveButton from "../../assets/imgs/SaveButton.svg";
 
 function ChatBox() {
   const [messages, setMessages] = useState([
-    {text: "Hi! I'm your assistant :3 Let's chatting", sender: "bot"}
+    {text: "Hi! I'm your assistant :3 Let's chat", sender: "bot"}
   ]);
   const [input, setInput] = useState("");
   const chatReference = useRef(null);
 
-  const sendMessage = () => {
-    if (input.trim() === "") return; //???
+  const sendMessage = async () => {
+    if (input.trim() === "") return; 
     
-    setMessages([...messages, {text: input, sender: "user"}]); //them tn user
+    const userMessage = {text: input, sender: "user"};
+    setMessages([...messages, userMessage]); //them tn user
     setInput(""); //xoa inp sau khi gui
 
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { text: "Bot: " + input, sender: "bot"}]);
-    }, 300);
+    try {
+      const history = messages.map(m => `${m.sender === "user" ? "User" : "llama"}: ${m.text}`).join("\n");
+
+      const response = await axios.post("http://127.0.0.1:8080/completion", {
+        "stream": false,
+        "n_predict": 30,
+        "temperature": 0.7,
+        "stop": ["</s>", "llama:", "User:"],
+        "repeat_last_n": 256,
+        "repeat_penalty": 1.18,
+        "top_k": 40,
+        "top_p": 0.5,
+        "tfs_z": 1,
+        "typical_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "mirostat": 0,
+        "mirostat_tau": 5,
+        "mirostat_eta": 0.1,
+        "prompt": history + `\nUser: ${input}\nllama:`
+      }, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      
+      const botText = response.data?.content || "No response";
+      
+      const botMessage = { text: botText, sender: "bot" };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        { text: "Error: Could not connect to AI", sender: "bot" }
+      ]);
+    }
   };
 
   //cuộn xuống mỗi khi gửi tn
