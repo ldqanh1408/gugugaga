@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const noteSchema = new mongoose.Schema(
   {
-    noteId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: () => new mongoose.Types.ObjectId(), // Tạo ID tự động
-      required: true,
-    },
     date: { type: Date, required: true, default: Date.now },
     mood: {
       type: String,

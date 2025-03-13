@@ -10,7 +10,7 @@ const authenticateJWT = async (req, res, next) => {
     var decoded;
     try {
         decoded = verifyToken(token);
-        
+        console.log(decoded);
         req.user = decoded;
         next();
     }
