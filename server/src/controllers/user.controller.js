@@ -37,17 +37,12 @@ exports.createUser = async (req, res) => {
     chat.userId = newUser._id;
     journal.userId = newUser._id;
 
-
     await newUser.save();
     await chat.save();
     await journal.save();
-
   } catch (error) {
     res.status(400).json({ message: "Lỗi khi tạo user", error: error.message });
   }
 };
 
-exports.login = (req, res) => {
-    
-}
-
+exports.login = (req, res) => {};

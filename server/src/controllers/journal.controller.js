@@ -9,31 +9,30 @@ exports.getNotes = async (req, res) => {
 
     // Kiểm tra dữ liệu đầu vào
     if (!journalId) {
-      return res.status(400).json({ 
-        message: "Vui lòng cung cấp journalId" 
+      return res.status(400).json({
+        message: "Vui lòng cung cấp journalId",
       });
     }
 
     // Tìm journal trong database
     const journal = await Journal.findOne({ _id: journalId });
-    
+
     // Kiểm tra xem journal có tồn tại không
     if (!journal) {
-      return res.status(404).json({ 
-        message: "Không tìm thấy journal với ID đã cung cấp" 
+      return res.status(404).json({
+        message: "Không tìm thấy journal với ID đã cung cấp",
       });
     }
 
     // Trả về notes
     return res.status(200).json(journal.notes);
-
   } catch (error) {
     // Log error để debug (trong môi trường production)
-    console.error('Error in getNotes:', error);
-    
-    return res.status(500).json({ 
+    console.error("Error in getNotes:", error);
+
+    return res.status(500).json({
       message: "Lỗi server khi lấy notes",
-      error: error.message 
+      error: error.message,
     });
   }
 };
@@ -44,12 +43,10 @@ exports.addNote = async (req, res) => {
     const { note } = req.body;
     // Kiểm tra dữ liệu đầu vào
     if (!journalId || !note) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Thiếu thông tin journalId hoặc note",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin journalId hoặc note",
+      });
     }
 
     // Tìm journal
@@ -89,21 +86,21 @@ exports.updateNote = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Thiếu thông tin cần thiết" });
     }
-    const journal = await Journal.findOne({ _id: journalId });
+    const journal = await Journal.findOneAndUpdate(
+      { _id: journalId, "notes._id": noteId },
+      {
+      $set: Object.keys(note).reduce((acc, key) => {
+        acc[`notes.$.${key}`] = note[key];
+        return acc;
+      }, {})},
+      { new: true }
+    );
     if (!journal) {
       return res
         .status(404)
         .json({ success: false, message: "Không tìm thấy journal" });
     }
 
-    const index = journal.notes.findIndex((note) => note._id.toString() === noteId.toString());
-    if (index === -1) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Không tìm thấy note" });
-    }
-    journal.notes[index] = note;
-    await journal.save();
     return res
       .status(200)
       .json({ success: true, message: "Sửa note thành công" });
@@ -117,14 +114,20 @@ exports.updateNote = async (req, res) => {
 
 exports.getEntries = async (req, res) => {
   try {
-    const {journalId} = req.params;
-    
+    const { journalId } = req.params;
+
     const journal = await Journal.findOne({ _id: journalId });
     if (!journal) {
-      return res.status(404).json({ success: false, message: "Không tìm thấy journal" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy journal" });
     }
     // ✅ Lấy danh sách các ngày từ notes, loại bỏ trùng lặp
-    const entries = [...new Set(journal.notes.map(note => note.date.toISOString().split("T")[0]))]
+    const entries = [
+      ...new Set(
+        journal.notes.map((note) => note.date.toISOString().split("T")[0])
+      ),
+    ];
 
     return res.status(200).json({ success: true, entries: entries });
   } catch (error) {
@@ -132,4 +135,35 @@ exports.getEntries = async (req, res) => {
   }
 };
 
-//sx danh sách liên kết đơn
+exports.deleteNote = async (req, res) => {
+  try {
+    const { noteId, journalId } = req.params;
+    if (!noteId || !journalId) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Thiếu thông tin" });
+    }
+    const journal = await Journal.findOneAndUpdate(
+      { _id: journalId, "notes._id": noteId },
+      { $pull: { notes: { _id: noteId } } },
+      { new: false } // Trả về document TRƯỚC khi cập nhật
+    );
+
+    console.log("📜 Journal trước khi xóa:", journal);
+
+    if (!journal) {
+      return res.status(404).json({
+        success: false,
+        message: "Journal không tồn tại hoặc không chứa noteId",
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Đã xóa thành công" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+

@@ -16,10 +16,10 @@ const noteSchema = new mongoose.Schema(
 
 const journalSchema = new mongoose.Schema(
   {
-    userId: { 
-      type: mongoose.Schema.Types.ObjectId, 
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true 
+      required: true,
     },
     notes: [noteSchema], // Sử dụng schema note riêng để dễ mở rộng
   },

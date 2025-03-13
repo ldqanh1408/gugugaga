@@ -15,7 +15,7 @@ const options = {
       url: "http://localhost:5000", // Cập nhật URL đúng với server
     },
   ],
-  apis: ["./src/routes/*.js"], // Định nghĩa API trong các file routes
+  apis: ["./src/utils/*.js"], // Định nghĩa API trong các file routes
 };
 
 const swaggerSpec = swaggerJsdoc(options);
