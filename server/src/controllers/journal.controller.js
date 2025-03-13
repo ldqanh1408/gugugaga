@@ -1,5 +1,7 @@
 const Journal = require("../models/journal.model");
 const { findJournalByUserId } = require("../services/journal.service");
+const mongoose = require("mongoose");
+
 // Lấy danh sách users
 exports.getNotes = async (req, res) => {
   try {
@@ -60,7 +62,6 @@ exports.addNote = async (req, res) => {
 
     // Tạo ID cho note nếu chưa có
     const newNote = {
-      noteId: note.noteId || new mongoose.Types.ObjectId(),
       date: note.date || new Date(),
       mood: note.mood,
       header: note.header,
@@ -81,9 +82,9 @@ exports.addNote = async (req, res) => {
 
 exports.updateNote = async (req, res) => {
   try {
-    const { journalId } = req.params;
+    const { journalId, noteId } = req.params;
     const { note } = req.body;
-    if (!journalId || !note || !note.noteId) {
+    if (!journalId || !note || !noteId) {
       return res
         .status(400)
         .json({ success: false, message: "Thiếu thông tin cần thiết" });
@@ -95,8 +96,7 @@ exports.updateNote = async (req, res) => {
         .json({ success: false, message: "Không tìm thấy journal" });
     }
 
-    const noteId = note.noteId;
-    const index = journal.notes.findIndex((note) => note.noteId === noteId);
+    const index = journal.notes.findIndex((note) => note._id.toString() === noteId.toString());
     if (index === -1) {
       return res
         .status(404)

@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const {authenticateJWT} = require("../middleware")
-const { getNotes, addNote , updateNote } = require("../controllers/journal.controller");
+const { getNotes, addNote , updateNote, getEntries } = require("../controllers/journal.controller");
 
 // Định nghĩa route
 /**
  * @swagger
  * /api/v1/journals/{journalId}/notes:
- *   post:
+ *   get:
  *     summary: Lấy notes của một journal
  *     tags: [Journal]
  *     parameters:
@@ -18,19 +18,6 @@ const { getNotes, addNote , updateNote } = require("../controllers/journal.contr
  *           type: string
  *         description: ID của journal cần lấy notes
  *         example: "507f1f77bcf86cd799439011"
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - journalId
- *             properties:
- *               journalId:
- *                 type: string
- *                 description: ID của journal cần lấy notes (trùng với path param)
- *                 example: "507f1f77bcf86cd799439011"
  *     responses:
  *       200:
  *         description: Lấy notes thành công
@@ -106,7 +93,7 @@ const { getNotes, addNote , updateNote } = require("../controllers/journal.contr
  *                 error: "Database connection failed"
  */
 
-router.get("/notes", authenticateJWT , getNotes);
+router.get("/:journalId/notes", authenticateJWT , getNotes);
 /**
  * @swagger
  * /api/v1/journal/{journalId}/note/{noteId}:
@@ -132,21 +119,24 @@ router.get("/notes", authenticateJWT , getNotes);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - mood
- *               - header
- *               - text
  *             properties:
- *               mood:
- *                 type: string
- *                 enum: ["happy", "sad", "neutral", "excited", "angry"]
- *                 example: "happy"
- *               header:
- *                 type: string
- *                 example: "Ngày tuyệt vời!"
- *               text:
- *                 type: string
- *                 example: "Hôm nay tôi cảm thấy rất vui..."
+ *               note:
+ *                 type: object
+ *                 required:
+ *                   - mood
+ *                   - header
+ *                   - text
+ *                 properties:
+ *                   mood:
+ *                     type: string
+ *                     enum: ["happy", "sad", "neutral", "excited", "angry"]
+ *                     example: "happy"
+ *                   header:
+ *                     type: string
+ *                     example: "Một ngày đẹp trời"
+ *                   text:
+ *                     type: string
+ *                     example: "Hôm nay tôi có một ngày tuyệt vời..."
  *     responses:
  *       200:
  *         description: Sửa note thành công
@@ -157,7 +147,7 @@ router.get("/notes", authenticateJWT , getNotes);
  *       500:
  *         description: Lỗi máy chủ
  */
-router.put("/:journalId/notes/:noteId", authenticateJWT , updateNote);
+router.patch("/:journalId/notes/:noteId", authenticateJWT , updateNote);
 
 /**
  * @swagger
@@ -178,21 +168,24 @@ router.put("/:journalId/notes/:noteId", authenticateJWT , updateNote);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - mood
- *               - header
- *               - text
  *             properties:
- *               mood:
- *                 type: string
- *                 enum: ["happy", "sad", "neutral", "excited", "angry"]
- *                 example: "happy"
- *               header:
- *                 type: string
- *                 example: "Một ngày đẹp trời"
- *               text:
- *                 type: string
- *                 example: "Hôm nay tôi có một ngày tuyệt vời..."
+ *               note:
+ *                 type: object
+ *                 required:
+ *                   - mood
+ *                   - header
+ *                   - text
+ *                 properties:
+ *                   mood:
+ *                     type: string
+ *                     enum: ["happy", "sad", "neutral", "excited", "angry"]
+ *                     example: "happy"
+ *                   header:
+ *                     type: string
+ *                     example: "Một ngày đẹp trời"
+ *                   text:
+ *                     type: string
+ *                     example: "Hôm nay tôi có một ngày tuyệt vời..."
  *     responses:
  *       201:
  *         description: Thêm note thành công
@@ -205,11 +198,11 @@ router.put("/:journalId/notes/:noteId", authenticateJWT , updateNote);
  */
 
 
-router.post("/journals/:journalId/notes", authenticateJWT , addNote)
+router.post("/:journalId/notes", authenticateJWT , addNote)
 
 /**
  * @swagger
- * /journals/{journalId}/entries:
+ * api/v1/journals/{journalId}/entries:
  *   get:
  *     summary: Lấy danh sách ngày có ghi chú trong journal
  *     tags: [Journal]
@@ -267,6 +260,6 @@ router.post("/journals/:journalId/notes", authenticateJWT , addNote)
  *                   example: "Lỗi máy chủ, thử lại sau"
  */
 
-router.get("/journals/:journalId/entries")
+router.get("/:journalId/entries", authenticateJWT, getEntries);
 
 module.exports = router;
