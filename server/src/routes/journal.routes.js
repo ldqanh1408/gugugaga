@@ -97,7 +97,7 @@ router.get("/:journalId/notes", authenticateJWT , getNotes);
 /**
  * @swagger
  * /api/v1/journal/{journalId}/note/{noteId}:
- *   put:
+ *   patch:
  *     summary: Cập nhật một ghi chú trong journal
  *     tags: [Journal]
  *     parameters:
