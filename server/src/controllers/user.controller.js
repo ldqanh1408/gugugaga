@@ -13,36 +13,29 @@ async function hashPassword(password) {
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.json(users);
+    if (!users) return res.status(404).json({ message: "Danh sách rỗng" });
+    res.status(200).json({ success: true, users });
   } catch (error) {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
 
-// Tạo user mới
-exports.createUser = async (req, res) => {
+exports.deleteUser = async (req, res) => {
   try {
-    var { account, userName, password } = req.body;
-    password = await hashPassword(password);
-    const chat = new Chat();
-    const journal = new Journal();
+    const { userId } = req.params;
 
-    const newUser = new User({
-      account,
-      userName,
-      password,
-      chatId: chat._id,
-      journalId: journal._id,
-    });
-    chat.userId = newUser._id;
-    journal.userId = newUser._id;
+    // Kiểm tra xem user có tồn tại không
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "❌ Người dùng không tồn tại." });
+    }
 
-    await newUser.save();
-    await chat.save();
-    await journal.save();
+    // Xóa user
+    await User.findByIdAndDelete(userId);
+
+    return res.status(200).json({ success: true, message: "✅ Xóa người dùng thành công." });
   } catch (error) {
-    res.status(400).json({ message: "Lỗi khi tạo user", error: error.message });
+    console.error("❌ Lỗi khi xóa người dùng:", error);
+    return res.status(500).json({ success: false, message: "Lỗi server khi xóa người dùng." });
   }
 };
-
-exports.login = (req, res) => {};

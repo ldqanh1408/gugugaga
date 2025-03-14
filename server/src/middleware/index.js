@@ -1,3 +1,14 @@
 const authenticateJWT = require("./authenticateJWT");
-
-module.exports = {authenticateJWT}
+const {
+  validateUser,
+  validateLogin,
+  validateMessage,
+  validateNote,
+} = require("./validationMiddleware");
+module.exports = {
+  authenticateJWT,
+  validateUser,
+  validateLogin,
+  validateMessage,
+  validateNote
+};

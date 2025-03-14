@@ -6,6 +6,7 @@ const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
 const router = express.Router();
 const dotenv = require("dotenv");
+const { validateUser, validateLogin } = require("../middleware")
 dotenv.config();
 
 async function hashPassword(password) {
@@ -15,7 +16,7 @@ async function hashPassword(password) {
 }
 
 // // 📝 Đăng ký
-router.post("/register", async (req, res) => {
+router.post("/register", validateUser , async (req, res) => {
   try {
     var { account, userName, password } = req.body;
     password = await hashPassword(password);
@@ -43,7 +44,7 @@ router.post("/register", async (req, res) => {
 });
 
 // 🔐 Đăng nhập
-router.post("/login", async (req, res) => {
+router.post("/login", validateLogin, async (req, res) => {
   try {
     var { account, password } = req.body;
     password = await hashPassword(password);

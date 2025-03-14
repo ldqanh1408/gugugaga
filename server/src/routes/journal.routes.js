@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { authenticateJWT } = require("../middleware");
+const { authenticateJWT, validateNote } = require("../middleware");
 const {
   getNotes,
   addNote,
@@ -14,9 +14,9 @@ const {
 router.get("/:journalId/notes", authenticateJWT, getNotes);
 
 
-router.patch("/:journalId/notes/:noteId", authenticateJWT, updateNote);
+router.patch("/:journalId/notes/:noteId", validateNote, authenticateJWT, updateNote);
 
-router.post("/:journalId/notes", authenticateJWT, addNote);
+router.post("/:journalId/notes",validateNote, authenticateJWT, addNote);
 
 router.delete("/:journalId/notes/:noteId", authenticateJWT, deleteNote);
 

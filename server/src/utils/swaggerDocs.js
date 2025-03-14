@@ -778,3 +778,144 @@
  *       500:
  *         description: Lỗi máy chủ
  */
+
+
+// ========================= USERS ==============================
+
+
+/**
+ * @swagger
+ * /api/v1/users:
+ *   get:
+ *     summary: Lấy danh sách người dùng
+ *     description: Trả về danh sách tất cả người dùng trong hệ thống.
+ *     tags:
+ *       - Users
+ *     responses:
+ *       200:
+ *         description: Lấy danh sách người dùng thành công.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "67d26a67661876dfc30438ad"
+ *                       account:
+ *                         type: string
+ *                         example: "Ka"
+ *                       password:
+ *                         type: string
+ *                         example: "$2b$10$IreAuOQS3Ohg/g4S0aoJT.7mHHS5eki..gRt2COOpUYWPDXi/BCS2"
+ *                       userName:
+ *                         type: string
+ *                         example: "Ka"
+ *                       chatId:
+ *                         type: string
+ *                         example: "67d26a67661876dfc30438ab"
+ *                       journalId:
+ *                         type: string
+ *                         example: "67d26a67661876dfc30438ac"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-03-13T05:17:27.395Z"
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-03-13T05:17:27.395Z"
+ *                       __v:
+ *                         type: integer
+ *                         example: 0
+ *       404:
+ *         description: Không có người dùng nào trong hệ thống.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Danh sách rỗng"
+ *       500:
+ *         description: Lỗi server khi lấy danh sách người dùng.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi server"
+ */
+
+
+
+
+
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}:
+ *   delete:
+ *     summary: Xóa người dùng
+ *     description: Xóa một người dùng dựa trên userId.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: ID của người dùng cần xóa
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Xóa người dùng thành công.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "✅ Xóa người dùng thành công."
+ *       404:
+ *         description: Người dùng không tồn tại.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "❌ Người dùng không tồn tại."
+ *       500:
+ *         description: Lỗi server khi xóa người dùng.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi server khi xóa người dùng."
+ */
