@@ -56,6 +56,7 @@ JWT_SECRET=your_secret_key
 ```
 
 ### 4️⃣ **Chạy server**
+Vào thư mục client và gõ lệnh sau:
 ```sh
 npm start
 ```
@@ -64,22 +65,7 @@ Mặc định server sẽ chạy trên `http://localhost:5000`
 ---
 
 ## 📌 API Endpoints
-Dưới đây là một số API chính của dự án:
-
-### 🔹 **Authentication**
-| Method | Endpoint         | Mô tả |
-|--------|----------------|------|
-| POST   | `/auth/register` | Đăng ký người dùng mới |
-| POST   | `/auth/login`    | Đăng nhập |
-| POST   | `/auth/logout`   | Đăng xuất |
-
-### 🔹 **Journal**
-| Method | Endpoint         | Mô tả |
-|--------|----------------|------|
-| POST   | `/journals/:journalId/notes` | Thêm ghi chú |
-| PUT    | `/journals/:journalId/notes/:noteId` | Cập nhật ghi chú |
-| GET    | `/journals/:journalId/entries` | Lấy danh sách ngày có ghi chú |
-
+- Tất cả API nằm trong http://localhost:5000/api-docs/
 📌 **Xem chi tiết API với Swagger:**
 Sau khi chạy server, mở trình duyệt và truy cập:
 ```sh
@@ -89,11 +75,8 @@ http://localhost:5000/api-docs
 ---
 
 ## 🔄 Backup Database
-Dự án hỗ trợ backup MongoDB bằng `mongodump`. Chạy script sau để backup:
-```sh
-bash scripts/backup_db.sh
-```
-Dữ liệu sẽ được lưu trong thư mục `backup/`.
+Dự án hỗ trợ backup MongoDB bằng `mongodump`. 
+Có thể backup dữ liệu (import hoặc export) bằng API
 
 ---
 
