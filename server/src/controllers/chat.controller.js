@@ -3,6 +3,13 @@ const Chat = require("../models/chat.model");
 exports.getMessages = async (req, res) => {
   try {
     const { chatId } = req.params;
+    const {
+      role,
+      startDate,
+      endDate,
+      sortBy = "createdAt",
+      order = "desc",
+    } = req.query;
 
     // Kiểm tra chatId
     if (!chatId) {
@@ -38,10 +45,25 @@ exports.getMessages = async (req, res) => {
     }
 
     // Sắp xếp tin nhắn theo createdAt
-    const messages = chat.messages.sort(
-      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-    );
-
+    let messages;
+    if (role) {
+      if (startDate && endDate) {
+        messages = chat.messages.filter((message) => {
+          return (
+            new Date(message.createdAt) >= new Date(startDate).toISOString() &&
+            new Date(message.createdAt) <= new Date(endDate).toISOString() &&
+            message.role === role
+          );
+        });
+      } else {
+        messages = chat.messages.filter((message) => {
+          return (message.role === role);
+        });
+      }
+    }
+    else{
+      messages = chat.messages;
+    }
     return res.status(200).json({
       success: true,
       messages,
