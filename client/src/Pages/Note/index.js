@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NoteViewer from "./NoteViewer";
 import NoteEditor from "./NoteEditor";
 import ResizeHandle from "./ResizeHandle";
@@ -9,9 +9,37 @@ function Note() {
   const [currentIndex, setCurrentIndex] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  useEffect(() => {
+    const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
+    setNotes(storedNotes);
+  }, []);
+
+  const saveToLocalStorage = (newNotes) => {
+    localStorage.setItem("notes", JSON.stringify(newNotes));
+  };
+
   const handleSave = (newNote) => {
-    setNotes([...notes, newNote]);
-    setCurrentIndex(notes.length);
+    const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    const noteWithChat = {
+      ...newNote,
+      chatHistory
+    };
+
+    const updatedNotes = [...notes, noteWithChat];
+    setNotes(updatedNotes);
+    saveToLocalStorage(updatedNotes);
+    setCurrentIndex(updatedNotes.length - 1);
+
+    const calendarEntry = {
+      date: newNote.date,
+      title: newNote.title,
+      mood: newNote.mood || "neutral",
+      time: new Date().toLocaleTimeString() //tgian ghi nhat ki
+    };
+
+    const calendarHistory = JSON.parse(localStorage.getItem("calendarHistory")) || [];
+    calendarHistory.push(calendarEntry);
+    localStorage.setItem("calendarHistory", JSON.stringify(calendarHistory));
   };
 
   const handleEdit = () => setIsEditing(true);
@@ -20,6 +48,7 @@ function Note() {
     updatedNotes[currentIndex] = updatedNote;
     setNotes(updatedNotes);
     setIsEditing(false);
+    saveToLocalStorage(updatedNotes)
   };
 
   const handlePrev = () => setCurrentIndex((prev) => Math.max(0, prev - 1));
