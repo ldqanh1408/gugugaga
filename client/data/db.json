@@ -45,6 +45,14 @@
       "password": "123",
       "email": "ng",
       "phone_number": "s"
+    },
+    {
+      "id": "8393",
+      "account": "Ka",
+      "user_name": "",
+      "password": "Ka",
+      "email": "",
+      "phone_number": ""
     }
   ],
   "journals": [
