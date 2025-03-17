@@ -1,5 +1,5 @@
 import './Calendar.css';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,12 +8,35 @@ import { FaSmile, FaMeh, FaFrown } from "react-icons/fa";
 
 function Calendar() {
     const [SelectedDate, setSelectedDate] = useState(null);
-    
-    const notifications = [
-        { date: "04/03", title: "Hom nay toi vui", mood: "happy", time: "9:41AM"},
-        { date: "05/03", title: "Hom nay binh thuong", mood: "neutral", time: "10:15AM"},
-        { date: "06/03", title: "Hom nay chan", mood: "sad", time: "1:00AM"}
-    ];
+    const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+        const storedHistory = JSON.parse(localStorage.getItem("calendarHistory")) || [];
+        if (SelectedDate){
+           
+            const selectedDate = new Date(SelectedDate);
+            selectedDate.setHours(12); // Đảm bảo không bị lệch múi giờ
+            const formattedDate = selectedDate.toISOString().split('T')[0];            
+
+            const filteredHistory = Array.from(
+                new Map(
+                    storedHistory   
+                        .filter((item) => item.date === formattedDate)
+                        .map((item) => [item.title + item.time, item])
+                ).values()
+            );
+            setNotifications(filteredHistory);
+        } 
+        else {
+            setNotifications([]);
+        }
+    }, [SelectedDate]);
+
+    const saveNoteToLocalStorage = (note) => {
+        const history = [...notifications, note];
+        localStorage.setItem("calendarHistory", JSON.stringify(history));
+        setNotifications(history);
+    };
 
     const getMoodIcon = (mood) => {
         switch (mood) {
@@ -38,6 +61,12 @@ function Calendar() {
                                 onChange={(date) => setSelectedDate(date)}
                                 inline
                                 className="custom-datepicker"
+                                showYearDropdown
+                                showFullMonthYearPicker
+                                scrollableYearDropdown
+                                yearDropdownItemNumber={2000}
+                                showMonthDropdown
+                                maxDate={new Date()}
                             />
                         </div>
                     </div>

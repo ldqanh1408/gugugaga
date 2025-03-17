@@ -4,9 +4,13 @@ import axios from "axios";
 import SaveButton from "../../assets/imgs/SaveButton.svg";
 
 function ChatBox() {
-  const [messages, setMessages] = useState([
-    {text: "Hi! I'm your assistant :3 Let's chat", sender: "bot"}
-  ]);
+  const [messages, setMessages] = useState(() => {
+    const storedMessages = JSON.parse(localStorage.getItem("chatHistory")) || [
+      {text: "Hi! I'm your assistant :3 Let's chat", sender: "bot"}
+    ];
+    return storedMessages;
+  });
+
   const [input, setInput] = useState("");
   const chatReference = useRef(null);
 
@@ -14,7 +18,11 @@ function ChatBox() {
     if (input.trim() === "") return; 
     
     const userMessage = {text: input, sender: "user"};
-    setMessages([...messages, userMessage]); //them tn user
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages, userMessage];
+      localStorage.setItem("chatHistory", JSON.stringify([...messages, userMessage]));
+      return updatedMessages;
+    }); //them tn user
     setInput(""); //xoa inp sau khi gui
 
     try {
@@ -47,12 +55,19 @@ function ChatBox() {
       
       const botMessage = { text: botText, sender: "bot" };
 
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages, botMessage];
+        localStorage.setItem("chatHistory", JSON.stringify([...messages, userMessage, botMessage]));
+        return updatedMessages;
+      });
     } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        { text: "Error: Could not connect to AI", sender: "bot" }
-      ]);
+      const errorMessage = { text: "Error: Could not connect to AI", sender: "bot" };
+
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages, errorMessage];
+        localStorage.setItem("chatHistory", JSON.stringify(updatedMessages));
+        return updatedMessages;
+      });
     }
   };
 

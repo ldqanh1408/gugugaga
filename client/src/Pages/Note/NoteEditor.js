@@ -12,9 +12,33 @@ function NoteEditor({ note = {}, onSave, isFromViewer = false }) {
       return;
     }
 
-    const updatedNote = { title, date, content };
+    const selectedDate = new Date(date);
+    selectedDate.setHours(12); // Đặt giờ trưa để tránh lệch ngày do múi giờ
+    const formattedDate = selectedDate.toISOString().split('T')[0];
+
+    const updatedNote = { title, date: formattedDate, content, time: new Date().toLocaleTimeString() };
 
     localStorage.setItem('savedNote', JSON.stringify(updatedNote));
+
+    const calendarEntry = {
+      date: formattedDate,
+      title,
+      mood: "neutral",
+      time: new Date().toLocaleTimeString()
+    };
+
+    const calendarHistory = JSON.parse(localStorage.getItem("calendarHistory")) || [];
+    const isDuplicate = calendarHistory.some(
+      (item) => 
+        item.date === formattedDate && 
+      item.title === updatedNote.title &&
+      item.content === updatedNote.content
+    );
+
+    if (!isDuplicate){
+      calendarHistory.push(calendarEntry);      
+      localStorage.setItem("calendarHistory", JSON.stringify(calendarHistory));
+    }
 
     onSave(updatedNote);
   };
