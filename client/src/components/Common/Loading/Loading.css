@@ -1,0 +1,48 @@
+.loading-container {
+    min-width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f2f5;
+    gap: 10px; /* Khoảng cách giữa spinner và text */
+  }
+  
+  .loading-text {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #333;
+    animation: pulse 1.5s infinite;
+  }
+  
+  .spinner {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #ccc;
+    border-top: 4px solid #007bff; /* Màu xanh Bootstrap */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Hiệu ứng xoay cho spinner */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Hiệu ứng nhấp nháy cho text */
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
+  }

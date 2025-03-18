@@ -12,11 +12,12 @@ import avatar from "../../assets/imgs/avatar.svg";
 import smile from "../../assets/imgs/smile.svg";
 import "./UserAvatar.css";
 import {useNavigate} from 'react-router-dom'
+import { logout } from "../../services/authService";
 
 function UserAvatar() {
   const navigate = useNavigate();
-  const Logout = () => {
-    localStorage.setItem("token","");
+  const Logout = async () => {
+    await logout();
     navigate('/');
     window.location.reload();
   };

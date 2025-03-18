@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Cho phép frontend truy cập
 
-app.use(limiter);
+// app.use(limiter);
 
 // Định tuyến tài liệu API Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

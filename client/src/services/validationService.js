@@ -118,3 +118,6 @@ export const handleSignUp = async ({
     setError("An error occurred. Please try again.");
   }
 }
+
+//=================== API ===================
+

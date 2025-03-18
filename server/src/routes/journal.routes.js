@@ -16,7 +16,7 @@ router.get("/:journalId/notes", authenticateJWT, getNotes);
 
 router.patch("/:journalId/notes/:noteId", validateNote, authenticateJWT, updateNote);
 
-router.post("/:journalId/notes",validateNote, authenticateJWT, addNote);
+router.post("/:journalId/notes", authenticateJWT, addNote);
 
 router.delete("/:journalId/notes/:noteId", authenticateJWT, deleteNote);
 

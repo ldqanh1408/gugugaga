@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form } from "react-bootstrap";
 import { getUsers } from "../../services/userService.js";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
-import {
-  handleLogin,
-  handleBlur,
-  handleFocus,
-} from "../../services";
-import {ACCOUNT, PASSWORD} from '../../constants'
+import { handleLogin, handleBlur, handleFocus } from "../../services";
+import { ACCOUNT, PASSWORD } from "../../constants";
+import { checkAuth, logging, getToken } from "../../services/authService.js";
 
 function Login() {
   const [account, setAccount] = useState("");
@@ -18,18 +15,28 @@ function Login() {
   const [passwordError, setPasswordError] = useState("");
   const [accountError, setAccountError] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getToken(); // Chờ Promise giải quyết
+      console.log("token là", token); // In ra giá trị thực (chuỗi hoặc null)
+      if (token) { // Kiểm tra token thực tế
+        navigate('/', { replace: true });
+      }
+    };
+    checkAuth();
+  }, [])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleLogin({
-      account,
-      password,
-      accountError,
-      passwordError,
-      setError,
-      navigate,
-      setAccountError,
-      setPasswordError,
-    });
+    try {
+      await logging({ account, password });
+      console.log({ message: "Logging thành công..." });
+      navigate("/");
+      window.location.reload(); // Reload trang
+    } catch (error) {
+      console.error({ message: error.message, success: false });
+    }
   };
 
   return (

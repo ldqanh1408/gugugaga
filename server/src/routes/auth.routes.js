@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const { createToken } = require("../utils/jwtHelper");
+const { createToken, verifyToken } = require("../utils/jwtHelper");
 const User = require("../models/user.model");
 const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
@@ -18,7 +18,7 @@ async function hashPassword(password) {
 // // 📝 Đăng ký
 router.post("/register", validateUser , async (req, res) => {
   try {
-    var { account, userName, password } = req.body;
+    var { account, userName, password, email = "", phoneNumber = ""} = req.body;
     password = await hashPassword(password);
     const chat = new Chat();
     const journal = new Journal();
@@ -27,6 +27,8 @@ router.post("/register", validateUser , async (req, res) => {
       account,
       userName,
       password,
+      email,
+      phoneNumber,
       chatId: chat._id,
       journalId: journal._id,
     });
@@ -56,7 +58,7 @@ router.post("/login", validateLogin, async (req, res) => {
     const token = createToken(user);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "strict",
     });
     res.status(201).json({ message: "Đăng nhập thành công" });
@@ -80,7 +82,7 @@ router.get("/get-token", async (req, res) => {
     if (!token) {
       return res
         .status(404)
-        .json({ success: false, message: "Token not found" });
+        .json({ success: false, message: "Token not found", token: null });
     }
     return res.status(200).json({ token });
   } catch (error) {
@@ -88,4 +90,38 @@ router.get("/get-token", async (req, res) => {
   }
 });
 
+router.get('/check-auth', (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ isAuthenticated: false, message: 'Chưa đăng nhập' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ isAuthenticated: true, user: decoded });
+  } catch (error) {
+    res.status(401).json({ isAuthenticated: false, message: 'Token không hợp lệ' });
+  }
+});
+
+router.get('/me', (req, res) => {
+  const token = req.cookies.token; // Lấy token từ cookie
+  if (!token) {
+    return res.status(401).json({ message: 'Chưa đăng nhập' });
+  }
+  try {
+    const payload = verifyToken(token);
+    res.json({
+      userId: payload._id,
+      journalId: payload.journalId,
+      chatId: payload.chatId,
+      userName: payload.userName
+
+    });
+  } catch (error) {
+    res.status(401).json({ message: 'Token không hợp lệ' });
+  }
+});
+
 module.exports = router;
+
