@@ -1,3 +1,3 @@
 import UserAvatar from './UserAvatar';
-
-export { UserAvatar };
+import Loading from "./Common/Loading/"
+export { UserAvatar, Loading };

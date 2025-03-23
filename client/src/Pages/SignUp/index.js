@@ -3,7 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import "./SignUp.css";
 import { useNavigate } from "react-router-dom";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { addUser } from "../../services";
 import {ACCOUNT, PASSWORD} from "../../constants"
 import {
@@ -13,6 +13,7 @@ import {
 }
 from '../../services'
 import { handleSignUp } from "../../services/validationService";
+import { register, getToken } from "../../services/authService";
 
 function SignUp() {
   const [account, setAccount] = useState("");
@@ -28,21 +29,27 @@ function SignUp() {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getToken(); // Chờ Promise giải quyết
+      console.log("token là", token); // In ra giá trị thực (chuỗi hoặc null)
+      if (token) { // Kiểm tra token thực tế
+        navigate('/', { replace: true });
+      }
+    };
+    checkAuth();
+  }, [])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleSignUp({
-        password,
-        confirmPassword,
-        navigate,
-        account,
-        userName,
-        phoneNumber,
-        email,
-        setError,
-        setAccountError,
-        setPasswordError,
-        setConfirmPasswordError
-    });
+    try {
+        await register({userName, account, password, email, phoneNumber});
+        console.log("Đăng kí thành công");
+        navigate("/login")
+    }
+    catch(error){
+        console.error({message: error.message});
+    }
   };
 
   return (

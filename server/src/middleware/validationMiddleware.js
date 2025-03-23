@@ -41,10 +41,6 @@ const validateMessage = validate([
 ]);
 
 const validateNote = validate([
-  body("date")
-    .notEmpty().withMessage("Ngày không được để trống")
-    .isISO8601().withMessage("Ngày phải đúng định dạng ISO 8601 (YYYY-MM-DD)"),
-
   body("mood")
     .notEmpty().withMessage("Cảm xúc không được để trống")
     .isIn(["happy", "sad", "neutral", "excited", "angry"]).withMessage("Cảm xúc không hợp lệ"),

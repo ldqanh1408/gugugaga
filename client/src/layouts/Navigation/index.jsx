@@ -1,14 +1,27 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { UserAvatar } from "../../components";
 import '../../styles/common.css';
 import "./Navigation.css";
 import { Row } from "react-bootstrap";
-
+import {getToken} from "../../services/authService"
 function Navigation() {
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
+
+    const [isAuthenticated, setIsAuthenticated] = useState(null); // Khởi tạo là null hoặc giá trị mặc định
+
+    useEffect(() => {
+      getToken()
+        .then(token => {
+          console.log(token); // In ra token thực tế
+          setIsAuthenticated(token); // Cập nhật state với token
+        })
+        .catch(error => {
+          console.error("Lỗi lấy token:", error);
+          setIsAuthenticated(null); // Xử lý lỗi nếu cần
+        });
+    }, [isAuthenticated]);
 
     return (
       <Row className="">

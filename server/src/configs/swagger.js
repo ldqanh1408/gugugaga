@@ -12,12 +12,13 @@ const options = {
   },
   servers: [
     {
-      url: "http://localhost:5000", // Cập nhật URL đúng với server
+      url: "http://localhost:5000/", // Cập nhật URL đúng với server
     },
   ],
-  apis: ["./src/utils/*.js"], // Định nghĩa API trong các file routes
+  apis: ["./src/utils/swaggerDocs.js"], // Định nghĩa API trong các file routes
 };
 
 const swaggerSpec = swaggerJsdoc(options);
+console.log(swaggerSpec)
 
 module.exports = { swaggerUi, swaggerSpec };
