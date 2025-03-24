@@ -14,7 +14,7 @@ const {
 router.get("/:journalId/notes", authenticateJWT, getNotes);
 
 
-router.patch("/:journalId/notes/:noteId", validateNote, authenticateJWT, updateNote);
+router.patch("/:journalId/notes/:noteId", authenticateJWT, updateNote);
 
 router.post("/:journalId/notes", authenticateJWT, addNote);
 

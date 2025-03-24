@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import "./ResizeHandle.css";
 
-function ResizeHandle({ children }) {
+function ResizeHandle({onSave, children }) {
   const [width, setWidth] = useState(50); // Mặc định chia đôi 50-50
   const isResizing = useRef(false); // Trạng thái đang kéo hay không
-
+  console.warn(children[1])
   const handleMouseDown = () => {
     isResizing.current = true;
     document.addEventListener("mousemove", handleMouseMove);
@@ -22,7 +22,6 @@ function ResizeHandle({ children }) {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
-
   return (
     <div className="resize-container">
       <div className="left-pane" style={{ width: `${width}%` }}>{children[0]}</div>

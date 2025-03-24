@@ -27,3 +27,52 @@ export const getNotes = async () => {
     throw error;
   }
 };
+
+export const saveNote = async (newNote) => {
+  const token = await getToken();
+  if (!token) {
+    throw new Error('Không tìm thấy token');
+  }
+  try {
+    const { journalId } = await getPayLoad();
+    if (!journalId) {
+      throw new Error('Journal ID không tồn tại');
+    }
+    const url = `${API_URL}${journalId}/notes`;
+    const response = await axios.post(url, newNote, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data.note;
+  } catch (error) {
+    console.error('Error fetching notes:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+
+export const updateNote = async ({note: updatedNote}) => {
+  
+  const token = await getToken();
+  if (!token) {
+    throw new Error('Không tìm thấy token');
+  }
+  try {
+    const { journalId } = await getPayLoad();
+    if (!journalId) {
+      throw new Error('Journal ID không tồn tại');
+    }
+    console.error("test:", updatedNote._id)
+    const url = `${API_URL}${journalId}/notes/${updatedNote._id}`;
+    const response = await axios.patch(url, {note:updatedNote}, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching notes:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};

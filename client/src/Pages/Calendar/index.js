@@ -80,7 +80,7 @@ function Calendar() {
           <p className="paragraph">Check your day. Check your life.</p>
 
           <div className="custom-datepicker-container">
-            <div className="datepicker-wrapper">
+            <div className="datepicker-wrapper ">
               <DatePicker
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}

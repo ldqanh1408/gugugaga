@@ -1,57 +1,31 @@
 import "./NoteEditor.css";
 import React, { useState } from "react";
 
-function NoteEditor({ note = {}, onSave, isFromViewer = false }) {
-  const [title, setTitle] = useState(note.title || "");
+function NoteEditor({note = {}, onSave,isFromViewer = false}) {
+  const [header, setHeader] = useState(note.header || "");
   const [date, setDate] = useState(note.date || "");
-  const [content, setContent] = useState(note.content || "");
+  const [text, setText] = useState(note.text || "");
 
   const handleSubmit = () => {
-    if (!title.trim() || !date.trim() || !content.trim()){
+    if (!header.trim() || !date.trim() || !text.trim()){
       alert("Please fill in all the required fields!!!");
       return;
     }
 
-    const selectedDate = new Date(date);
-    selectedDate.setHours(12); // Đặt giờ trưa để tránh lệch ngày do múi giờ
-    const formattedDate = selectedDate.toISOString().split('T')[0];
-
-    const updatedNote = { title, date: formattedDate, content, time: new Date().toLocaleTimeString() };
-
-    localStorage.setItem('savedNote', JSON.stringify(updatedNote));
-
-    const calendarEntry = {
-      date: formattedDate,
-      title,
-      mood: "neutral",
-      time: new Date().toLocaleTimeString()
-    };
-
-    const calendarHistory = JSON.parse(localStorage.getItem("calendarHistory")) || [];
-    const isDuplicate = calendarHistory.some(
-      (item) => 
-        item.date === formattedDate && 
-      item.title === updatedNote.title &&
-      item.content === updatedNote.content
-    );
-
-    if (!isDuplicate){
-      calendarHistory.push(calendarEntry);      
-      localStorage.setItem("calendarHistory", JSON.stringify(calendarHistory));
-    }
-
+    const updatedNote = {_id:note._id, header, date, text, mood: 'neutral'};
+    console.log(updatedNote)
     onSave(updatedNote);
   };
-
+  
   const autoResizeTextArea = (event) => {
     event.target.style.height = "auto"; // Reset height trước
     event.target.style.height = event.target.scrollHeight + "px"; // Gán chiều cao theo nội dung
   };
 
   return (
-    <div className={`note-editor-container ${isFromViewer ? "viewer-mode" : ""}`}>
+    <div key={note._id} className={`note-editor-container ${isFromViewer ? "viewer-mode" : ""}`}> 
       <div className={`note-diary ${isFromViewer ? "viewer-diary" : ""}`}>Diary</div>
-      <input className="note-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter title" />
+      <input className="note-title" value={header} onChange={(e) => setHeader(e.target.value)} placeholder="Enter title" />
       <hr class="note-line"></hr>
       
       <div className="date-container">
@@ -59,9 +33,9 @@ function NoteEditor({ note = {}, onSave, isFromViewer = false }) {
       </div>
       
       <textarea className="note-content" 
-        value={content} 
+        value={text} 
         onChange={(e) => {
-          setContent(e.target.value); 
+          setText(e.target.value); 
           autoResizeTextArea(e);
         }} 
         placeholder="Enter content">
