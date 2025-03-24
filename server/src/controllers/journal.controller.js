@@ -67,7 +67,7 @@ exports.addNote = async (req, res) => {
     const newNote = notes[notes.length - 1];
     return res
       .status(200)
-      .json({ success: true, message: "Thêm note thành công", note: newNote});
+      .json({ success: true, message: "Thêm note thành công", note: newNote });
   } catch (error) {
     return res.status(404).json({ success: false, message: error.message });
   }
@@ -85,10 +85,11 @@ exports.updateNote = async (req, res) => {
     const journal = await Journal.findOneAndUpdate(
       { _id: journalId, "notes._id": noteId },
       {
-      $set: Object.keys(note).reduce((acc, key) => {
-        acc[`notes.$.${key}`] = note[key];
-        return acc;
-      }, {})},
+        $set: Object.keys(note).reduce((acc, key) => {
+          acc[`notes.$.${key}`] = note[key];
+          return acc;
+        }, {}),
+      },
       { new: true }
     );
     if (!journal) {
@@ -96,17 +97,20 @@ exports.updateNote = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Không tìm thấy journal" });
     }
-    const notes = journal.notes;
-    const newNote = notes[notes.length - 1];
+    const newNote = journal.notes.find(n => n._id.toString() === noteId)
 
     return res
       .status(200)
-      .json({ success: true, message: "Sửa note thành công" , note: newNote});
+      .json({ success: true, message: "Sửa note thành công", note: newNote });
   } catch (error) {
     console.error("Lỗi khi cập nhật note:", error);
     return res
       .status(500)
-      .json({ success: false, message: "Lỗi máy chủ, thử lại sau" , error: error.message});
+      .json({
+        success: false,
+        message: "Lỗi máy chủ, thử lại sau",
+        error: error.message,
+      });
   }
 };
 
@@ -163,5 +167,3 @@ exports.deleteNote = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-

@@ -16,6 +16,7 @@ function NoteViewer({note, hasPrev, hasNext, onPrev, onNext, currentIndex, onSav
           note={note}
           isFromViewer={true}
           onSave = {onSave}
+          
         />
       ) : (
         <div className="note-viewer">
@@ -32,7 +33,7 @@ function NoteViewer({note, hasPrev, hasNext, onPrev, onNext, currentIndex, onSav
           <div className="note-viewer-data">
             <h1 className="note-viewer-title">{note.header || "Nothing"}</h1>
             <hr class="note-viewer-line"></hr>
-            <p className="note-viewer-date">{formatDate(note.updatedAt) || ""}</p>
+            <p className="note-viewer-date">{formatDate(note.date) || ""}</p>
             <p className="note-viewer-content">{note.text || ""}</p>
           </div>
 

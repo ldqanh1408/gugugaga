@@ -1,19 +1,21 @@
 import "./NoteEditor.css";
 import React, { useState } from "react";
 
-function NoteEditor({note = {}, onSave,isFromViewer = false}) {
+function NoteEditor({note = {}, onSave,isFromViewer = false, currentIndex, setCurrentIndex}) {
   const [header, setHeader] = useState(note.header || "");
   const [date, setDate] = useState(note.date || "");
   const [text, setText] = useState(note.text || "");
-
+  function formatDateForInput(dateString) {
+    if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Lấy YYYY-MM-DD
+  }
   const handleSubmit = () => {
     if (!header.trim() || !date.trim() || !text.trim()){
       alert("Please fill in all the required fields!!!");
       return;
     }
-
     const updatedNote = {_id:note._id, header, date, text, mood: 'neutral'};
-    console.log(updatedNote)
     onSave(updatedNote);
   };
   
@@ -29,7 +31,7 @@ function NoteEditor({note = {}, onSave,isFromViewer = false}) {
       <hr class="note-line"></hr>
       
       <div className="date-container">
-        <input className="note-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <input className="note-date" type="date" value={formatDateForInput(date)} onChange={(e) => setDate(e.target.value)} />
       </div>
       
       <textarea className="note-content" 
