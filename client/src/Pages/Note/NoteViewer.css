@@ -104,9 +104,7 @@
 }
 
 .note-viewer-line {
-    border: none;
-    height: 1px;
-    background-color: #a87f70;
+    border: solid 2px #a87f70;;
     width: 25%; /* Chỉ dài 1/4 màn hình */
     height: 2px;
     margin-left: 9px;
