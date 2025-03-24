@@ -19,6 +19,7 @@ function Note() {
     fetchNotes();
   }, []);
 
+  
   const handleSave = async (newNote) => {
     try {
       const savedNote = await saveNote({note:newNote});
@@ -36,9 +37,10 @@ function Note() {
   
   const handleUpdate = async (updatedNote) => {
     try {
+      console.log(updatedNote)
       const savedNote = await updateNote({note:updatedNote}); // API trả về note đã cập nhật
-      
-      // Cập nhật note trong state
+      // Cập nhật note trong state  
+      console.log(savedNote)
       setNotes((prevNotes) =>
         prevNotes.map((note) =>
           note._id === savedNote._id ? savedNote : note // Thay thế note cũ bằng note mới
@@ -53,15 +55,16 @@ function Note() {
 
   const handleEdit = () => setIsEditing(true);
   
-  const handlePrev = () => setCurrentIndex((prev) => prev - 1);
+  const handlePrev = () =>{
+    setCurrentIndex((prev) => prev - 1);
+  } 
   const handleNext = () => setCurrentIndex((prev) => prev + 1);
   return (
     <div>
       {currentIndex === null ? (
         <NoteEditor onSave={handleSave} />
       ) : (
-        <ResizeHandle onSave={handleUpdate}>
-           (
+        <ResizeHandle >
               <NoteViewer
                 note={notes[currentIndex]}
                 isEditing={isEditing} 
@@ -71,12 +74,9 @@ function Note() {
                 currentIndex={currentIndex}
                 hasPrev = {currentIndex > 0}
                 hasNext = {currentIndex < notes.length - 1}
-                onPrev = {handlePrev}
-                onNext = {handleNext}
-                onSave = {handleUpdate}
-
+                onSave={handleUpdate}
+                setCurrentIndex = {setCurrentIndex}
               />
-            )
           <ChatBox />
         </ResizeHandle>
       )}

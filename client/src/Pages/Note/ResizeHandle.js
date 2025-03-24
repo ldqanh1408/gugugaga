@@ -4,7 +4,6 @@ import "./ResizeHandle.css";
 function ResizeHandle({onSave, children }) {
   const [width, setWidth] = useState(50); // Mặc định chia đôi 50-50
   const isResizing = useRef(false); // Trạng thái đang kéo hay không
-  console.warn(children[1])
   const handleMouseDown = () => {
     isResizing.current = true;
     document.addEventListener("mousemove", handleMouseMove);
@@ -14,7 +13,7 @@ function ResizeHandle({onSave, children }) {
   const handleMouseMove = (e) => {
     if (!isResizing.current) return; // Nếu không kéo thì bỏ qua
     const newWidth = (e.clientX / window.innerWidth) * 100;
-    setWidth(Math.max(20, Math.min(80, newWidth))); // Giới hạn min 20%, max 80%
+    setWidth(Math.max(20, Math. min(80, newWidth))); // Giới hạn min 20%, max 80%
   };
 
   const handleMouseUp = () => {

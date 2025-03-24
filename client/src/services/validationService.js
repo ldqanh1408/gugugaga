@@ -13,7 +13,7 @@ export const handleLogin = async ({
   try {
     if (!account) setAccountError("Account is required");
     if (!password) setPasswordError("Password is required");
-    if(!account || !password) return;
+    if (!account || !password) return;
     console.log(1);
     const users = await getUsers();
     const user = users.find(
@@ -74,14 +74,14 @@ export const handleConfirm = ({
   confirmPassword,
   setConfirmPasswordError,
 }) => {
-  if(password !== confirmPassword){
-    setConfirmPasswordError("Confirmation password does not match. Please try again.");
-  }
-  else{
+  if (password !== confirmPassword) {
+    setConfirmPasswordError(
+      "Confirmation password does not match. Please try again."
+    );
+  } else {
     setConfirmPasswordError("");
-    
   }
-}
+};
 
 export const handleSignUp = async ({
   password,
@@ -94,16 +94,20 @@ export const handleSignUp = async ({
   setError,
   setAccountError,
   setPasswordError,
-  setConfirmPasswordError
+  setConfirmPasswordError,
 }) => {
   try {
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    if(!password){setPasswordError("Account is required")}
-    if(!account){setAccountError("Password is required")}
-    if(!password  || !account) return;
+    if (!password) {
+      setPasswordError("Account is required");
+    }
+    if (!account) {
+      setAccountError("Password is required");
+    }
+    if (!password || !account) return;
     const newUser = {
       account,
       user_name: userName,
@@ -117,7 +121,6 @@ export const handleSignUp = async ({
   } catch (error) {
     setError("An error occurred. Please try again.");
   }
-}
+};
 
 //=================== API ===================
-
