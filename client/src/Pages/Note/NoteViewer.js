@@ -3,25 +3,19 @@ import "./NoteViewer.css";
 import EditButton from "../../assets/imgs/EditButton.svg";
 import NoteEditor from "./NoteEditor";
 
-function NoteViewer() {
-  const [note, setNote] = useState(
-    JSON.parse(localStorage.getItem('savedNote')) ||
-    { title: "Nothing!!!", date: "", content: ""}
-  );
-
-  const [isEditing, setIsEditing] = useState(false);
-  const handleSave = (updatedNote) => {
-    setNote(updatedNote);
-    setIsEditing(false);
+function NoteViewer({note, hasPrev, hasNext, onPrev, onNext, currentIndex, onSave, isEditing ,setIsEditing}) {
+  function formatDate(dateString) {
+    const date = new Date(dateString); // Chuyển chuỗi ISO sang đối tượng Date
+    return date.toLocaleDateString("vi-VN"); // Định dạng ngày theo chuẩn Việt Nam (dd/mm/yyyy)
   }
-
   return (
+    
     <div className="note-viewer-container d-flex justify-content-center align-items-center">
       {isEditing ? (
         <NoteEditor 
-          note={note} 
-          onSave={handleSave}
+          note={note}
           isFromViewer={true}
+          onSave = {onSave}
         />
       ) : (
         <div className="note-viewer">
@@ -31,19 +25,19 @@ function NoteViewer() {
             </button>
 
             <div className="triangle-wrapper">
-              <button className="btn">▲</button>
+              {hasPrev ? <button className="btn" onClick={onPrev}>▲</button> : <button className="btn">▲</button>}  
             </div>
           </div>
 
           <div className="note-viewer-data">
-            <h1 className="note-viewer-title">{note.title || "Nothing"}</h1>
+            <h1 className="note-viewer-title">{note.header || "Nothing"}</h1>
             <hr class="note-viewer-line"></hr>
-            <p className="note-viewer-date">{note.date || ""}</p>
-            <p className="note-viewer-content">{note.content || ""}</p>
+            <p className="note-viewer-date">{formatDate(note.updatedAt) || ""}</p>
+            <p className="note-viewer-content">{note.text || ""}</p>
           </div>
 
           <div className="toolbar bottom">
-            <button className="btn">▼</button>
+            {hasNext ? <button className="btn" onClick={onNext}>▼</button> : <button className="btn" >▼</button>}
           </div>  
         </div>
       )}

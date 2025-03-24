@@ -58,20 +58,16 @@ exports.addNote = async (req, res) => {
     }
 
     // Tạo ID cho note nếu chưa có
-    const newNote = {
-      date: note.date || new Date(),
-      mood: note.mood,
-      header: note.header,
-      text: note.text,
-    };
 
     // Thêm note vào journal
 
     journal.notes = [...journal.notes, note];
-    await journal.save();
+    const newJournal = await journal.save();
+    const notes = newJournal.notes;
+    const newNote = notes[notes.length - 1];
     return res
       .status(200)
-      .json({ success: true, message: "Thêm note thành công" });
+      .json({ success: true, message: "Thêm note thành công", note: newNote});
   } catch (error) {
     return res.status(404).json({ success: false, message: error.message });
   }
@@ -100,15 +96,17 @@ exports.updateNote = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Không tìm thấy journal" });
     }
+    const notes = journal.notes;
+    const newNote = notes[notes.length - 1];
 
     return res
       .status(200)
-      .json({ success: true, message: "Sửa note thành công" });
+      .json({ success: true, message: "Sửa note thành công" , note: newNote});
   } catch (error) {
     console.error("Lỗi khi cập nhật note:", error);
     return res
       .status(500)
-      .json({ success: false, message: "Lỗi máy chủ, thử lại sau" });
+      .json({ success: false, message: "Lỗi máy chủ, thử lại sau" , error: error.message});
   }
 };
 

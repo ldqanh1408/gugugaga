@@ -3,77 +3,80 @@ import NoteViewer from "./NoteViewer";
 import NoteEditor from "./NoteEditor";
 import ResizeHandle from "./ResizeHandle";
 import ChatBox from "./ChatBox";
-
+import {saveNote, getNotes, updateNote} from "../../services/journalService.js"
 function Note() {
   const [notes, setNotes] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
 
   useEffect(() => {
-    const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
-    setNotes(storedNotes);
+    const fetchNotes = async () => {
+      const data = await getNotes();
+      setNotes(data);
+    }
+    fetchNotes();
   }, []);
 
-  const saveToLocalStorage = (newNotes) => {
-    localStorage.setItem("notes", JSON.stringify(newNotes));
+  const handleSave = async (newNote) => {
+    try {
+      const savedNote = await saveNote({note:newNote});
+      
+      setNotes((prev) =>{
+        const updatedNote = [...prev,savedNote];
+        return updatedNote;
+      })
+      setCurrentIndex(notes.length);
+    }
+    catch(error){
+      console.error(error.message);
+    }
   };
-
-  const handleSave = (newNote) => {
-    const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-    const noteWithChat = {
-      ...newNote,
-      chatHistory
-    };
-
-    const updatedNotes = [...notes, noteWithChat];
-    setNotes(updatedNotes);
-    saveToLocalStorage(updatedNotes);
-    setCurrentIndex(updatedNotes.length - 1);
-
-    const calendarEntry = {
-      date: newNote.date,
-      title: newNote.title,
-      mood: newNote.mood || "neutral",
-      time: new Date().toLocaleTimeString() //tgian ghi nhat ki
-    };
-
-    const calendarHistory = JSON.parse(localStorage.getItem("calendarHistory")) || [];
-    calendarHistory.push(calendarEntry);
-    localStorage.setItem("calendarHistory", JSON.stringify(calendarHistory));
+  
+  const handleUpdate = async (updatedNote) => {
+    try {
+      const savedNote = await updateNote({note:updatedNote}); // API trả về note đã cập nhật
+      
+      // Cập nhật note trong state
+      setNotes((prevNotes) =>
+        prevNotes.map((note) =>
+          note._id === savedNote._id ? savedNote : note // Thay thế note cũ bằng note mới
+        )
+      );
+  
+      setIsEditing(false); // Thoát chế độ edit sau khi update thành công
+    } catch (error) {
+      console.error("Failed to update note:", error);
+    }
   };
 
   const handleEdit = () => setIsEditing(true);
-  const handleUpdate = (updatedNote) => {
-    const updatedNotes = [...notes];
-    updatedNotes[currentIndex] = updatedNote;
-    setNotes(updatedNotes);
-    setIsEditing(false);
-    saveToLocalStorage(updatedNotes)
-  };
-
-  const handlePrev = () => setCurrentIndex((prev) => Math.max(0, prev - 1));
-  const handleNext = () => setCurrentIndex((prev) => Math.min(notes.length - 1, prev + 1));
-
+  
+  const handlePrev = () => setCurrentIndex((prev) => prev - 1);
+  const handleNext = () => setCurrentIndex((prev) => prev + 1);
   return (
     <div>
       {currentIndex === null ? (
         <NoteEditor onSave={handleSave} />
       ) : (
-        <ResizeHandle>
-          <div>
-            {isEditing ? (
-              <NoteEditor note={notes[currentIndex]} onSave={handleUpdate} />
-            ) : (
+        <ResizeHandle onSave={handleUpdate}>
+           (
               <NoteViewer
                 note={notes[currentIndex]}
-                onEdit={handleEdit}
+                isEditing={isEditing} 
+                setIsEditing={setIsEditing}
                 onPrev={handlePrev}
                 onNext={handleNext}
-                hasPrev={currentIndex > 0}
-                hasNext={currentIndex < notes.length - 1}
+                currentIndex={currentIndex}
+                hasPrev = {currentIndex > 0}
+                hasNext = {currentIndex < notes.length - 1}
+                onPrev = {handlePrev}
+                onNext = {handleNext}
+                onSave = {handleUpdate}
+
               />
-            )}
-          </div>
+            )
           <ChatBox />
         </ResizeHandle>
       )}
