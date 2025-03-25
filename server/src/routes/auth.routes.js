@@ -18,7 +18,7 @@ async function hashPassword(password) {
 // // 📝 Đăng ký
 router.post("/register", validateUser , async (req, res) => {
   try {
-    var { account, userName, password, email = "", phoneNumber = ""} = req.body;
+    var { account, userName, password, email = "", phoneNumber = "", avatar = ""} = req.body;
     password = await hashPassword(password);
     const chat = new Chat();
     const journal = new Journal();
@@ -31,6 +31,7 @@ router.post("/register", validateUser , async (req, res) => {
       phoneNumber,
       chatId: chat._id,
       journalId: journal._id,
+      avatar,
     });
     chat.userId = newUser._id;
     journal.userId = newUser._id;

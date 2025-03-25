@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String},
     chatId:{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" },
     journalId:{ type: mongoose.Schema.Types.ObjectId, ref: "Journal" },
+    avatar:{type: String}
   },
   { timestamps: true } // Tự động tạo createdAt & updatedAt
 );
