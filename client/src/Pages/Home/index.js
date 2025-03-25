@@ -12,7 +12,7 @@ function Home() {
       <Row className="mt-4">
         <h1 className="fw-bolder text">GUGUGAGA</h1>
         <p className="opacity-75 text">Write your life</p>
-        <Button className="btn text">Write</Button>
+        <Button className="btn text" href="note">Write</Button>
       </Row>
       <Row>
         <img src={sample} className="img-fluid section img full"></img>

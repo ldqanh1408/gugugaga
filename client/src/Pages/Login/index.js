@@ -1,46 +1,54 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form } from "react-bootstrap";
-import { getUsers } from "../../services/userService.js";
-import "./Login.css";
 import { useNavigate } from "react-router-dom";
-import { handleLogin, handleBlur, handleFocus } from "../../services";
+import { logging, getToken } from "../../services/authService.js";
+import { handleBlur, handleFocus } from "../../services";
 import { ACCOUNT, PASSWORD } from "../../constants";
-import { checkAuth, logging, getToken } from "../../services/authService.js";
-
+import { ClipLoader } from "react-spinners";
+import './Login.css'
 function Login() {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [accountError, setAccountError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await getToken(); // Chờ Promise giải quyết
-      console.log("token là", token); // In ra giá trị thực (chuỗi hoặc null)
-      if (token) { // Kiểm tra token thực tế
-        navigate('/', { replace: true });
+      const token = await getToken();
+      if (token) {
+        navigate("/", { replace: true });
       }
     };
     checkAuth();
-  }, [])
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await logging({ account, password });
       console.log({ message: "Logging thành công..." });
       navigate("/");
-      window.location.reload(); // Reload trang
+      window.location.reload();
     } catch (error) {
-      console.error({ message: error.message, success: false });
+      setError("Mật khẩu hoặc tài khoản không chính xác");
     }
+    setLoading(false);
   };
 
   return (
-    <div className="containter form-1">
+    <div className={`container form-1`}>
+      {/* Overlay che toàn màn hình khi loading */}
+      {loading && (
+        <div className="loading-overlay">
+          <ClipLoader color="#ffffff" size={50} />
+        </div>
+      )}
+
       <div className="title">
         <h1>Login</h1>
       </div>
@@ -103,11 +111,15 @@ function Login() {
               <Form.Text className="text-danger">{passwordError}</Form.Text>
             </Form.Group>
           </div>
-          <Button type="submit" onClick={handleSubmit}>
-            Login
+          <Form.Text className="text-danger d-block">{error}</Form.Text>
+          
+          {/* Nút login hiển thị loading khi đang xử lý */}
+          <Button type="submit" onClick={handleSubmit} disabled={loading}>
+            {loading ? <ClipLoader color="white" size={20} /> : "Login"}
           </Button>
         </Form>
       </div>
+     
     </div>
   );
 }

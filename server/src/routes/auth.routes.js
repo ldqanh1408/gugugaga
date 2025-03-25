@@ -49,12 +49,12 @@ router.post("/register", validateUser , async (req, res) => {
 router.post("/login", validateLogin, async (req, res) => {
   try {
     var { account, password } = req.body;
-    password = await hashPassword(password);
 
     const user = await User.findOne({ account });
     if (!user) return res.status(400).json("Người dùng không tồn tại");
 
     const isMatch = await bcrypt.compare(password, user.password);
+    if(!isMatch) return res.status(400).json("Mật khẩu không hợp lệ");
     const token = createToken(user);
     res.cookie("token", token, {
       httpOnly: true,

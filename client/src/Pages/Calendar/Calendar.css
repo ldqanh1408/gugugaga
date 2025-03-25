@@ -274,8 +274,61 @@
 
 .mood-icon {
   font-size: 16px;
+  width: 16px;
+  height: auto;
 }
 
 .mood-icon.happy { color: black; }
 .mood-icon.neutral { color: black; }
 .mood-icon.sad { color: black; }
+
+.notification-container {
+  max-height: 500px; /* Giới hạn chiều cao, có thể chỉnh theo ý */
+  overflow-y: auto; /* Hiển thị thanh cuộn khi nội dung quá dài */
+  padding-right: 10px; /* Tạo khoảng trống tránh che nội dung */
+}
+
+/* Tùy chỉnh thanh cuộn (chỉ áp dụng trên Chrome, Edge) */
+.notification-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.notification-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+/* Giữ cho lịch không bị tràn ra khỏi màn hình */
+.custom-datepicker-container {
+  width: 100%; /* Đảm bảo lịch chiếm đủ không gian */
+  max-width: 100%; /* Tránh tràn ra ngoài */
+  display: flex;
+  justify-content: center;
+}
+
+
+.custom-datepicker {
+  width: 100%;
+  min-width: 280px; /* Đảm bảo không quá nhỏ */
+}
+/* Giới hạn kích thước của lịch */
+.react-datepicker {
+  max-width: 100%; /* Không vượt quá kích thước cột */
+  width: 280px; /* Kích thước cố định để tránh tràn */
+  min-width: 200px; /* Không nhỏ hơn mức này */
+}
+
+/* Điều chỉnh cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .custom-left {
+    width: 100%; /* Đảm bảo cột không bị cố định */
+    max-width: 100%;
+  }
+
+  .react-datepicker {
+    width: 100%; /* Để lịch không vượt ra ngoài màn hình */
+  }
+}
