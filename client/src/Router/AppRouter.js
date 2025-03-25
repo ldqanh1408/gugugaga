@@ -1,11 +1,12 @@
 import {Navigation, Footer} from "../layouts";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Home, Calendar, Note, SignUp, Login } from "../Pages";
+import { Home, Calendar, Note, SignUp, Login, Profile } from "../Pages";
 import  PrivateRoutes  from "./PrivateRoutes";
 import  PublicRoutes  from "./PublicRoutes";
 import  routes  from "./ConfigRouter";
 import "../styles/common.css"
 import "../styles/AppRouter.css";
+
 function AppRouter() {
   return (
     <Router>
@@ -32,6 +33,7 @@ function AppRouter() {
             ))}
           </Route>
 
+          <Route path="/profile" element={<Profile />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/login" element={<Login />} />"
         </Routes>
