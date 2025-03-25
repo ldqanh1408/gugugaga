@@ -70,7 +70,6 @@ export const getToken = async () => {
   try {
     const response = await api.get("/get-token");
     const { token } = response.data;
-    console.log("Token:", token);
     return token;
   } catch (error) {
     console.log(error);
