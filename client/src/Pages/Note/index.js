@@ -77,7 +77,7 @@ function Note() {
                 onSave={handleUpdate}
                 setCurrentIndex = {setCurrentIndex}
               />
-          <ChatBox />
+          <ChatBox notes={notes}/>
         </ResizeHandle>
       )}
     </div>

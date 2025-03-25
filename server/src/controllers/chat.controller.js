@@ -114,7 +114,8 @@ exports.addMessage = async (req, res) => {
     // Trả về response thành công
     return res.status(200).json({
       success: true,
-      message: "Thêm tin nhắn thành công",
+      message: message,
+      
     });
   } catch (error) {
     console.error("Error in addMessage:", error);

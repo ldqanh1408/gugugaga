@@ -7,7 +7,7 @@ const { addMessage, getMessages, deleteMessage, updateMessage } = require("../co
 
 router.get("/:chatId/messages" ,authenticateJWT, getMessages);
 
-router.post("/:chatId/messages", validateMessage, authenticateJWT, addMessage);
+router.post("/:chatId/messages", authenticateJWT, addMessage);
 
 router.delete("/:chatId/messages/:messageId", authenticateJWT, deleteMessage);
 

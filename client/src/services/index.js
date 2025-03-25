@@ -5,7 +5,11 @@ import {
   handleBlur,
   handleConfirm,
 } from "./validationService.js";
+
+import { getMessages, addMessage } from "./chatService.js";
+import { getNotes } from "./journalService.js";
 export {
+  getNotes,
   getUsers,
   getUserById,
   addUser,
@@ -13,4 +17,6 @@ export {
   handleBlur,
   handleLogin,
   handleConfirm,
+  getMessages,
+  addMessage,
 };
