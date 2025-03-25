@@ -5,13 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { addUser } from "../../services";
-import {ACCOUNT, PASSWORD} from "../../constants"
-import {
-    handleBlur,
-    handleFocus,
-    handleConfirm,
-}
-from '../../services'
+import { ACCOUNT, PASSWORD, USER_NAME } from "../../constants";
+import { handleBlur, handleFocus, handleConfirm } from "../../services";
 import { handleSignUp } from "../../services/validationService";
 import { register, getToken } from "../../services/authService";
 
@@ -27,28 +22,29 @@ function SignUp() {
   const [error, setError] = useState("");
   const [accountError, setAccountError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [userNameError, setUserNameError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = await getToken(); // Chờ Promise giải quyết
       console.log("token là", token); // In ra giá trị thực (chuỗi hoặc null)
-      if (token) { // Kiểm tra token thực tế
-        navigate('/', { replace: true });
+      if (token) {
+        // Kiểm tra token thực tế
+        navigate("/", { replace: true });
       }
     };
     checkAuth();
-  }, [])
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        await register({userName, account, password, email, phoneNumber});
-        console.log("Đăng kí thành công");
-        navigate("/login")
-    }
-    catch(error){
-        console.error({message: error.message});
+      await register({ userName, account, password, email, phoneNumber });
+      console.log("Đăng kí thành công");
+      navigate("/login");
+    } catch (error) {
+      console.error({ message: error.message });
     }
   };
 
@@ -65,20 +61,28 @@ function SignUp() {
               onChange={(e) => setAccount(e.target.value)}
               placeholder="Nhập tên tài khoản..."
               className="form-control"
-              onBlur={() => handleBlur({
-                field : ACCOUNT,
-                account,
-                password,
-                setAccountError,
-                setPasswordError,
-              })}
-              onFocus={() => handleFocus({
-                field : ACCOUNT,
-                account,
-                password,
-                setAccountError,
-                setPasswordError,
-              })}
+              onBlur={() =>
+                handleBlur({
+                  field: ACCOUNT,
+                  account,
+                  password,
+                  userName,
+                  setAccountError,
+                  setPasswordError,
+                  setUserNameError,
+                })
+              }
+              onFocus={() =>
+                handleFocus({
+                  field: ACCOUNT,
+                  account,
+                  password,
+                  userName,
+                  setAccountError,
+                  setPasswordError,
+                  setUserNameError,
+                })
+              }
             ></Form.Control>
             <Form.Text className="text-danger">{accountError}</Form.Text>
           </Form.Group>
@@ -89,21 +93,29 @@ function SignUp() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Nhập mật khẩu..."
               className="form-control"
-              onBlur={() => handleBlur({
-                field : PASSWORD,
-                account,
-                password,
-                setAccountError,
-                setPasswordError,
-              })}
-              onInput={() => handleFocus({
-                field : PASSWORD,
-                account,
-                password,
-                setAccountError,
-                setPasswordError,
-              })}
-           ></Form.Control>
+              onBlur={() =>
+                handleBlur({
+                  field: PASSWORD,
+                  account,
+                  password,
+                  userName,
+                  setAccountError,
+                  setPasswordError,
+                  setUserNameError,
+                })
+              }
+              onFocus={() =>
+                handleFocus({
+                  field: PASSWORD,
+                  account,
+                  password,
+                  userName,
+                  setAccountError,
+                  setPasswordError,
+                  setUserNameError,
+                })
+              }
+            ></Form.Control>
             <Form.Text className="text-danger">{passwordError}</Form.Text>
           </Form.Group>
           <Form.Group className="mt-4">
@@ -117,26 +129,50 @@ function SignUp() {
                   confirmPassword,
                   confirmPasswordError,
                   setConfirmPasswordError,
-                })
+                });
               }}
               placeholder="Nhập lại mật khẩu..."
               className="form-control"
             ></Form.Control>
-            <Form.Text className="text-danger">{confirmPasswordError}</Form.Text>
+            <Form.Text className="text-danger">
+              {confirmPasswordError}
+            </Form.Text>
+          </Form.Group>
+          <Form.Group className="mt-4">
+            <Form.Label className="fw-semibold">Name:</Form.Label>
+            <Form.Control
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Nhập tên người dùng..."
+              className="form-control"
+              onBlur={() =>
+                handleBlur({
+                  field: USER_NAME,
+                  account,
+                  password,
+                  userName,
+                  setAccountError,
+                  setPasswordError,
+                  setUserNameError,
+                })
+              }
+              onFocus={() =>
+                handleFocus({
+                  field: USER_NAME,
+                  account,
+                  password,
+                  userName,
+                  setAccountError,
+                  setPasswordError,
+                  setUserNameError,
+                })
+              }
+            ></Form.Control>
+            <Form.Text className="text-danger">{userNameError}</Form.Text>
           </Form.Group>
         </Form>
 
         <Form className="">
           <div className="d-flex flex-column form-2 additional">
-            <Form.Group>
-              <Form.Label className="fw-semibold">Name:</Form.Label>
-              <Form.Control
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="Nhập tên người dùng..."
-                className="form-control"
-              ></Form.Control>
-              <Form.Text></Form.Text>
-            </Form.Group>
             <Form.Group className="mt-4">
               <Form.Label className="fw-semibold">Email:</Form.Label>
               <Form.Control

@@ -43,14 +43,18 @@ export const handleLogin = async ({
 export const handleBlur = ({
   field,
   account,
+  userName,
   setAccountError,
   password,
   setPasswordError,
+  setUserNameError
 }) => {
   if (field === "account" && !account) {
     setAccountError("Account is required");
   } else if (field === "password" && !password) {
     setPasswordError("Password is required");
+  } else if (field === "userName" && !userName) {
+    setUserNameError("User name is required");
   }
 };
 
@@ -59,13 +63,18 @@ export const handleFocus = ({
   field,
   account,
   password,
+  userName,
   setAccountError,
   setPasswordError,
+  setUserNameError
 }) => {
   if (field === "account") {
     setAccountError("");
   } else if (field === "password") {
     setPasswordError("");
+  }
+  else if (field === "userName") {
+    setUserNameError("");
   }
 };
 
@@ -87,7 +96,7 @@ export const handleSignUp = async ({
   password,
   confirmPassword,
   account,
-  userName = "",
+  userName,
   email = "",
   phoneNumber = "",
   navigate,
@@ -95,6 +104,7 @@ export const handleSignUp = async ({
   setAccountError,
   setPasswordError,
   setConfirmPasswordError,
+  setUserNameError,
 }) => {
   try {
     if (password !== confirmPassword) {
@@ -108,6 +118,9 @@ export const handleSignUp = async ({
       setAccountError("Password is required");
     }
     if (!password || !account) return;
+    if (!userName) {
+      setUserNameError("User name is required");
+    }
     const newUser = {
       account,
       user_name: userName,
