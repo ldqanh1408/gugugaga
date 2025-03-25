@@ -20,7 +20,6 @@ export const getNotes = async () => {
         Authorization: `Bearer ${token}`, // Gửi token trong header
       },
     });
-    console.log("Response từ getNotes:", response.data);
     return response.data;
   } catch (error) {
     console.error(
