@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Link } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Row,
@@ -32,7 +33,8 @@ function UserAvatar() {
               <img src={avatar} alt="User avatar" className="avatar" />
             </DropdownToggle>
             <DropdownMenu>
-              <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/profile">Profile</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/change-password">Change Password</Dropdown.Item>
               <Dropdown.Item href="" onClick={Logout}>Logout</Dropdown.Item>
             </DropdownMenu>
           </Dropdown>
