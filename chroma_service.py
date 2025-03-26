@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 import requests
@@ -13,6 +14,15 @@ app = FastAPI(
     description="API tích hợp MongoDB + ChromaDB và llama.cpp",
     version="1.0.0"
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],          # Hoặc thay "*" bằng ["http://localhost:3000"] nếu muốn giới hạn
+    allow_credentials=True,
+    allow_methods=["*"],          # Cho phép tất cả các method (GET, POST, PUT, DELETE, OPTIONS,...)
+    allow_headers=["*"]           # Cho phép tất cả các header
+)
+
 
 # ---------------------------
 # 1. Kết nối MongoDB
@@ -44,16 +54,16 @@ LLAMA_API_URL = "http://127.0.0.1:8080/completion"
 def call_llama(prompt: str) -> str:
     payload = {
         "prompt": prompt,
-        "n_predict": 50,
-        "temperature": 0.7,
+        "n_predict": 500,          # Tăng số token để câu trả lời dài hơn
+        "temperature": 0.5,        # Giảm bớt độ 'random', câu trả lời ổn định
         "top_k": 40,
-        "top_p": 0.5,
+        "top_p": 0.9,              # Tăng top_p để AI có thêm không gian chọn từ
         "repeat_last_n": 256,
-        "repeat_penalty": 1.18,
-        "stream": False
+        "repeat_penalty": 1.1,     # Giảm lặp lại từ so với 1.18
+        "stream": False,
     }
     try:
-        resp = requests.post(LLAMA_API_URL, json=payload, timeout=10)
+        resp = requests.post(LLAMA_API_URL, json=payload, timeout=30)
         return resp.json().get("content", "No response")
     except Exception as e:
         print(f"Error calling llama.cpp: {e}")
@@ -76,37 +86,35 @@ def chat_api(req: ChatRequest):
     embed_id = f"{req.chatId}-user-{int(time.time()*1000)}"
 
     # Lưu tin nhắn vào ChromaDB
-    chat_vectors.add({
-        "ids": [embed_id],
-        "embeddings": [embedding],
-        "documents": [req.message],
-        "metadatas": [{"chatId": req.chatId}]
-    })
+    chat_vectors.add(
+        ids=[embed_id],
+        embeddings=[embedding],
+        documents=[req.message],
+        metadatas=[{"chatId": req.chatId}]
+    )
 
     # Truy vấn ChromaDB để lấy các tin nhắn liên quan
-    results = chat_vectors.query({
-        "query_embeddings": [embedding],
-        "n_results": 3
-    })
+    results = chat_vectors.query(
+        query_embeddings=[embedding],
+        n_results=1
+    )
     related_texts = results.get("documents", [[]])[0] or []
+    # Nếu related_texts là danh sách rỗng thì related_prompt sẽ là chuỗi rỗng
     related_prompt = "\n".join(related_texts)
 
-    # Tạo prompt cho llama.cpp
-    final_prompt = f"{related_prompt}\nUser: {req.message}\nBot:"
+    final_prompt = related_prompt
+    # # Tạo prompt cho llama.cpp với xử lý nếu related_prompt rỗng
+    # if related_prompt.strip():
+    #     final_prompt = f"{related_prompt}\nUser: {req.message}\nBot:"
+    # else:
+    #     final_prompt = f"User: {req.message}\nBot:"
 
     # Gọi llama.cpp để lấy phản hồi AI
     ai_reply = call_llama(final_prompt)
 
-    # (Backend không lưu tin nhắn vào MongoDB vì ChatBox.js đã tự lưu)
-
     return {"response": ai_reply}
 
-# (Tuỳ chọn) Endpoint tạo chat mới, trả về chatId
-@app.post("/api/chats/new")
-def create_new_chat():
-    chat_doc = {"messages": [], "createdAt": time.time()}
-    result = chats_collection.insert_one(chat_doc)
-    return {"chatId": str(result.inserted_id)}
+
 
 # ---------------------------
 # 7. Chạy Server trên port 4000
