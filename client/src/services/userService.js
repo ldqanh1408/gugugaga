@@ -1,6 +1,6 @@
 import axios from "axios";
-
-const API_URL = "http://localhost:5000";
+import {getToken, getPayLoad} from "../services"
+const API_URL = "http://localhost:5000/api/v1/";
 
 const getUsers = async () => {
   try {
@@ -12,12 +12,18 @@ const getUsers = async () => {
   }
 };
 
-const getUserById = async (id) => {
+const getUser = async () => {
   try {
-    const response = await axios.get(`${API_URL}/users/${id}`);
-    return response.data;
+    const token = await getToken();
+    if(!token){
+      console.error("Token không tồn tại");
+      return null;
+    }
+    const { userId } = await getPayLoad();
+    const response = await axios.get(`${API_URL}users/${userId}`);
+    return response.data.user;
   } catch (error) {
-    console.error(`Error fetching user with id ${id}:`, error);
+    console.error(`Error fetching user with id :`, error);
     throw error;
   }
 };
@@ -32,4 +38,4 @@ const addUser = async (user) => {
   }
 };
 
-export { getUsers, getUserById, addUser };
+export { getUsers, getUser, addUser };

@@ -6,7 +6,7 @@ const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
 const router = express.Router();
 const dotenv = require("dotenv");
-const { validateUser, validateLogin } = require("../middleware")
+const { validateUser, validateLogin, authenticateJWT } = require("../middleware")
 dotenv.config();
 
 async function hashPassword(password) {
@@ -98,8 +98,8 @@ router.get('/check-auth', (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ isAuthenticated: true, user: decoded });
+    const payload = verifyToken(token);
+    res.json({ isAuthenticated: true, user: payload});
   } catch (error) {
     res.status(401).json({ isAuthenticated: false, message: 'Token không hợp lệ' });
   }
@@ -123,6 +123,37 @@ router.get('/me', (req, res) => {
     res.status(401).json({ message: 'Token không hợp lệ' });
   }
 });
+
+router.post('/change-password',async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ message: 'Chưa đăng nhập' });
+  }
+  try {
+    const payload = verifyToken(token);
+    const {newPassword, currentPassword} = req.body
+    if(!newPassword || !currentPassword){
+      return res.status(400).json({success: false, message: "Thiếu thông tin"});
+    }
+    const userId = payload._id;
+    var user = await User.findOne({_id: userId});
+    if(!user){
+      return res.status(400).json({success: false, message: "Không tìm thấy user"});
+    }
+    
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    
+    if(!isMatch) return res.status(404).json({success:false, message: "Mật khẩu không khớp"})
+      
+      user.password = await hashPassword(newPassword);
+      await user.save();
+
+      return res.status(200).json({success: true, message: "Đổi mật khẩu thành công"});
+
+  } catch (error) {
+    return res.status(401).json({message: error.message });
+  }
+})
 
 module.exports = router;
 
