@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Card } from 'react-bootstrap';
+import { Form, Button} from 'react-bootstrap';
+import './EditProfile.css'
 
 function EditProfile({ onCancel, onSave, initialData }) {
     const [profile, setProfile] = useState(initialData);
@@ -38,7 +39,7 @@ function EditProfile({ onCancel, onSave, initialData }) {
             
             if (response.ok) {
                 const result = await response.json();
-                console.log('Du lieu gui di:', result);
+                console.log('Data sent:', result);
                 alert('Updated successfully!!!');
                 onSave(profile);
                 setIsChanged(false);
@@ -47,52 +48,122 @@ function EditProfile({ onCancel, onSave, initialData }) {
                 alert ("Failed... Please try again!");
             }
         } catch (error){
-            console.error('Loi khi gui du lieu:', error);
-            alert('Da xay ra loi khi gui du lieu.');
+            console.error('Error sending data:', error);
+            alert('An error occurred while sending data.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="edit-profile-container">
-            <h1>Edit Profile</h1>
-            <hr className="note-line"></hr>
+        <div className="container edit-profile-container">
+            <h1 className="edit-profile-header">Edit Profile</h1>
+            <hr className="edit-profile-line"></hr>
 
             <Form onSubmit={handleSubmit}>
-                <h3>Avatar</h3>
                 <Form.Group>
-                    <Form.Control type="file" accept="image/*" onChange={handleAvatarChange} />
+                    <Form.Label className="custom-h2-label">Avatar</Form.Label>
+
+                    <Form.Group className="edit-profile-box">
+                        <div className="avatar-content">
+                            <div className="avatar-preview">
+                                <img 
+                                    src={profile.avatar || "/default-avatar.png"} 
+                                    alt="Avatar" 
+                                    className="avatar-image"
+                                />
+                            </div>
+
+                            <div className="change-photo-area">
+                                <Form.Label htmlFor="avatar-input" className="change-photo-text">
+                                    Change photo
+                                </Form.Label>
+
+                                <Form.Control 
+                                    id="avatar-input"
+                                    type="file" 
+                                    accept="image/*" 
+                                    onChange={handleAvatarChange} 
+                                    className="custom-avatar-input"
+                                />
+                            </div>
+                        </div>
+                    </Form.Group>
                 </Form.Group>
 
-                <h3>Name</h3>
-                <Form.Control type="text" name="name" value={profile.name} onChange={handleChange} placeholder="Enter your name" />
+                <Form.Group>
+                    <Form.Label className="custom-h2-label">Name</Form.Label>
 
-                <h3>Username</h3>
-                <Form.Control type="text" name="username" value={profile.username} onChange={handleChange} placeholder="Enter your username" />
+                    <Form.Group className="edit-profile-box">
+                            <Form.Control className="no-border" type="text" name="name" value={profile.name} onChange={handleChange} placeholder="Enter your name" />
+                    </Form.Group>
+                </Form.Group>
 
-                <h3>Bio</h3>
-                <Form.Control as="textarea" name="bio" value={profile.bio} onChange={handleChange} placeholder="Enter your bio" />
+                <Form.Group>
+                    <Form.Label className="custom-h2-label">Username</Form.Label>
+                    <Form.Group className="edit-profile-box">
+                        <Form.Control className="no-border" type="text" name="username" value={profile.username} onChange={handleChange} placeholder="Enter your username" />
+                    </Form.Group>
+                </Form.Group>
+                
+                <Form.Group>
+                    <Form.Label className="custom-h2-label">Bio</Form.Label>
+                    <Form.Group className="edit-profile-box">
+                        <Form.Control className="no-border" as="textarea" name="bio" value={profile.bio} onChange={handleChange} placeholder="Enter your bio" />
+                    </Form.Group>   
+                </Form.Group>
 
-                <h3>Date of Birth</h3>
-                <Form.Control type="date" name="dob" value={profile.dob} onChange={handleChange} />
+                <Form.Group>
+                    <Form.Label className="custom-h2-label">Date of Birth</Form.Label>
+                    <Form.Group className="edit-profile-box">
+                        <Form.Control className="no-border" type="date" name="dob" value={profile.dob} onChange={handleChange} />
+                    </Form.Group>
+                </Form.Group>
 
-                <h3>Gender</h3>
-                <Form.Control type="text" name="gender" value={profile.gender} onChange={handleChange} placeholder="Enter your gender" />
+                <Form.Group>
+                    <Form.Label className="custom-h2-label">Gender</Form.Label>
+                    <Form.Group className="edit-profile-box">
+                        <Form.Select 
+                            className="no-border"
+                            name="gender" 
+                            value={profile.gender} 
+                            onChange={handleChange}
+                        >
+                            <option value="">-- Select Gender --</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Secret!!!</option>
+                        </Form.Select>
+                    </Form.Group>
+                </Form.Group>
 
-                <h3>Phone</h3>
-                <Form.Control type="tel" name="phone" value={profile.phone} onChange={handleChange} placeholder="Enter your phone number" />
+                <Form.Group>
+                    <Form.Label className="custom-h2-label">Phone</Form.Label>
+                    <Form.Group className="edit-profile-box">
+                        <Form.Control className="no-border" type="tel" name="phone" value={profile.phone} onChange={handleChange} placeholder="Enter your phone number" />
+                    </Form.Group>
+                </Form.Group>
 
-                <h3>Email</h3>
-                <Form.Control type="email" name="email" value={profile.email} onChange={handleChange} placeholder="Enter your email" required />
-
-                <h3>Website</h3>
-                <Form.Control type="url" name="website" value={profile.website} onChange={handleChange} placeholder="Enter your link" />
-
-                <Button variant="primary" type="submit" className="mt-3" disabled={!isChanged || loading}>
-                    {loading ? 'Updating...' : 'Submit'}
-                </Button>
-
+                <Form.Group>
+                    <Form.Label className="custom-h2-label">Email</Form.Label>
+                    <Form.Group className="edit-profile-box">
+                        <Form.Control className="no-border" type="email" name="email" value={profile.email} onChange={handleChange} placeholder="Enter your email" required />
+                    </Form.Group>
+                </Form.Group>
+            
+                <div className="edit-profile-btn-wrapper">
+                    <Button 
+                        style={{
+                            marginRight: '0',
+                        }}
+                        variant="primary" 
+                        type="submit" 
+                        className="mt-3 edit-profile-btn" 
+                        disabled={!isChanged || loading}
+                    >
+                        {loading ? 'Updating...' : 'Submit'}
+                    </Button>
+                </div>
             </Form>
         </div>
     );

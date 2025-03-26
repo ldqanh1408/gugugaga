@@ -34,7 +34,7 @@ function UserAvatar() {
             </DropdownToggle>
             <DropdownMenu>
               <Dropdown.Item as={Link} to="/profile">Profile</Dropdown.Item>
-              <Dropdown.Item as={Link} to="/edit-password">Profile</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/change-password">Change Password</Dropdown.Item>
               <Dropdown.Item href="" onClick={Logout}>Logout</Dropdown.Item>
             </DropdownMenu>
           </Dropdown>
