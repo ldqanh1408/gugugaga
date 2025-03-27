@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const connectDB = require("./src/configs/db");
+const {connectDB} = require("./src/configs/db");
 const cookieParser = require("cookie-parser");
 const { swaggerUi, swaggerSpec } = require("./src/configs/swagger");
 const limiter = require("./src/utils/limitHelper")

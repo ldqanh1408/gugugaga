@@ -1,24 +1,23 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Profile.css';
 import userAva from "../../assets/imgs/userAva.jpg"; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import EditProfile from './EditProfile';
+import { loadProfile } from '../../services/index';
 
 function Profile() {
     const [isEditing, setIsEditing] = useState(false);
-    const [consecutiveDays, setConsecutiveDays] = useState(0);
-    const [profileData, setProfileData] = useState({
-        avatar: userAva,
-        name: 'Công Chúa Bong Bóng',
-        username: '@your_little_princess',
-        bio: 'Thắng đời 1-0 vì biết đến website viết nhật ký siêu tâm lí như này',
-        dob: '',
-        gender: '',
-        phone: '',
-        email: '',
-        website: ''
-    });
+
+    const [profileData, setProfileData] = useState({});
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const data = await loadProfile();
+            setProfileData(data);
+        }
+        fetchProfile();
+    }, [])
+
 
     useEffect (() => {
         const fetchConsecutiveDays = async () => {
@@ -52,13 +51,13 @@ function Profile() {
                     <div className="profile-header"></div>
                     <div className="profile-content text-center">
                         <img
-                            src={profileData.avatar}
+                            src={profileData.avatar || userAva}
                             alt="userAva"
                             className="img-fluid rounded-circle profile-image"
                         />
 
-                        <h2 className="profile-name">{profileData.name}</h2>
-                        <p className="profile-username">{profileData.username}</p>
+                        <h2 className="profile-name">{profileData.nickName}</h2>
+                        <p className="profile-username">{profileData.userName}</p>
                         <p className="profile-bio">{profileData.bio}</p>
 
                         <div className="row profile-stats align-items-center">

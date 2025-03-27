@@ -1,4 +1,12 @@
-import { getUsers, getUserById, addUser, getUser } from "./userService.js";
+import {
+  getUsers,
+  getUserById,
+  addUser,
+  getUser,
+  getAvatar,
+  uploadAvatar,
+  loadProfile
+} from "./userService.js";
 import {
   handleLogin,
   handleFocus,
@@ -13,7 +21,7 @@ import {
   getPayLoad,
   logging,
   register,
-  changePassword
+  changePassword,
 } from "./authService.js";
 import { getNotes } from "./journalService.js";
 export {
@@ -32,5 +40,8 @@ export {
   getPayLoad,
   logging,
   register,
-  changePassword
+  changePassword,
+  getAvatar,
+  uploadAvatar,
+  loadProfile
 };
