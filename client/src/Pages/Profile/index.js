@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './Profile.css';
 import userAva from "../../assets/imgs/userAva.jpg"; 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,6 +7,7 @@ import EditProfile from './EditProfile';
 
 function Profile() {
     const [isEditing, setIsEditing] = useState(false);
+    const [consecutiveDays, setConsecutiveDays] = useState(0);
     const [profileData, setProfileData] = useState({
         avatar: userAva,
         name: 'Công Chúa Bong Bóng',
@@ -18,6 +19,21 @@ function Profile() {
         email: '',
         website: ''
     });
+
+    useEffect (() => {
+        const fetchConsecutiveDays = async () => {
+            try {
+                const response = await fetch(`/api/v1/journals/${profileData.journalId}/stats/consecutive-days`);
+                const data = await response.json();
+                setConsecutiveDays(data.consecutiveDays);
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu số ngày viết liên tục:", error);
+            }
+        };
+
+        fetchConsecutiveDays();
+        }, [profileData.journalId]
+    );
 
     const handleSave = (updatedProfile) => {
         setProfileData(updatedProfile);
@@ -47,8 +63,8 @@ function Profile() {
 
                         <div className="row profile-stats align-items-center">
                             <div className="col text-center">
-                                <h3>5</h3>
-                                <p>emotions</p>
+                                <h3>{consecutiveDays}</h3>
+                                <p>days streak</p>
                             </div>
                             <div className="col-auto">
                                 <div className="divider"></div>
