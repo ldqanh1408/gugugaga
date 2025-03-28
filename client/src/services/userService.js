@@ -70,7 +70,7 @@ const loadProfile = async () => {
       return null;
     }
     const { userId } = await getPayLoad();
-    const response = await axios.get(`${API_URL}/load-profile/${userId}`);
+    const response = await axios.get(`${API_URL}users/load-profile/${userId}`);
     return response.data.profile;
   } catch (error) {
     return { success: false, message: true };

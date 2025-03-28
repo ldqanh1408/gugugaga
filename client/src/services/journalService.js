@@ -30,6 +30,33 @@ export const getNotes = async () => {
   }
 };
 
+//gọi API cho một ghi chú cụ thể.
+export const getNoteById = async (id) => {
+  const token = await getToken();
+  if (!token) {
+    throw new Error("Không tìm thấy token");
+  }
+  try {
+    const { journalId } = await getPayLoad();
+    if (!journalId) {
+      throw new Error("Journal ID không tồn tại");
+    }
+    const url = `${API_URL}${journalId}/notes/${id}`; // URL để lấy ghi chú theo ID
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data.note; // Trả về ghi chú
+  } catch (error) {
+    console.error(
+      "Error fetching note by ID:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
+
 export const saveNote = async (newNote) => {
   const token = await getToken();
   if (!token) {

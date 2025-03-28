@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button} from 'react-bootstrap';
 import './EditProfile.css'
-import userAva from "../../assets/imgs/userAva.jpg"; 
 
 function EditProfile({ onCancel, onSave, initialData }) {
     const [profile, setProfile] = useState(initialData);
@@ -16,28 +15,20 @@ function EditProfile({ onCancel, onSave, initialData }) {
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
-        
         if (file) {
-          // Hiển thị ảnh preview ngay lập tức
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setProfile({ ...profile, avatarPreview: reader.result }); // avatarPreview chỉ để hiển thị
-            setIsChanged(true);
-          };
-          reader.readAsDataURL(file);
-      
-          // Chuẩn bị FormData để gửi lên server khi người dùng nhấn Lưu
-          const formData = new FormData();
-          formData.append('avatar', file);
-          setProfile({ ...profile, avatarFile: formData }); // Lưu FormData cho việc upload sau
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfile({ ...profile, avatar: reader.result });
+                setIsChanged(true);
+            };
+            reader.readAsDataURL(file);
         }
-      };
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try{
-   
             const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
                 method: 'POST',
                 headers: {
@@ -77,7 +68,7 @@ function EditProfile({ onCancel, onSave, initialData }) {
                         <div className="avatar-content">
                             <div className="avatar-preview">
                                 <img 
-                                    src={profile.avatarPreview || userAva } 
+                                    src={profile.avatar || "/default-avatar.png"} 
                                     alt="Avatar" 
                                     className="avatar-image"
                                 />
@@ -91,7 +82,7 @@ function EditProfile({ onCancel, onSave, initialData }) {
                                 <Form.Control 
                                     id="avatar-input"
                                     type="file" 
-                                    accept="image/*"
+                                    accept="image/*" 
                                     onChange={handleAvatarChange} 
                                     className="custom-avatar-input"
                                 />
@@ -100,7 +91,7 @@ function EditProfile({ onCancel, onSave, initialData }) {
                     </Form.Group>
                 </Form.Group>
 
-                <Form.Group> 
+                <Form.Group>
                     <Form.Label className="custom-h2-label">Name</Form.Label>
 
                     <Form.Group className="edit-profile-box">

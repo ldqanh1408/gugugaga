@@ -1,14 +1,30 @@
 .btn {
-    background-color: #000;
-    width: 100px;
-    height: 50px;
-    opacity: 0.8;
+    background: #e5cac2;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 15px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow:
+      inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
+      inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    width: auto; /* Không bị kéo dài */
+    max-width: fit-content; /* Chỉ rộng theo nội dung */
+    transition: all 0.2s ease-in-out; /* Hiệu ứng mượt */
+   margin-top: 4px;
+   margin-left:20px;
+  
 }
 
 .btn:hover {
-    background-color: #000;
-
-    opacity: 0.5;
+    background: #e5cac2;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+    transform: translateY(-2px); /* Nhấc nút lên một chút */
 }
 
 .text {

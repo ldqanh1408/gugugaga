@@ -10,6 +10,7 @@ function Profile() {
     const [isEditing, setIsEditing] = useState(false);
 
     const [profileData, setProfileData] = useState({});
+    const [consecutiveDays, setConsecutiveDays] = useState(0);
     useEffect(() => {
         const fetchProfile = async () => {
             const data = await loadProfile();
@@ -24,7 +25,7 @@ function Profile() {
             try {
                 const response = await fetch(`/api/v1/journals/${profileData.journalId}/stats/consecutive-days`);
                 const data = await response.json();
-                setConsecutiveDays(data.consecutiveDays);
+                setConsecutiveDays(data.consecutiveDays);   
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu số ngày viết liên tục:", error);
             }
