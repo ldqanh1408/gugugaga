@@ -75,17 +75,19 @@ exports.loadProfile = async (req, res) => {
         .status(404)
         .json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
+    
     return res.status(200).json({
       success: true,
       profile: {
-        avatar: user.avatar,
-        nickName: user.nickName,
-        userName: user.userName,
-        bio: user.bio,
-        dob: user.dob,
-        gender: user.gender,
-        phone: user.phone,
-        email: user.email,
+        avatar: user.avatar || "",
+        nickName: user.userName || "",
+        userName: user.account || "",
+        bio: user.bio || "",
+        dob: user.dob || "",
+        gender: user.gender || "",
+        phone: user.phone || "",
+        email: user.email || "",
+        avatarPreview: user.avatar || ""
       },
     });
   } catch (error) {
@@ -98,30 +100,17 @@ exports.uploadProfile = async (req, res) => {
     // Kiểm tra xem user có tồn tại không
     const user = await User.findOne({ _id: userId });
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "❌ Người dùng không tồn tại." });
+      return res.status(404).json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
 
-    // Cập nhật thông tin profile (bao gồm avatar từ GridFS)
-    const { nickName, userName, bio, dob, gender, phone, email, avatar } =
-      req.body;
+    const { nickName, userName, bio, dob, gender, phone, email, avatar } = req.body;
+    console.error(req.body);
 
-    // Kiểm tra file avatar tải lên (nếu có) và cập nhật vào GridFS
-    const newAvatarId = avatar; // ID của file trong GridFS sau khi upload
+    // Kiểm tra và upload ảnh lên Cloudinary nếu có file được tải lên
 
-    // Nếu user đã có avatar trước đó, xóa avatar cũ khỏi GridFS
-    if (user.avatar && user.avatar !== "defaultAvatarId") {
-      const oldAvatarId = new mongoose.Types.ObjectId(user.avatar);
-      gfs.delete(oldAvatarId, (err) => {
-        if (err) console.error("Lỗi khi xóa avatar cũ:", err);
-      });
-    }
 
-    // Cập nhật ID avatar mới vào user profile
-    user.avatar = newAvatarId;
-
-    // Cập nhật các thông tin khác của user (ngoài avatar)
+    // Cập nhật thông tin khác của user (và avatar mới nếu có)
+    user.avatar = avatar || user.avatar;
     user.nickName = nickName || user.nickName;
     user.userName = userName || user.userName;
     user.bio = bio || user.bio;
@@ -131,8 +120,9 @@ exports.uploadProfile = async (req, res) => {
     user.email = email || user.email;
 
     await user.save();
+    console.log("User sau khi cập nhật trong MongoDB:", user);
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       success: true,
       message: "✅ Hồ sơ đã được cập nhật thành công.",
       profile: {
@@ -145,6 +135,8 @@ exports.uploadProfile = async (req, res) => {
         phone: user.phone,
         email: user.email,
       },
+      avatar: user.avatar,
+      user,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

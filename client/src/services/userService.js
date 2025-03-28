@@ -40,11 +40,19 @@ const addUser = async (user) => {
 
 const uploadAvatar = async (file) => {
   try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không tìm thấy token" };
+    }
     const formData = new FormData();
     formData.append("avatar", file);
 
-    const response = await axios.post(`${API_URL}upload`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+    const response = await axios.post(`${API_URL}users/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+      withCredentials: true,
     });
 
     return response.data; // Trả về fileId (GridFS)
@@ -70,44 +78,73 @@ const loadProfile = async () => {
       return null;
     }
     const { userId } = await getPayLoad();
-    const response = await axios.get(`${API_URL}/load-profile/${userId}`);
+    const response = await axios.get(`${API_URL}users/load-profile/${userId}`);
     return response.data.profile;
   } catch (error) {
     return { success: false, message: true };
   }
 };
 
-const uploadProfile = async (profile) => {
+const uploadProfile = async ({ profile, avatarFile }) => {
   try {
-    let avatarId = profile.avatar; // Nếu avatar không thay đổi, giữ nguyên
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const payload = await getPayLoad();
+    let avatarUrl = profile.avatar; // Nếu không thay đổi ảnh thì giữ nguyên
 
-    // **Bước 1: Upload avatar nếu file mới được chọn**
-    if (profile.avatarFile) {
+    // **Bước 1: Upload avatar lên Cloudinary (nếu có file mới được chọn)**
+    if (avatarFile) {
       const formData = new FormData();
-      formData.append("avatar", profile.avatarFile);
+      formData.append("avatar", avatarFile); // Thêm file avatar vào form data
 
-      const avatarResponse = await axios.post('/api/upload/avatar', formData, {
+      const uploadResponse = await axios.post(`${API_URL}users/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // Gửi token trong header
         },
       });
 
-      avatarId = avatarResponse.data.fileId; // ID của avatar mới từ GridFS
+      // Lấy URL ảnh từ response nếu upload thành công
+      if (uploadResponse.data && uploadResponse.data.success) {
+        avatarUrl = uploadResponse.data.imageUrl;
+      } else {
+        return { success: false, message: "❌ Upload avatar thất bại." };
+      }
     }
-
-    // **Bước 2: Gửi thông tin profile lên backend**
+    // **Bước 2: Cập nhật profile (bao gồm avatar mới nếu có)**
     const updatedProfile = {
       ...profile,
-      avatar: avatarId,  // Đặt avatar mới (hoặc giữ nguyên nếu không thay đổi)
+      avatar: avatarUrl, // Cập nhật avatar mới hoặc giữ nguyên nếu không đổi
     };
-
-    await axios.patch(`/api/profile/${profile.userId}`, updatedProfile);
-
-    alert("✅ Profile đã được cập nhật thành công!");
+    // Gửi thông tin profile đã cập nhật lên backend
+    const data = await axios.patch(
+      `${API_URL}users/upload-profile/${payload.userId}`,
+      updatedProfile,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gửi token để xác thực
+        },
+        withCredentials: true, // Đảm bảo cookie được gửi kèm
+      }
+    );
+    console.log(data);
+    return { success: true, profile: data.data.profile };
   } catch (error) {
-    console.error("Lỗi khi cập nhật profile:", error);
+    console.error("❌ Lỗi khi cập nhật profile:", error);
     alert("❌ Có lỗi xảy ra khi cập nhật profile.");
+    return { success: false, message: "Lỗi khi cập nhật profile." };
   }
-}
+};
 
-export { getUsers, getUser, addUser, getAvatar, uploadAvatar, loadProfile };
+
+export {
+  getUsers,
+  getUser,
+  addUser,
+  getAvatar,
+  uploadAvatar,
+  loadProfile,
+  uploadProfile,
+};

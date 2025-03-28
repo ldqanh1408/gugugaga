@@ -5,7 +5,8 @@ import {
   getUser,
   getAvatar,
   uploadAvatar,
-  loadProfile
+  loadProfile,
+  uploadProfile
 } from "./userService.js";
 import {
   handleLogin,
@@ -43,5 +44,6 @@ export {
   changePassword,
   getAvatar,
   uploadAvatar,
-  loadProfile
+  loadProfile,
+  uploadProfile
 };

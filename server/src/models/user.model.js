@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema(
     },
     bio:{type: String},
     dob:{type: String},
+    phone:{type: String},  
+    avatar:{type: String}  
   },
   { timestamps: true } // Tự động tạo createdAt & updatedAt
 );

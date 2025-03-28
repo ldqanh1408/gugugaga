@@ -19,4 +19,12 @@ const connectDB = async () => {
   }
 };
 
-module.exports = { connectDB, gfs };
+const getGFS = () => {
+  if (!gfs) {
+    throw new Error("❌ gfs chưa được khởi tạo. Hãy đảm bảo connectDB đã chạy!");
+  }
+  return gfs;
+};
+
+
+module.exports = { connectDB, getGFS };

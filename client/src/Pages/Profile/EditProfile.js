@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { Form, Button} from 'react-bootstrap';
-import './EditProfile.css'
+import { useDispatch, useSelector } from 'react-redux';
+import { Form, Button } from 'react-bootstrap';
+import './EditProfile.css';
 import userAva from "../../assets/imgs/userAva.jpg"; 
-
-function EditProfile({ onCancel, onSave, initialData }) {
-    const [profile, setProfile] = useState(initialData);
+import { updateAvatar, updateProfile, uploadProfileAsync } from '../../redux/userSlice'; // Redux action
+import {Loading} from "../../components/Common/Loading"
+function EditProfile({ setIsEditing }) {
+    const dispatch = useDispatch();
+    const profileData = useSelector((state) => state.user.profile); // Lấy profile từ Redux store
+    const [profile, setProfile] = useState(profileData);
     const [isChanged, setIsChanged] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [avatarFile, setAvatarFile] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -16,49 +21,30 @@ function EditProfile({ onCancel, onSave, initialData }) {
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
-        
         if (file) {
-          // Hiển thị ảnh preview ngay lập tức
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setProfile({ ...profile, avatarPreview: reader.result }); // avatarPreview chỉ để hiển thị
-            setIsChanged(true);
-          };
-          reader.readAsDataURL(file);
-      
-          // Chuẩn bị FormData để gửi lên server khi người dùng nhấn Lưu
-          const formData = new FormData();
-          formData.append('avatar', file);
-          setProfile({ ...profile, avatarFile: formData }); // Lưu FormData cho việc upload sau
+            setAvatarFile(file); // Lưu file để upload sau
+
+            // Hiển thị ảnh preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfile({ ...profile, avatarPreview: reader.result });
+                setIsChanged(true);
+            };
+            reader.readAsDataURL(file);
         }
-      };
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        try{
-   
-            const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type' : 'application/json'
-                },
-                body: JSON.stringify(profile)
-            });
-            
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Data sent:', result);
-                alert('Updated successfully!!!');
-                onSave(profile);
-                setIsChanged(false);
-            } 
-            else {
-                alert ("Failed... Please try again!");
-            }
-        } catch (error){
-            console.error('Error sending data:', error);
-            alert('An error occurred while sending data.');
+
+        try {
+            const newProfile = await dispatch(uploadProfileAsync({ profile, avatarFile })); // Cập nhật qua Redux action
+            await dispatch(updateAvatar(newProfile.avatar));
+            setIsEditing(false);
+            window.location.reload();
+        } catch (error) {
+            console.error('Error updating profile:', error);
         } finally {
             setLoading(false);
         }
@@ -67,18 +53,17 @@ function EditProfile({ onCancel, onSave, initialData }) {
     return (
         <div className="container edit-profile-container">
             <h1 className="edit-profile-header">Edit Profile</h1>
-            <hr className="edit-profile-line"></hr>
+            <hr className="edit-profile-line" />
 
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Avatar</Form.Label>
-
                     <Form.Group className="edit-profile-box">
                         <div className="avatar-content">
                             <div className="avatar-preview">
-                                <img 
-                                    src={profile.avatarPreview || userAva } 
-                                    alt="Avatar" 
+                                <img
+                                    src={profile.avatarPreview || userAva}
+                                    alt="Avatar"
                                     className="avatar-image"
                                 />
                             </div>
@@ -87,12 +72,11 @@ function EditProfile({ onCancel, onSave, initialData }) {
                                 <Form.Label htmlFor="avatar-input" className="change-photo-text">
                                     Change photo
                                 </Form.Label>
-
-                                <Form.Control 
+                                <Form.Control
                                     id="avatar-input"
-                                    type="file" 
+                                    type="file"
                                     accept="image/*"
-                                    onChange={handleAvatarChange} 
+                                    onChange={handleAvatarChange}
                                     className="custom-avatar-input"
                                 />
                             </div>
@@ -100,42 +84,68 @@ function EditProfile({ onCancel, onSave, initialData }) {
                     </Form.Group>
                 </Form.Group>
 
-                <Form.Group> 
+                <Form.Group>
                     <Form.Label className="custom-h2-label">Name</Form.Label>
-
                     <Form.Group className="edit-profile-box">
-                            <Form.Control className="no-border" type="text" name="name" value={profile.name} onChange={handleChange} placeholder="Enter your name" />
+                        <Form.Control
+                            className="no-border"
+                            type="text"
+                            name="name"
+                            value={profile.name}
+                            onChange={handleChange}
+                            placeholder="Enter your name"
+                        />
                     </Form.Group>
                 </Form.Group>
 
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Username</Form.Label>
                     <Form.Group className="edit-profile-box">
-                        <Form.Control className="no-border" type="text" name="username" value={profile.username} onChange={handleChange} placeholder="Enter your username" />
+                        <Form.Control
+                            className="no-border"
+                            type="text"
+                            name="username"
+                            value={profile.username}
+                            onChange={handleChange}
+                            placeholder="Enter your username"
+                        />
                     </Form.Group>
                 </Form.Group>
-                
+
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Bio</Form.Label>
                     <Form.Group className="edit-profile-box">
-                        <Form.Control className="no-border" as="textarea" name="bio" value={profile.bio} onChange={handleChange} placeholder="Enter your bio" />
-                    </Form.Group>   
+                        <Form.Control
+                            className="no-border"
+                            as="textarea"
+                            name="bio"
+                            value={profile.bio}
+                            onChange={handleChange}
+                            placeholder="Enter your bio"
+                        />
+                    </Form.Group>
                 </Form.Group>
 
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Date of Birth</Form.Label>
                     <Form.Group className="edit-profile-box">
-                        <Form.Control className="no-border" type="date" name="dob" value={profile.dob} onChange={handleChange} />
+                        <Form.Control
+                            className="no-border"
+                            type="date"
+                            name="dob"
+                            value={profile.dob}
+                            onChange={handleChange}
+                        />
                     </Form.Group>
                 </Form.Group>
 
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Gender</Form.Label>
                     <Form.Group className="edit-profile-box">
-                        <Form.Select 
+                        <Form.Select
                             className="no-border"
-                            name="gender" 
-                            value={profile.gender} 
+                            name="gender"
+                            value={profile.gender}
                             onChange={handleChange}
                         >
                             <option value="">-- Select Gender --</option>
@@ -149,25 +159,38 @@ function EditProfile({ onCancel, onSave, initialData }) {
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Phone</Form.Label>
                     <Form.Group className="edit-profile-box">
-                        <Form.Control className="no-border" type="tel" name="phone" value={profile.phone} onChange={handleChange} placeholder="Enter your phone number" />
+                        <Form.Control
+                            className="no-border"
+                            type="tel"
+                            name="phone"
+                            value={profile.phone}
+                            onChange={handleChange}
+                            placeholder="Enter your phone number"
+                        />
                     </Form.Group>
                 </Form.Group>
 
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Email</Form.Label>
                     <Form.Group className="edit-profile-box">
-                        <Form.Control className="no-border" type="email" name="email" value={profile.email} onChange={handleChange} placeholder="Enter your email" required />
+                        <Form.Control
+                            className="no-border"
+                            type="email"
+                            name="email"
+                            value={profile.email}
+                            onChange={handleChange}
+                            placeholder="Enter your email"
+                            required
+                        />
                     </Form.Group>
                 </Form.Group>
-            
+
                 <div className="edit-profile-btn-wrapper">
-                    <Button 
-                        style={{
-                            marginRight: '0',
-                        }}
-                        variant="primary" 
-                        type="submit" 
-                        className="mt-3 edit-profile-btn" 
+                    <Button
+                        style={{ marginRight: '0' }}
+                        variant="primary"
+                        type="submit"
+                        className="mt-3 edit-profile-btn"
                         disabled={!isChanged || loading}
                     >
                         {loading ? 'Updating...' : 'Submit'}
