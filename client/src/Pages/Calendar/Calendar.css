@@ -332,3 +332,42 @@
     width: 100%; /* Để lịch không vượt ra ngoài màn hình */
   }
 }
+
+/* Căn chỉnh nút Edit ở góc phải dưới */
+.history-edit-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: transparent;  /* Màu nền nút */
+  border: none;
+  padding: 10px;  /* Kích thước nút */
+  border-radius: 5px;  /* Bo góc của nút */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease-in-out; /* Thêm hiệu ứng chuyển màu */
+}
+
+/* Điều chỉnh biểu tượng trong nút để vừa với không gian */
+.history-edit-btn .edit-icon {
+  width: 20px;  /* Đặt kích thước icon */
+  height: 20px;  /* Đặt kích thước icon */
+  filter: brightness(2); /* Làm cho icon đậm hơn ngay từ ban đầu */
+}
+
+/* Thêm hiệu ứng hover cho nút Edit */
+.history-edit-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+  background-color: transparent;  /* Thay đổi màu nền khi hover */
+}
+
+.history-edit-btn:active {
+  opacity: 0.5; /* Làm nhạt nút khi nhấn */
+}
+
+/* Thêm hiệu ứng cho icon khi hover */
+.history-edit-btn:hover .edit-icon {
+  filter: brightness(1.2);  /* Làm sáng icon khi hover */
+}

@@ -22,6 +22,7 @@ function EditProfile({ setIsEditing }) {
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+
             setAvatarFile(file); // Lưu file để upload sau
 
             // Hiển thị ảnh preview
@@ -38,6 +39,7 @@ function EditProfile({ setIsEditing }) {
         e.preventDefault();
         setLoading(true);
 
+
         try {
             const newProfile = await dispatch(uploadProfileAsync({ profile, avatarFile })); // Cập nhật qua Redux action
             await dispatch(updateAvatar(newProfile.avatar));
@@ -45,6 +47,7 @@ function EditProfile({ setIsEditing }) {
             window.location.reload();
         } catch (error) {
             console.error('Error updating profile:', error);
+
         } finally {
             setLoading(false);
         }
@@ -61,9 +64,11 @@ function EditProfile({ setIsEditing }) {
                     <Form.Group className="edit-profile-box">
                         <div className="avatar-content">
                             <div className="avatar-preview">
+
                                 <img
                                     src={profile.avatarPreview || userAva}
                                     alt="Avatar"
+
                                     className="avatar-image"
                                 />
                             </div>
@@ -74,9 +79,11 @@ function EditProfile({ setIsEditing }) {
                                 </Form.Label>
                                 <Form.Control
                                     id="avatar-input"
+
                                     type="file"
                                     accept="image/*"
                                     onChange={handleAvatarChange}
+
                                     className="custom-avatar-input"
                                 />
                             </div>

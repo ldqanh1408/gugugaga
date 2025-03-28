@@ -1,5 +1,6 @@
 import "./Calendar.css";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -11,10 +12,13 @@ import { ReactComponent as SadIcon } from "../../assets/icons/sad.svg";
 import { ReactComponent as ExcitedIcon } from "../../assets/icons/excited.svg";
 import { ReactComponent as AngryIcon } from "../../assets/icons/angry.svg";
 import { ReactComponent as NeutralIcon } from "../../assets/icons/neutral.svg";
+import EditButton from "../../assets/imgs/EditButton.svg";
 
-function Calendar() {
+function Calendar({notes}) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [notifications, setNotifications] = useState([]);
+  const [isViewerMode, setIsViewerMode] = useState(true);
+  const navigate = useNavigate(); //Hook để chuyển hướng trag
 
   // Hàm chuyển đổi createdAt thành giờ (HH:mm)
   const formatTimeFromCreatedAt = (createdAt) => {
@@ -63,6 +67,13 @@ function Calendar() {
 
     fetchNotes();
   }, [selectedDate]);
+
+  const handleEditClick = (noteId) => {
+    if (isViewerMode){
+      // Chuyển sang chế độ chỉnh sửa khi nhấn nút chỉnh sửa trong chế độ xem
+      navigate(`/note-editor`);
+    }
+  }
 
   const getMoodIcon = (mood) => {
     switch (mood) {
@@ -132,6 +143,14 @@ function Calendar() {
                         <span className="mood-label">Mood:</span>{" "}
                         {getMoodIcon(item.mood)}
                       </div>
+
+                      <button 
+                        className="history-edit-btn"
+                        onClick={() => handleEditClick(item._id)}
+                      >
+                        <img src={EditButton} alt="Edit" className="edit-icon"/>
+                      </button>
+
                     </div>
                   </Card.Body>
                 </Card>

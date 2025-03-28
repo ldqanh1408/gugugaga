@@ -18,58 +18,64 @@ function ChatBox({ notes }) {
         console.error({ message: error.message });
       }
     }
+
     async function fetchBotMessage() {
-      var promptNote = "JOURNAL REVIEW\n";
-      promptNote += "Below are the user's journal entries. Summarize the entries, providing any insights or reflections on the user's emotions or thoughts.\n\n";
-      
-      promptNote += notes.map((note) => {
-        // Chuyển đổi ngày từ định dạng ISO sang định dạng dễ đọc
-        const date = new Date(note.date);
-        const day = date.getDate(); // Ngày
-        const month = date.toLocaleString('default', { month: 'long' }); // Tháng (Tên tháng)
-        const year = date.getFullYear(); // Năm
-    
-        return `Ngày: ${day}, Tháng: ${month}, Năm: ${year} | Mood: ${note.mood} | Title: "${note.header}" | Entry: ${note.text}`;
-      }).join("\n\n");
-    
-      promptNote += "\n\nPlease summarize the overall mood, emotional trends, and any notable observations based on the entries above.\n";
-      console.log(promptNote);
-      const response = await axios.post(
-        "http://127.0.0.1:8080/completion",
-        {
-          stream: false,
-          n_predict: 150,  // Increased response length for more detailed summaries
-          temperature: 0.7,
-          stop: ["</s>", "llama:", "User:"],
-          repeat_last_n: 256,
-          repeat_penalty: 1.18,
-          top_k: 40,
-          top_p: 0.5,
-          tfs_z: 1,
-          typical_p: 1,
-          presence_penalty: 0,
-          frequency_penalty: 0,
-          mirostat: 0,
-          mirostat_tau: 5,
-          mirostat_eta: 0.1,
-          prompt: promptNote,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    
-      const botText = response.data?.content || "No response";
-    
-      const botMessage = { text: botText, role: "ai" };
-      await addMessage({ message: botMessage });
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages, botMessage];
-        return updatedMessages;
-      });
+      return {}; // Dữ liệu rỗng để tránh lỗi
     }
+  
+
+    // async function fetchBotMessage() {
+    //   var promptNote = "JOURNAL REVIEW\n";
+    //   promptNote += "Below are the user's journal entries. Summarize the entries, providing any insights or reflections on the user's emotions or thoughts.\n\n";
+      
+    //   promptNote += notes.map((note) => {
+    //     // Chuyển đổi ngày từ định dạng ISO sang định dạng dễ đọc
+    //     const date = new Date(note.date);
+    //     const day = date.getDate(); // Ngày
+    //     const month = date.toLocaleString('default', { month: 'long' }); // Tháng (Tên tháng)
+    //     const year = date.getFullYear(); // Năm
+    
+    //     return `Ngày: ${day}, Tháng: ${month}, Năm: ${year} | Mood: ${note.mood} | Title: "${note.header}" | Entry: ${note.text}`;
+    //   }).join("\n\n");
+    
+    //   promptNote += "\n\nPlease summarize the overall mood, emotional trends, and any notable observations based on the entries above.\n";
+    //   console.log(promptNote);
+    //   const response = await axios.post(
+    //     "http://127.0.0.1:8080/completion",
+    //     {
+    //       stream: false,
+    //       n_predict: 150,  // Increased response length for more detailed summaries
+    //       temperature: 0.7,
+    //       stop: ["</s>", "llama:", "User:"],
+    //       repeat_last_n: 256,
+    //       repeat_penalty: 1.18,
+    //       top_k: 40,
+    //       top_p: 0.5,
+    //       tfs_z: 1,
+    //       typical_p: 1,
+    //       presence_penalty: 0,
+    //       frequency_penalty: 0,
+    //       mirostat: 0,
+    //       mirostat_tau: 5,
+    //       mirostat_eta: 0.1,
+    //       prompt: promptNote,
+    //     },
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //     }
+    //   );
+    
+    //   const botText = response.data?.content || "No response";
+    
+    //   const botMessage = { text: botText, role: "ai" };
+    //   await addMessage({ message: botMessage });
+    //   setMessages((prevMessages) => {
+    //     const updatedMessages = [...prevMessages, botMessage];
+    //     return updatedMessages;
+    //   });
+    // }
     fetchMessages();
     fetchBotMessage();
   }, []);

@@ -1,20 +1,34 @@
 .btn {
-    background-color: #000;
-    width: 100px;
-    height: 50px;
-    opacity: 0.8;
+    background: #e5cac2;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 15px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow:
+      inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
+      inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    width: auto; 
+    max-width: fit-content;
+    transition: all 0.2s ease-in-out;
 }
 
 .btn:hover {
-    background-color: #000;
-
-    opacity: 0.5;
+    background: #e5cac2;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
 }
 
 .text {
    margin-top: 4px;
-   margin-left:20px;
+   margin-left: 0;
    padding-left: 0;
+   text-align: left;
 }
 
 .section {
@@ -23,39 +37,45 @@
 
 .second {
     margin-top: 100px;
+    display: flex;
+    justify-content: space-between; /* Căn đều nội dung */
+    align-items: center; /* Căn giữa theo chiều dọc */
 }
+
 .img {
-    border-radius: 2%;
-    border: 2px solid #000;
-    padding: 0;
+      border-radius: 2%;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+      padding: 0;
+      margin-left: 0;
 }
 
 .first {
     margin-top: 50px;
+    margin-bottom: 120px;
 }
 
 .member {
-    background-color: var(--secondary-color);
-    margin-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px ;
-    border: 1px #CCC solid;
-    border-radius: 2%;
+    background-color: #fafafa;
+    margin: 12px auto;
+    padding: 18px;
+    border: 1px solid #EEE;
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
 }
 
 .member-img{
     height: 200px;
-    border: 2px #CCC solid;
-}
-
+    border: 1px solid #DDD;
+    border-radius: 10px;
+    object-fit: cover;
+    width: 100%;
+}   
 
 .description {
     background-color: var(--white-color);
     padding: 16px;
     margin-top: 4px;
     border-radius: 2%;
-}
-
-.first {
-    margin-bottom: 120px;
 }

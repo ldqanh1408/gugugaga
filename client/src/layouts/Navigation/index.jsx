@@ -10,6 +10,7 @@ import { checkToken } from "../../redux/authSlice"; // Import Redux Thunk
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom"; // Import Link từ React Router
 
+
 function Navigation() {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth); // Lấy trạng thái isAuthenticated từ Redux store
@@ -19,6 +20,7 @@ function Navigation() {
   useEffect(() => {
     dispatch(checkToken());  // Chỉ kiểm tra token nếu chưa đăng nhập
   }, [dispatch, profile]);
+
 
   return (
     <Row>

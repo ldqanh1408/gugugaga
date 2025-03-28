@@ -15,7 +15,9 @@ function Profile() {
         dispatch(fetchProfile());
     }, [dispatch]);
 
+
         
+
     const handleSave = (updatedProfile) => {
         setIsEditing(false);
         // Đồng bộ avatar (nếu avatar trong profile thay đổi)
@@ -46,10 +48,29 @@ function Profile() {
                         <h2 className="profile-name">{profile?.nickName}</h2>
                         <p className="profile-username">{profile?.userName}</p>
                         <p className="profile-bio">{profile?.bio}</p>
+                        <h2 className="profile-name">{profileData.nickName}</h2>
+                        <p className="profile-username">{profileData.userName}</p>
+                        <p className="profile-bio">{profileData.bio}</p>
 
-                        <button className="btn btn-edit mt-3" onClick={() => setIsEditing(true)}>
-                            Edit
-                        </button>
+                        <div className="row profile-stats align-items-center">
+                            <div className="col text-center">
+                                <h3>{consecutiveDays || 5}</h3>
+                                <p>days streak</p>
+                            </div>
+                            <div className="col-auto">
+                                <div className="divider"></div>
+                            </div>
+                            <div className="col text-center">
+                                <h3>15</h3>
+                                <p>pages of diary entries</p>
+                            </div>
+                        </div>
+
+                        <button 
+                            className="btn btn-edit mt-3"
+                            onClick={() => setIsEditing(true)}
+                        >Edit</button>
+
                     </div>
                 </div>
             )}
