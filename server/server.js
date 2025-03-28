@@ -15,11 +15,24 @@ const app = express();
 
 
 // Middleware
-app.use(express.json());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // Đặt đúng origin frontend
+  res.header("Access-Control-Allow-Credentials", "true");             // Gửi credentials
+  res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+app.use(express.json({ limit: "10mb" })); // Tăng giới hạn JSON payload
+app.use(express.urlencoded({ limit: "10mb", extended: true })); // Tăng giới hạn cho form data
+
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Cho phép frontend truy cập
-
+app.use(cors({
+  origin: "http://localhost:3000", // Cho phép frontend cụ thể truy cập
+  credentials: true, // Cho phép gửi cookie, token, thông tin xác thực
+  methods: ["GET", "POST", "PATCH", "DELETE"], // Các phương thức HTTP được phép
+  allowedHeaders: ["Content-Type", "Authorization"], // Header được phép
+}));
 // app.use(limiter);
 
 // Định tuyến tài liệu API Swagger

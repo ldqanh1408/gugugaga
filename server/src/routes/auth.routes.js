@@ -20,7 +20,7 @@ async function hashPassword(password) {
 }
 
 // // 📝 Đăng ký
-router.post("/register", validateUser, async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     var {
       account,
@@ -31,7 +31,7 @@ router.post("/register", validateUser, async (req, res) => {
       avatar = "",
       bio = "",
       dob = "",
-      gender = "",
+      gender = "male",
 
     } = req.body;
     password = await hashPassword(password);
@@ -60,6 +60,7 @@ router.post("/register", validateUser, async (req, res) => {
 
     res.status(201).json({ message: "Đăng ký thành công" });
   } catch (err) {
+    console.error(err.message);
     res.status(500).json({ message: err.message });
   }
 });

@@ -1,69 +1,60 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
 import userAva from "../../assets/imgs/userAva.jpg"; 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import EditProfile from './EditProfile';
-import { loadProfile } from '../../services/index';
+import { fetchUser, fetchProfile, updateAvatar } from '../../redux/userSlice';
+import Loading from "../../components/Common/Loading"
 
 function Profile() {
+    const dispatch = useDispatch();
+    const { user, profile, loading } = useSelector((state) => state.user);
     const [isEditing, setIsEditing] = useState(false);
 
-    const [profileData, setProfileData] = useState({});
-    const [consecutiveDays, setConsecutiveDays] = useState(0);
     useEffect(() => {
-        const fetchProfile = async () => {
-            const data = await loadProfile();
-            setProfileData(data);
-        }
-        fetchProfile();
-    }, [])
+        dispatch(fetchProfile());
+    }, [dispatch]);
 
 
-    useEffect (() => {
-        const fetchConsecutiveDays = async () => {
-            try {
-                const response = await fetch(`/api/v1/journals/${profileData.journalId}/stats/consecutive-days`);
-                const data = await response.json();
-                setConsecutiveDays(data.consecutiveDays);   
-            } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu số ngày viết liên tục:", error);
-            }
-        };
-
-        fetchConsecutiveDays();
-        }, [profileData.journalId]
-    );
+        
 
     const handleSave = (updatedProfile) => {
-        setProfileData(updatedProfile);
         setIsEditing(false);
+        // Đồng bộ avatar (nếu avatar trong profile thay đổi)
+        if (updatedProfile.avatar) {
+            dispatch(updateAvatar(updatedProfile.avatar));  // Cập nhật avatar cho cả user và profile
+        }
     };
+
+    if (loading) return <Loading></Loading>;
 
     return (
         <div>
             {isEditing ? (
                 <EditProfile 
-                    initialData={profileData} //truyen data ban dau
-                    onSave={handleSave} //Them callback
+                    setIsEditing={setIsEditing}
+                    initialData={profile}
+                    onSave={handleSave}
                 />    
-            ) :(
+            ) : (
                 <div className="profile-container"> 
                     <div className="profile-header"></div>
                     <div className="profile-content text-center">
                         <img
-                            src={profileData.avatar || userAva}
+                            src={profile?.avatar || userAva}
                             alt="userAva"
                             className="img-fluid rounded-circle profile-image"
                         />
-
+                        <h2 className="profile-name">{profile?.nickName}</h2>
+                        <p className="profile-username">{profile?.userName}</p>
+                        <p className="profile-bio">{profile?.bio}</p>
                         <h2 className="profile-name">{profileData.nickName}</h2>
                         <p className="profile-username">{profileData.userName}</p>
                         <p className="profile-bio">{profileData.bio}</p>
 
                         <div className="row profile-stats align-items-center">
                             <div className="col text-center">
-                                <h3>{consecutiveDays}</h3>
+                                <h3>{consecutiveDays || 5}</h3>
                                 <p>days streak</p>
                             </div>
                             <div className="col-auto">
@@ -79,6 +70,7 @@ function Profile() {
                             className="btn btn-edit mt-3"
                             onClick={() => setIsEditing(true)}
                         >Edit</button>
+
                     </div>
                 </div>
             )}
