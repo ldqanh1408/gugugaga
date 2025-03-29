@@ -22,8 +22,9 @@ function ChatBox({ notes }) {
     async function fetchBotMessage() {
       // Xây dựng prompt từ journal notes
       let promptNote = "JOURNAL REVIEW\n";
-      promptNote += "Below are the user's journal entries. Summarize the entries, providing any insights or reflections on the user's emotions or thoughts.\n\n";
-      
+      promptNote +=
+        "Below are the user's journal entries. Summarize the entries, providing any insights or reflections on the user's emotions or thoughts.\n\n";
+
       promptNote += notes
         .map((note) => {
           const date = new Date(note.date);
@@ -33,13 +34,14 @@ function ChatBox({ notes }) {
           return `Ngày: ${day}, Tháng: ${month}, Năm: ${year} | Mood: ${note.mood} | Title: "${note.header}" | Entry: ${note.text}`;
         })
         .join("\n\n");
-      
-      promptNote += "\n\nYou are a helpful assistant. Please provide a thorough and detailed analysis with at least 300 words. Expand on emotional nuances and give comprehensive insights.\n";
-      
+
+      promptNote +=
+        "\n\nYou are a helpful assistant. Please provide a thorough and detailed analysis with at least 300 words. Expand on emotional nuances and give comprehensive insights.\n";
+
       try {
         // Lấy chatId từ payload
         const { chatId } = await getPayLoad();
-        
+
         // Gọi API của chroma_service với prompt tạo từ notes
         const response = await axios.post(
           "http://localhost:4000/api/chats/ai",
@@ -53,10 +55,10 @@ function ChatBox({ notes }) {
             },
           }
         );
-        
+
         const botText = response.data?.response || "No response";
         const botMessage = { text: botText, role: "ai" };
-        
+
         // Lưu tin nhắn của bot vào chat
         await addMessage({ message: botMessage });
         setMessages((prevMessages) => [...prevMessages, botMessage]);
@@ -81,7 +83,7 @@ function ChatBox({ notes }) {
     try {
       // Lấy chatId từ payload
       const { chatId } = await getPayLoad();
-      
+
       // Gọi API của chroma_service để nhận phản hồi từ GPT
       const response = await axios.post(
         "http://localhost:4000/api/chats/ai",
@@ -95,10 +97,10 @@ function ChatBox({ notes }) {
           },
         }
       );
-      
+
       const botText = response.data?.response || "No response";
       const botMessage = { text: botText, role: "ai" };
-      
+
       // Thêm tin nhắn của bot vào chat
       await addMessage({ message: botMessage });
       setMessages((prev) => [...prev, botMessage]);
