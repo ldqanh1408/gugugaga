@@ -57,7 +57,7 @@ function Note() {
         // Render NoteEditor nếu chưa có ghi chú nào được chọn
         <NoteEditor onSave={handleSave} />
       ) : (
-        <ResizeHandle>
+        // <ResizeHandle>
           <NoteViewer
            
             onPrev={handlePrev}
@@ -67,8 +67,8 @@ function Note() {
             hasNext={currentIndex < notes.length - 1}
            
           />
-          <ChatBox notes={notes} />
-        </ResizeHandle>
+          /* <ChatBox notes={notes} />
+        </ResizeHandle> */
       )}
     </div>
   );

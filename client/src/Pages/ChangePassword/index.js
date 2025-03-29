@@ -82,7 +82,7 @@ function ChangePassword() {
         {/* Nút lưu */}
         <div className="d-flex justify-content-end">
           <Button type="submit" onClick={handleSubmit} disabled={loading}>
-            {loading ? <ClipLoader color="white" size={20} /> : "Login"}
+            {loading ? <ClipLoader color="white" size={20} /> : "Save Change"}
           </Button>
         </div>
       </Form>
