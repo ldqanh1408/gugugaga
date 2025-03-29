@@ -111,8 +111,7 @@ exports.uploadProfile = async (req, res) => {
 
     // Cập nhật thông tin khác của user (và avatar mới nếu có)
     user.avatar = avatar || user.avatar;
-    user.nickName = nickName || user.nickName;
-    user.userName = userName || user.userName;
+    user.userName = nickName || user.userName;
     user.bio = bio || user.bio;
     user.dob = dob || user.dob;
     user.gender = gender || user.gender;
@@ -127,8 +126,8 @@ exports.uploadProfile = async (req, res) => {
       message: "✅ Hồ sơ đã được cập nhật thành công.",
       profile: {
         avatar: user.avatar,
-        nickName: user.nickName,
-        userName: user.userName,
+        nickName: user.userName,
+        userName: user.account,
         bio: user.bio,
         dob: user.dob,
         gender: user.gender,

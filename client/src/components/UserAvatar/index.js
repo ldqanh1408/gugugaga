@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Row, Col, DropdownToggle, Dropdown, DropdownMenu } from "react-bootstrap";
-import avatarPlaceholder from "../../assets/imgs/userAva.jpg"; // Placeholder nếu không có avatar
+import avatarPlaceholder from "../../assets/imgs/userDefault.svg"; // Placeholder nếu không có avatar
 import "./UserAvatar.css";
 import { useNavigate } from "react-router-dom";
 import { fetchProfile, fetchUser, logoutUserAsync } from "../../redux/userSlice"; // Import Redux Thunks

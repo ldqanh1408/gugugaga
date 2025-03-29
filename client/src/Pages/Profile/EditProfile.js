@@ -52,7 +52,6 @@ function EditProfile({ setIsEditing }) {
             setLoading(false);
         }
     };
-
     return (
         <div className="container edit-profile-container">
             <h1 className="edit-profile-header">Edit Profile</h1>
@@ -97,24 +96,10 @@ function EditProfile({ setIsEditing }) {
                         <Form.Control
                             className="no-border"
                             type="text"
-                            name="name"
-                            value={profile.name}
+                            name="nickName"
+                            value={profile.nickName}
                             onChange={handleChange}
                             placeholder="Enter your name"
-                        />
-                    </Form.Group>
-                </Form.Group>
-
-                <Form.Group>
-                    <Form.Label className="custom-h2-label">Username</Form.Label>
-                    <Form.Group className="edit-profile-box">
-                        <Form.Control
-                            className="no-border"
-                            type="text"
-                            name="username"
-                            value={profile.username}
-                            onChange={handleChange}
-                            placeholder="Enter your username"
                         />
                     </Form.Group>
                 </Form.Group>
@@ -140,7 +125,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="date"
                             name="dob"
-                            value={profile.dob}
+                            value={profile.dob ? profile.dob.split('T')[0] : ''}
                             onChange={handleChange}
                         />
                     </Form.Group>

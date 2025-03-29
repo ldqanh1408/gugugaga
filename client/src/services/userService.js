@@ -129,7 +129,6 @@ const uploadProfile = async ({ profile, avatarFile }) => {
         withCredentials: true, // Đảm bảo cookie được gửi kèm
       }
     );
-    console.log(data);
     return { success: true, profile: data.data.profile };
   } catch (error) {
     console.error("❌ Lỗi khi cập nhật profile:", error);

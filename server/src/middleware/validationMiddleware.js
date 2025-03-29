@@ -14,16 +14,38 @@ const validate = (validations) => {
   };
 };
 
-// Middleware validate khi tạo user
-const validateUser = validate([
-  body("account").notEmpty().withMessage("Tài khoản không được để trống"),
-  body("password")
-    .isLength({ min: 8 })
-    .withMessage("Mật khẩu phải có ít nhất 8 ký tự"),
-  body("userName")
-    .isLength({ min: 4 })
-    .withMessage("Mật khẩu phải có ít nhất 4 ký tự"),
+const validateRegister = validate([
+  body("account").notEmpty().withMessage("Account is required."),
+  body("userName").notEmpty().withMessage("Username is required."),
+  body("password").notEmpty().withMessage("Password is required."),
+
+  body("email")
+    .optional()
+    .isEmail()
+    .withMessage("Invalid email format.")
+    .custom(async (email) => {
+      if (email) {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          throw new Error("Email already exists.");
+        }
+      }
+    }),
+
+  body("phoneNumber")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number.")
+    .custom(async (phoneNumber) => {
+      if (phoneNumber) {
+        const existingUser = await User.findOne({ phoneNumber });
+        if (existingUser) {
+          throw new Error("Phone number already exists.");
+        }
+      }
+    }),
 ]);
+
 
 const validateLogin = validate([
   body("account").notEmpty().withMessage("Tài khoản không được để trống"),
@@ -59,4 +81,4 @@ const validateNote = validate([
 
 
 
-module.exports = { validateUser, validateLogin, validateMessage, validateNote };
+module.exports = { validateRegister, validateLogin, validateMessage, validateNote };

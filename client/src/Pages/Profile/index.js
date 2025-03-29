@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
-import userAva from "../../assets/imgs/userAva.jpg"; 
+import userAva from "../../assets/imgs/userDefault.svg"; 
 import EditProfile from './EditProfile';
 import { fetchUser, fetchProfile, updateAvatar } from '../../redux/userSlice';
 import Loading from "../../components/Common/Loading"

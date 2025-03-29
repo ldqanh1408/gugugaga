@@ -7,7 +7,7 @@ const Journal = require("../models/journal.model");
 const router = express.Router();
 const dotenv = require("dotenv");
 const {
-  validateUser,
+  validateRegister,
   validateLogin,
   authenticateJWT,
 } = require("../middleware");
@@ -20,7 +20,7 @@ async function hashPassword(password) {
 }
 
 // // 📝 Đăng ký
-router.post("/register", async (req, res) => {
+router.post("/register", validateRegister , async (req, res) => {
   try {
     var {
       account,
