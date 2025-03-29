@@ -12,19 +12,20 @@ export const register = async ({
   account,
   password,
   email,
-  phoneNumber,
+  phone,
 }) => {
   try {
     const response = await axios.post(`${API_URL}/register`, {
       userName,
       password,
       account,
-      phoneNumber,
+      phone,
       email,
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching notes:", error);
+    
+    console.error("Error fetching:", error);
     throw error;
   }
 };

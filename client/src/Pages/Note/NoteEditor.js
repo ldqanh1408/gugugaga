@@ -24,7 +24,6 @@ function NoteEditor({
   const [date, setDate] = useState(currentNote.date || "");
   const [text, setText] = useState(currentNote.text || "");
   const [mood, setMood] = useState(currentNote.mood || "");
-
   const dispatch = useDispatch();
   console.error(currentNote)
   function formatDateForInput(dateString) {
@@ -32,7 +31,11 @@ function NoteEditor({
     const date = new Date(dateString);
     return date.toISOString().split("T")[0]; // Lấy YYYY-MM-DD
   }
-
+  
+  useEffect(() => {
+    dispatch(setCurrentNote({ _id: currentNote?._id, header, date, text, mood }));
+  }, [header, date, text, mood]);
+  
   const handleSubmit = () => {
     if (!header.trim() || !date.trim() || !text.trim()) {
       alert("Please fill in all the required fields!!!");
@@ -48,7 +51,6 @@ function NoteEditor({
       dispatch(fetchNotes());
     }
   };
-
   const autoResizeTextArea = (event) => {
     event.target.style.height = "auto"; // Reset height trước
     event.target.style.height = event.target.scrollHeight + "px"; // Gán chiều cao theo nội dung

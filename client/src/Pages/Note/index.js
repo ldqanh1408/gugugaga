@@ -26,7 +26,6 @@ function Note() {
       dispatch(fetchNotes());
     }
   }, [currentIndex, notes, dispatch]);
-
   const handleSave = (newNote) => {
     dispatch(saveNewNote(newNote));
   };

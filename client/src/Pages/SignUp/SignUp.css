@@ -51,3 +51,7 @@
     background-color: var(--white-color);
     padding: 2px;
 }
+.notice {
+    font-size: 10px;
+    color: #ccc;
+}

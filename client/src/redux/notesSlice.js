@@ -26,6 +26,12 @@ export const updateExistingNote = createAsyncThunk(
   }
 );
 
+const getVietnamDate = () => {
+  const now = new Date();
+  now.setHours(now.getHours() + 7);  // Thêm 7 giờ để chuyển từ UTC sang GMT+7
+  return now.toISOString().split("T")[0];  // Lấy phần ngày (YYYY-MM-DD)
+};
+
 // Slice Redux để quản lý trạng thái notes
 const notesSlice = createSlice({
   name: "notes",
@@ -37,7 +43,7 @@ const notesSlice = createSlice({
     currentIndex: null,
     currentNote: {
       header: "",
-      date: new Date().toISOString().split("T")[0],
+      date: getVietnamDate(),
       text: "",
       mood: "neutral",
     },
@@ -81,15 +87,6 @@ const notesSlice = createSlice({
         state.loading = false;
 
         // Nếu chưa có note nào thì đặt một ghi chú trắng
-        state.currentNote =
-          state.currentIndex !== null
-            ? state.notes[state.notes[state.notes.length - 1]]
-            : {
-                header: "",
-                date: new Date().toISOString().split("T")[0],
-                text: "",
-                mood: "neutral",
-              };
       
       })
       .addCase(fetchNotes.rejected, (state, action) => {

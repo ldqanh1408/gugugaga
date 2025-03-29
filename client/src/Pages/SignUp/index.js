@@ -9,7 +9,8 @@ import { ACCOUNT, PASSWORD, USER_NAME } from "../../constants";
 import { handleBlur, handleFocus, handleConfirm } from "../../services";
 import { handleSignUp } from "../../services/validationService";
 import { register, getToken } from "../../services/authService";
-
+import Loading from "../../components/Common/Loading";
+import { ClipLoader } from "react-spinners";
 function SignUp() {
   const [account, setAccount] = useState("");
   const [userName, setUserName] = useState("");
@@ -17,8 +18,9 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [accountError, setAccountError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -28,7 +30,6 @@ function SignUp() {
   useEffect(() => {
     const checkAuth = async () => {
       const token = await getToken(); // Chờ Promise giải quyết
-      console.log("token là", token); // In ra giá trị thực (chuỗi hoặc null)
       if (token) {
         // Kiểm tra token thực tế
         navigate("/", { replace: true });
@@ -39,17 +40,21 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await register({ userName, account, password, email, phoneNumber });
+      await register({ userName, account, password, email, phone });
       console.log("Đăng kí thành công");
       navigate("/login");
     } catch (error) {
+      setError("Đăng ký thất bại");
       console.error({ message: error.message });
     }
+    setLoading(false);
   };
 
   return (
     <div className="containter form-1">
+      {loading && <Loading />}
       <div className="title">
         <h1>SignUp</h1>
       </div>
@@ -84,6 +89,11 @@ function SignUp() {
                 })
               }
             ></Form.Control>
+            <span className="notice d-block">
+              Nhập tài khoản từ 5-20 ký tự, chỉ gồm chữ cái (A-Z, a-z), số
+              (0-9), dấu chấm (.) hoặc gạch dưới (_). Không chứa ký tự đặc biệt
+              khác.
+            </span>
             <Form.Text className="text-danger">{accountError}</Form.Text>
           </Form.Group>
           <Form.Group className="mt-4">
@@ -116,6 +126,11 @@ function SignUp() {
                 })
               }
             ></Form.Control>
+            <span className="notice d-block">
+              Nhập mật khẩu từ 8 đến 32 ký tự, gồm ít nhất 1 chữ thường (a-z), 1
+              chữ hoa (A-Z), 1 số (0-9), 1 ký tự đặc biệt (@, $, !, %, *, ?, &,
+              #) và không chứa khoảng trắng.
+            </span>
             <Form.Text className="text-danger">{passwordError}</Form.Text>
           </Form.Group>
           <Form.Group className="mt-4">
@@ -186,7 +201,7 @@ function SignUp() {
             <Form.Group className="mt-4">
               <Form.Label className="fw-semibold">Phone:</Form.Label>
               <Form.Control
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => setPhone(e.target.value)}
                 placeholder="Nhập số điện thoại..."
                 className="form-control"
               ></Form.Control>
@@ -194,8 +209,8 @@ function SignUp() {
             </Form.Group>
           </div>
           {error && <p className="text-danger">{error}</p>}
-          <Button type="submit" onClick={handleSubmit}>
-            Sign up
+          <Button type="submit" onClick={handleSubmit} disabled={loading}>
+            {loading ? <ClipLoader color="white" size={20} /> : "Sign Up"}
           </Button>
         </Form>
       </div>
