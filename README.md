@@ -51,8 +51,11 @@ npm install
 Tạo file `.env` trong thư mục gốc và điền các giá trị sau:
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/gugugaga
-JWT_SECRET=your_secret_key
+MONGO_URI=mongodb://localhost:27017/Diary
+JWT_SECRET= 6b01fe644626b1037d5f240391bdb8e25d26b70555e983c4cc325f16a2a4a039
+API_SECRET_KEY = your_secret_key
+API_KEY = your_key
+CLOUD_NAME = your_cloud name
 ```
 
 ### 4️⃣ **Chạy server**
