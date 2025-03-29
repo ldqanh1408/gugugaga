@@ -1,39 +1,52 @@
 import "./NoteEditor.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { DropdownToggle, Dropdown, DropdownMenu } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  Row,
-  Col,
-  DropdownToggle,
-  Dropdown,
-  DropdownMenu,
-  Button,
-} from "react-bootstrap";
-import avatar from "../../assets/imgs/avatar.svg";
-import smile from "../../assets/imgs/smile.svg";
+  setCurrentIndex,
+  setIsEditing,
+  updateExistingNote,
+  setCurrentNote,
+  fetchNotes,
+  saveNewNote,
+} from "../../redux/notesSlice";
 function NoteEditor({
-  note = {},
+  note = {}, // Giá trị mặc định
   onSave,
   isFromViewer = false,
-  currentIndex,
-  setCurrentIndex,
 }) {
-  const [header, setHeader] = useState(note.header || "");
-  const [date, setDate] = useState(note.date || "");
-  const [text, setText] = useState(note.text || "");
-  const [mood, setMood] = useState(note.mood || "neutral");
+  const { isEditing, currentIndex, notes, currentNote } = useSelector(
+    (state) => state.notes
+  );
+  const [header, setHeader] = useState(currentNote.header || "");
+  const [date, setDate] = useState(currentNote.date || "");
+  const [text, setText] = useState(currentNote.text || "");
+  const [mood, setMood] = useState(currentNote.mood || "");
+
+  const dispatch = useDispatch();
+  console.error(currentNote)
   function formatDateForInput(dateString) {
     if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
     const date = new Date(dateString);
     return date.toISOString().split("T")[0]; // Lấy YYYY-MM-DD
   }
+
   const handleSubmit = () => {
     if (!header.trim() || !date.trim() || !text.trim()) {
       alert("Please fill in all the required fields!!!");
       return;
     }
-    const updatedNote = { _id: note._id, header, date, text, mood };
-    onSave(updatedNote);
+    const updatedNote = { _id: currentNote?._id, header, date, text, mood };
+    dispatch(setCurrentNote(updatedNote));
+    if (isEditing) {
+      dispatch(updateExistingNote(updatedNote))
+      dispatch(setIsEditing(false));
+    } else {
+      dispatch(saveNewNote(updatedNote))
+      dispatch(fetchNotes());
+    }
   };
 
   const autoResizeTextArea = (event) => {
@@ -41,9 +54,11 @@ function NoteEditor({
     event.target.style.height = event.target.scrollHeight + "px"; // Gán chiều cao theo nội dung
   };
 
+  if (!currentNote) return <div>Loading...</div>; // Hoặc xử lý lỗi khác
+
   return (
     <div
-      key={note._id}
+      key={currentNote?._id}
       className={`note-editor-container ${isFromViewer ? "viewer-mode" : ""}`}
     >
       <div className={`note-diary ${isFromViewer ? "viewer-diary" : ""}`}>

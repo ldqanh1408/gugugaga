@@ -48,13 +48,11 @@ function Profile() {
                         <h2 className="profile-name">{profile?.nickName}</h2>
                         <p className="profile-username">{profile?.userName}</p>
                         <p className="profile-bio">{profile?.bio}</p>
-                        <h2 className="profile-name">{profileData.nickName}</h2>
-                        <p className="profile-username">{profileData.userName}</p>
-                        <p className="profile-bio">{profileData.bio}</p>
+                   
 
                         <div className="row profile-stats align-items-center">
                             <div className="col text-center">
-                                <h3>{consecutiveDays || 5}</h3>
+                                <h3>{5}</h3>
                                 <p>days streak</p>
                             </div>
                             <div className="col-auto">

@@ -2,26 +2,32 @@ import React, {useState} from "react";
 import "./NoteViewer.css";
 import EditButton from "../../assets/imgs/EditButton.svg";
 import NoteEditor from "./NoteEditor";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsEditing } from "../../redux/notesSlice";
 
-function NoteViewer({note, hasPrev, hasNext, onPrev, onNext, currentIndex, onSave, isEditing ,setIsEditing}) {
+function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
   function formatDate(dateString) {
     const date = new Date(dateString); // Chuyển chuỗi ISO sang đối tượng Date
     return date.toLocaleDateString("vi-VN"); // Định dạng ngày theo chuẩn Việt Nam (dd/mm/yyyy)
   }
+  const dispatch = useDispatch();
+  const {notes, currentIndex, isEditing, currentNote} = useSelector((state) => state.notes);
+  const [note, setNote] = useState(notes[currentIndex] || currentNote);
+  if (!note) return <div>Loading...</div>;  // Hoặc xử lý lỗi khác
+
   return (
     
     <div className="note-viewer-container d-flex justify-content-center align-items-center">
       {isEditing ? (
         <NoteEditor 
-          note={note}
+          note={currentNote}
           isFromViewer={true}
-          onSave = {onSave}
           
         />
       ) : (
         <div className="note-viewer">
           <div className="toolbar top">
-            <button className="btn edit-btn" onClick={() => setIsEditing(true)}>
+            <button className="btn edit-btn" onClick={() => dispatch(setIsEditing(true))}>
               <img src={EditButton} alt="Edit" className="edit-icon"/>
             </button>
 
@@ -31,10 +37,10 @@ function NoteViewer({note, hasPrev, hasNext, onPrev, onNext, currentIndex, onSav
           </div>
 
           <div className="note-viewer-data">
-            <h1 className="note-viewer-title">{note.header || "Nothing"}</h1>
+            <h1 className="note-viewer-title">{currentNote?.header || "Nothing"}</h1>
             <hr class="note-viewer-line"></hr>
-            <p className="note-viewer-date">{formatDate(note.date) || ""}</p>
-            <p className="note-viewer-content">{note.text || ""}</p>
+            <p className="note-viewer-date">{formatDate(currentNote?.date) || ""}</p>
+            <p className="note-viewer-content">{currentNote?.text || ""}</p>
           </div>
 
           <div className="toolbar bottom">
