@@ -127,7 +127,7 @@ exports.getEntries = async (req, res) => {
     // ✅ Lấy danh sách các ngày từ notes, loại bỏ trùng lặp
     const entries = [
       ...new Set(
-        journal.notes.map((note) => note.date.toISOString().split("T")[0])
+        journal.notes.map((note) => note.createdAt.toISOString().split("T")[0])
       ),
     ];
 
