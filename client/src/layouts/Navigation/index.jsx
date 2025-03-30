@@ -33,6 +33,7 @@ function Navigation() {
             <Nav className="d-flex flex-grow-1">
               <Nav.Link as={Link} to="/calendar" className="fw-semibold">Calendar</Nav.Link>
               <Nav.Link as={Link} to="/note" className="fw-semibold">Note</Nav.Link>
+              <Nav.Link as={Link} to="/chat" className="fw-semibold">Chat</Nav.Link>
               {!isAuthenticated ? (
                 <div className="d-lg-flex d-none flex-grow-1 justify-content-end">
                   <Nav.Link as={Link} to="/sign-up">Sign up</Nav.Link>

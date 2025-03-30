@@ -6,4 +6,5 @@ import Login from "./Login";
 import Profile from "./Profile";
 import ChangePassword from "./ChangePassword";
 import NoteEditor from "./Note/NoteEditor";
-export { Home, Calendar, Note, SignUp, Login, Profile, ChangePassword, NoteEditor};
+import ChatBox from "./Note/ChatBox";
+export { Home, Calendar, Note, SignUp, Login, Profile, ChangePassword, NoteEditor, ChatBox};
