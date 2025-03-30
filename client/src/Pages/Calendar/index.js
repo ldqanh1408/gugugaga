@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Row, Col, Card } from "react-bootstrap";
+import { Row, Col, Card, Dropdown, ButtonGroup } from "react-bootstrap";
 import { fetchNotes, setCurrentIndex, setIsEditing } from "../../redux/notesSlice";
 import { ReactComponent as HappyIcon } from "../../assets/icons/happy.svg";
 import { ReactComponent as SadIcon } from "../../assets/icons/sad.svg";
@@ -13,9 +13,13 @@ import { ReactComponent as ExcitedIcon } from "../../assets/icons/excited.svg";
 import { ReactComponent as AngryIcon } from "../../assets/icons/angry.svg";
 import { ReactComponent as NeutralIcon } from "../../assets/icons/neutral.svg";
 import EditButton from "../../assets/imgs/EditButton.svg";
+import FilterButton from "../../assets/imgs/FilterButton.svg"
 import {updateExistingNote} from "../../redux/notesSlice"
 
 function Calendar() {
+  const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
+  const [showDropdown, setShowDropdown] = useState(false); // Hiển thị dropdown
+  
   const [selectedDate, setSelectedDate] = useState(new Date());
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -75,6 +79,7 @@ function Calendar() {
     }
   };
 
+  const displayedNotes = filterMode === "all" ? notes : filteredNotes;
   return (
     <div className="container parent">
       <Row className="justify-content-between gap-3 calendar">
@@ -103,6 +108,31 @@ function Calendar() {
         <Col sm={12} md={5} className="custom-right">
           <Card className="mb-3 custom-card-title">
             <Card.Body className="fw-bold">Your history</Card.Body>
+            
+            {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
+            <div className="filter-dropdown-container">
+              <Dropdown as={ButtonGroup}>
+                <Dropdown.Toggle variant="light" className="filter-btn">
+                  <img src={FilterButton} alt="Filter" />
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu align="end">
+                  <Dropdown.Item
+                    active={filterMode === "day"}
+                    onClick={() => setFilterMode("day")}
+                  >
+                    View by day
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    active={filterMode === "all"}
+                    onClick={() => setFilterMode("all")}
+                  >
+                    View all
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </Card>
 
           {loading ? (
@@ -111,10 +141,10 @@ function Calendar() {
             <p>Error loading notes: {error}</p>
           ) : (
             <div className="notification-container">
-              {notes.length === 0 ? (
-                <p>Không có ghi chú nào cho ngày này</p>
+              {displayedNotes.length === 0 ? (
+                <p>No notes available.</p>
               ) : (
-                (filteredNotes.length === 0 && selectedDate === null ? notes : filteredNotes).map((item, index) => {
+                displayedNotes.map((item, index) => {
                   const originalIndex = notes.indexOf(item); // Giữ nguyên index của item trong mảng notes
                   return (
                     <Card key={originalIndex} className="mb-3 custom-card">

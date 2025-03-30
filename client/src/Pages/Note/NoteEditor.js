@@ -89,13 +89,13 @@ function NoteEditor({
         </DropdownToggle>
         <DropdownMenu className="mt-2">
           <Dropdown.Item onClick={() => setMood("neutral")}>
-            neutral
+            Neutral
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => setMood("happy")}>happy</Dropdown.Item>
-          <Dropdown.Item onClick={() => setMood("angry")}>angry</Dropdown.Item>
-          <Dropdown.Item onClick={() => setMood("sad")}>sad</Dropdown.Item>
+          <Dropdown.Item onClick={() => setMood("happy")}>Happy</Dropdown.Item>
+          <Dropdown.Item onClick={() => setMood("angry")}>Angry</Dropdown.Item>
+          <Dropdown.Item onClick={() => setMood("sad")}>Sad</Dropdown.Item>
           <Dropdown.Item onClick={() => setMood("excited")}>
-            excited
+            Excited
           </Dropdown.Item>
         </DropdownMenu>
       </Dropdown>
