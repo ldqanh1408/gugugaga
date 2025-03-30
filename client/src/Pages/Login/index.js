@@ -31,11 +31,11 @@ function Login() {
     setLoading(true);
     try {
       await logging({ account, password });
-      console.log({ message: "Logging thành công..." });
+      console.log({ message: "Login successful...." });
       navigate("/");
       window.location.reload();
     } catch (error) {
-      setError("Mật khẩu hoặc tài khoản không chính xác");
+      setError("Incorrect password or account.");
     }
     setLoading(false);
   };

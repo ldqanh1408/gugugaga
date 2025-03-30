@@ -43,10 +43,10 @@ function SignUp() {
     setLoading(true);
     try {
       await register({ userName, account, password, email, phone });
-      console.log("Đăng kí thành công");
+      console.log("You have successfully registered.");
       navigate("/login");
     } catch (error) {
-      setError("Đăng ký thất bại");
+      setError("Registration has failed");
       console.error({ message: error.message });
     }
     setLoading(false);
@@ -193,7 +193,7 @@ function SignUp() {
               <Form.Control
                 type="email"
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Nhập email..."
+                placeholder="Enter your email..."
                 className="signup-box"
               ></Form.Control>
               <Form.Text></Form.Text>
@@ -202,7 +202,7 @@ function SignUp() {
               <Form.Label className="signup-custom-h2-label">Phone:</Form.Label>
               <Form.Control
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="Nhập số điện thoại..."
+                placeholder="Enter your phone number..."
                 className="signup-box"
               ></Form.Control>
               <Form.Text></Form.Text>
