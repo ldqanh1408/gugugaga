@@ -21,22 +21,17 @@ function ChatBox({ notes }) {
     }
     async function fetchBotMessage() {
       // Xây dựng prompt từ journal notes
-      let promptNote = "JOURNAL REVIEW\n";
-      promptNote +=
-        "Below are the user's journal entries. Summarize the entries, providing any insights or reflections on the user's emotions or thoughts.\n\n";
-
+      let promptNote = "JOURNAL ENTRIES\n";
+      promptNote += "Below are the user's past journal entries for reference:\n\n";
+      
       promptNote += notes
-        .map((note) => {
-          const date = new Date(note.date);
-          const day = date.getDate();
-          const month = date.toLocaleString("default", { month: "long" });
-          const year = date.getFullYear();
-          return `Ngày: ${day}, Tháng: ${month}, Năm: ${year} | Mood: ${note.mood} | Title: "${note.header}" | Entry: ${note.text}`;
+        .map(({ date, mood, header, text }) => {
+          const d = new Date(date);
+          return `Date: ${d.toLocaleDateString()} | Mood: ${mood}\nTitle: "${header}"\nEntry: ${text}`;
         })
         .join("\n\n");
+      
 
-      promptNote +=
-        "\n\nYou are a helpful assistant. Please provide a thorough and detailed analysis with at least 300 words. Expand on emotional nuances and give comprehensive insights.\n";
 
       try {
         // Lấy chatId từ payload
