@@ -43,7 +43,6 @@ function Note() {
       dispatch(setCurrentIndex(currentIndex - 1));
     }
   };
-
   const handleNext = () => {
     if (currentIndex < notes.length - 1) {
       dispatch(setCurrentIndex(currentIndex + 1));

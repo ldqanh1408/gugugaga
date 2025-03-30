@@ -147,3 +147,7 @@
     border: none;
     max-height: 500px; /* Độ cao tối đa (tuỳ chỉnh) */
 }
+
+.create-icon {
+    width: 28px;
+}

@@ -1,10 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./NoteViewer.css";
 import EditButton from "../../assets/imgs/EditButton.svg";
 import CreateNewButton from "../../assets/imgs/CreateNewButton.svg";
 import NoteEditor from "./NoteEditor";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsEditing } from "../../redux/notesSlice";
+import { setCurrentIndex, setIsEditing } from "../../redux/notesSlice";
 
 function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
   function formatDate(dateString) {
@@ -14,6 +14,7 @@ function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
   const dispatch = useDispatch();
   const {notes, currentIndex, isEditing, currentNote} = useSelector((state) => state.notes);
   const [note, setNote] = useState(notes[currentIndex] || currentNote);
+
   if (!note) return <div>Loading...</div>;  // Hoặc xử lý lỗi khác
 
   return (
@@ -33,7 +34,7 @@ function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
             </button>
             
             {/* create: mới icon chưa logic */}
-            <button className="btn create-btn" onClick={() => dispatch(setIsEditing(true))}>
+            <button className="btn create-btn" onClick={() => dispatch(setCurrentIndex(null))}>
               <img src={CreateNewButton} alt="Create" className="create-icon"/>
             </button>
             

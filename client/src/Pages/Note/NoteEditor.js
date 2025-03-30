@@ -78,9 +78,8 @@ function NoteEditor({
       <div className="date-container">
         <input
           className="note-date"
-          type="date"
+          type=""
           value={formatDateForInput(date)}
-          onChange={(e) => setDate(e.target.value)}
         />
       </div>
       <Dropdown className="d-none d-lg-block">
