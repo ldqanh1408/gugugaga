@@ -24,7 +24,7 @@ import {
   register,
   changePassword,
 } from "./authService.js";
-import { getNotes, getEntries } from "./journalService.js";
+import { getNotes, getEntries, getConsecutiveDays} from "./journalService.js";
 export {
   getNotes,
   getUsers,
@@ -47,4 +47,5 @@ export {
   loadProfile,
   uploadProfile,
   getEntries,
+  getConsecutiveDays
 };

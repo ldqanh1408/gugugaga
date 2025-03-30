@@ -167,3 +167,33 @@ exports.deleteNote = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.getConsecutiveDays = async (req, res) => {
+  try {
+    const { journalId } = req.params;
+
+    const journal = await Journal.findOne({ _id: journalId });
+    if (!journal) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy journal" });
+    }
+    if(journal.notes.length === 0) return res.status(200).json({success: true, consecutiveDays: 0});
+    const dates = journal.notes.map(note => note.date.toISOString().split('T')[0]);
+    const uniqueDates = [...new Set(dates)].sort();
+    let maxStreak = 1, currentStreak = 1;
+    for(let i = 1; i <= uniqueDates.length; i++){
+      const prevDate = new Date(uniqueDates[i - 1]);
+      const curDate = new Date(uniqueDates[i]);
+      const diffInDate = (curDate - prevDate) / (1000 * 60 * 60 * 24);
+      if(diffInDate === 1){
+        currentStreak++;
+        maxStreak = Math.max(currentStreak, maxStreak);
+      } 
+      else currentStreak = 1;
+    }
+    return res.status(200).json({succes: true, consecutiveDays: maxStreak});
+  } catch (error) {
+    return res.status(500).json({success: false, message: error.message})
+  }
+}

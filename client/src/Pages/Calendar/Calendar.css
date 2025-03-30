@@ -419,3 +419,12 @@
   background-color: #CDACA0 !important; /* Màu nền của mục đang chọn */
   opacity: 0.8 !important;
 }
+.note-day::after {
+  content: "•";  /* Dấu chấm */
+  display: block;
+  font-size: 20px; 
+  line-height: 0;
+  color: black; /* Màu dấu chấm */
+  margin-top: 1px;
+  text-align: center;
+}

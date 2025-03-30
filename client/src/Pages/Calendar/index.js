@@ -15,6 +15,7 @@ import { ReactComponent as NeutralIcon } from "../../assets/icons/neutral.svg";
 import EditButton from "../../assets/imgs/EditButton.svg";
 import FilterButton from "../../assets/imgs/FilterButton.svg"
 import {updateExistingNote} from "../../redux/notesSlice"
+import { getEntries } from "../../services";
 
 function Calendar() {
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
@@ -34,6 +35,13 @@ function Calendar() {
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${day}/${month}/${year}`;
+  };
+
+  const noteDatesSet = new Set(notes.map((note) => formatDateLocal(note.createdAt)));
+
+  // Thêm dấu chấm nhỏ vào những ngày có ghi chú
+  const getDayClassName = (date) => {
+    return noteDatesSet.has(formatDateLocal(date)) ? "note-day" : "";
   };
 
   const formatTimeFromCreatedAt = (createdAt) => {
@@ -100,6 +108,8 @@ function Calendar() {
                 yearDropdownItemNumber={2000}
                 showMonthDropdown
                 maxDate={new Date()}
+                dayClassName={getDayClassName} // Áp dụng className cho ngày có ghi chú
+
               />
             </div>
           </div>
