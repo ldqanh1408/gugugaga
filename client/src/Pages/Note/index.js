@@ -1,84 +1,73 @@
-import React, { useState, useEffect } from "react";
+// src/components/Note.js
+import React, { useEffect } from "react";
 import NoteViewer from "./NoteViewer";
 import NoteEditor from "./NoteEditor";
 import ResizeHandle from "./ResizeHandle";
 import ChatBox from "./ChatBox";
-import {saveNote, getNotes, updateNote} from "../../services/journalService.js"
+import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import {
+  fetchNotes,
+  saveNewNote,
+  updateExistingNote,
+  setCurrentIndex,
+  setIsEditing,
+  setCurrentNote,
+} from "../../redux/notesSlice";
+
 function Note() {
-  const [notes, setNotes] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [hasNext, setHasNext] = useState(false);
-  const [hasPrev, setHasPrev] = useState(false);
-
+  const dispatch = useDispatch();
+  const { notes, currentIndex, isEditing, currentNote } = useSelector((state) => state.notes);
   useEffect(() => {
-    const fetchNotes = async () => {
-      const data = await getNotes();
-      setNotes(data);
+    if (currentIndex !== null && notes.length > 0) {
+      dispatch(setCurrentNote(notes[currentIndex]));  // Cập nhật currentNote khi currentIndex thay đổi
     }
-    fetchNotes();
-  }, []);
-
-  
-  const handleSave = async (newNote) => {
-    try {
-      const savedNote = await saveNote({note:newNote});
-      
-      setNotes((prev) =>{
-        const updatedNote = [...prev,savedNote];
-        return updatedNote;
-      })
-      setCurrentIndex(notes.length);
+    if(!notes){
+      dispatch(fetchNotes());
     }
-    catch(error){
-      console.error(error.message);
-    }
-  };
-  
-  const handleUpdate = async (updatedNote) => {
-    try {
-      console.log(updatedNote)
-      const savedNote = await updateNote({note:updatedNote}); // API trả về note đã cập nhật
-      // Cập nhật note trong state  
-      console.log(savedNote)
-      setNotes((prevNotes) =>
-        prevNotes.map((note) =>
-          note._id === savedNote._id ? savedNote : note // Thay thế note cũ bằng note mới
-        )
-      );
-  
-      setIsEditing(false); // Thoát chế độ edit sau khi update thành công
-    } catch (error) {
-      console.error("Failed to update note:", error);
-    }
+  }, [currentIndex, notes, dispatch]);
+  const handleSave = (newNote) => {
+    dispatch(saveNewNote(newNote));
   };
 
-  const handleEdit = () => setIsEditing(true);
-  
-  const handlePrev = () =>{
-    setCurrentIndex((prev) => prev - 1);
-  } 
-  const handleNext = () => setCurrentIndex((prev) => prev + 1);
+  const handleUpdate = (updatedNote) => {
+    dispatch(updateExistingNote(updatedNote));
+  };
+
+  const handleEdit = () => {
+    dispatch(setIsEditing(true));
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      dispatch(setCurrentIndex(currentIndex - 1));
+    }
+  };
+  const handleNext = () => {
+    if (currentIndex < notes.length - 1) {
+      dispatch(setCurrentIndex(currentIndex + 1));
+    }
+  };
+  if (!currentNote) return <div>Loading...</div>;  // Hoặc xử lý lỗi khác
+
   return (
     <div>
       {currentIndex === null ? (
+        // Render NoteEditor nếu chưa có ghi chú nào được chọn
         <NoteEditor onSave={handleSave} />
       ) : (
-        <ResizeHandle >
-              <NoteViewer
-                note={notes[currentIndex]}
-                isEditing={isEditing} 
-                setIsEditing={setIsEditing}
-                onPrev={handlePrev}
-                onNext={handleNext}
-                currentIndex={currentIndex}
-                hasPrev = {currentIndex > 0}
-                hasNext = {currentIndex < notes.length - 1}
-                onSave={handleUpdate}
-                setCurrentIndex = {setCurrentIndex}
-              />
-          <ChatBox notes={notes}/>
-        </ResizeHandle>
+        <ResizeHandle>
+          <NoteViewer
+           
+            onPrev={handlePrev}
+            onNext={handleNext}
+          
+            hasPrev={currentIndex > 0}
+            hasNext={currentIndex < notes.length - 1}
+           
+          />
+          <ChatBox notes={notes} />
+        </ResizeHandle> 
       )}
     </div>
   );

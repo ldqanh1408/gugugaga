@@ -31,17 +31,17 @@ function Login() {
     setLoading(true);
     try {
       await logging({ account, password });
-      console.log({ message: "Logging thành công..." });
+      console.log({ message: "Login successful...." });
       navigate("/");
       window.location.reload();
     } catch (error) {
-      setError("Mật khẩu hoặc tài khoản không chính xác");
+      setError("Incorrect password or account.");
     }
     setLoading(false);
   };
 
   return (
-    <div className={`container form-1`}>
+    <div className="container form-1`">
       {/* Overlay che toàn màn hình khi loading */}
       {loading && (
         <div className="loading-overlay">
@@ -49,17 +49,17 @@ function Login() {
         </div>
       )}
 
-      <div className="title">
-        <h1>Login</h1>
-      </div>
-      <div className="">
+      <div className="container login-container">
+        <h1 className="login-header">Login</h1>
+        <hr className="login-line"></hr>
+
         <Form className="">
           <div className="d-flex flex-column form-2">
             <Form.Group>
-              <Form.Label className="fw-semibold">User name:</Form.Label>
+              <Form.Label className="login-custom-h2-label">User name:</Form.Label>
               <Form.Control
-                placeholder="Nhập tên tài khoản..."
-                className="form-control"
+                placeholder="Enter your username..."
+                className="login-box"
                 onChange={(e) => setAccount(e.target.value)}
                 onBlur={() =>
                   handleBlur({
@@ -83,11 +83,11 @@ function Login() {
               <Form.Text className="text-danger">{accountError}</Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
-              <Form.Label className="fw-semibold">Password:</Form.Label>
+              <Form.Label className="login-custom-h2-label">Password:</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Nhập mật khẩu..."
-                className="form-control"
+                placeholder="Enter your password..."
+                className="login-box"
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={() =>
                   handleBlur({
@@ -114,9 +114,11 @@ function Login() {
           <Form.Text className="text-danger d-block">{error}</Form.Text>
           
           {/* Nút login hiển thị loading khi đang xử lý */}
-          <Button type="submit" onClick={handleSubmit} disabled={loading}>
-            {loading ? <ClipLoader color="white" size={20} /> : "Login"}
-          </Button>
+          <div className="d-flex justify-content-end">  
+            <Button style={{ marginRight: '0' }} type="submit" onClick={handleSubmit} disabled={loading}>
+              {loading ? <ClipLoader color="white" size={20} /> : "Login"}
+            </Button>
+          </div>
         </Form>
       </div>
      

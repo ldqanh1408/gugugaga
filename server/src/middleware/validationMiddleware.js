@@ -1,5 +1,5 @@
 const { body, param, validationResult } = require("express-validator");
-
+const User = require("../models/user.model");
 // Middleware kiểm tra lỗi
 const validate = (validations) => {
   return async (req, res, next) => {
@@ -14,15 +14,75 @@ const validate = (validations) => {
   };
 };
 
-// Middleware validate khi tạo user
-const validateUser = validate([
-  body("account").notEmpty().withMessage("Tài khoản không được để trống"),
-  body("password")
-    .isLength({ min: 8 })
-    .withMessage("Mật khẩu phải có ít nhất 8 ký tự"),
+const uniqueCheck = (field, message) => {
+  return body(field).custom(async (value) => {
+    const existingUser = await User.findOne({ [field]: value });
+    if (existingUser) throw new Error(message);
+  });
+};
+
+const validateRegister = validate([
+  body("account")
+    .notEmpty()
+    .withMessage("Account is required.")
+    .isLength({ min: 5, max: 20 })
+    .withMessage("Account phải từ 5 đến 20 ký tự.")
+    .matches(/^[a-zA-Z0-9._]+$/)
+    .withMessage("Account chỉ được chứa chữ cái, số, dấu chấm và gạch dưới."),
+  uniqueCheck("account", "Account already exists."),
   body("userName")
-    .isLength({ min: 4 })
-    .withMessage("Mật khẩu phải có ít nhất 4 ký tự"),
+    .notEmpty()
+    .withMessage("Nickname is required.")
+    .isLength({ min: 3, max: 30 })
+    .withMessage("Nickname phải từ 3 đến 30 ký tự.")
+    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .withMessage(
+      "Nickname chỉ được chứa chữ cái, số, khoảng trắng, dấu gạch dưới (_), gạch ngang (-), và dấu chấm."
+    ),
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required.")
+    .isLength({ min: 8, max: 32 })
+    .withMessage("Password phải từ 8 đến 32 ký tự.")
+    .matches(/[a-z]/)
+    .withMessage("Password phải chứa ít nhất một chữ thường.")
+    .matches(/[A-Z]/)
+    .withMessage("Password phải chứa ít nhất một chữ hoa.")
+    .matches(/\d/)
+    .withMessage("Password phải chứa ít nhất một số.")
+    .matches(/[@$!%*?&#]/)
+    .withMessage(
+      "Password phải chứa ít nhất một ký tự đặc biệt (@, $, !, %, *, ?, &, #)."
+    )
+    .not()
+    .matches(/\s/)
+    .withMessage("Password không được chứa khoảng trắng."),
+
+  body("email")
+    .optional()
+    .isEmail()
+    .withMessage("Invalid email format.")
+    .custom(async (email) => {
+      if (email) {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          throw new Error("Email already exists.");
+        }
+      }
+    }),
+
+  body("phone")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number.")
+    .custom(async (phone) => {
+      if (phone) {
+        const existingUser = await User.findOne({ phone });
+        if (existingUser) {
+          throw new Error("Phone number already exists.");
+        }
+      }
+    }),
 ]);
 
 const validateLogin = validate([
@@ -42,21 +102,29 @@ const validateMessage = validate([
 
 const validateNote = validate([
   body("mood")
-    .notEmpty().withMessage("Cảm xúc không được để trống")
-    .isIn(["happy", "sad", "neutral", "excited", "angry"]).withMessage("Cảm xúc không hợp lệ"),
+    .notEmpty()
+    .withMessage("Cảm xúc không được để trống")
+    .isIn(["happy", "sad", "neutral", "excited", "angry"])
+    .withMessage("Cảm xúc không hợp lệ"),
 
   body("header")
-    .notEmpty().withMessage("Tiêu đề không được để trống")
-    .isLength({ max: 100 }).withMessage("Tiêu đề tối đa 100 ký tự")
+    .notEmpty()
+    .withMessage("Tiêu đề không được để trống")
+    .isLength({ max: 100 })
+    .withMessage("Tiêu đề tối đa 100 ký tự")
     .trim()
     .escape(), // Ngăn XSS
 
   body("text")
-    .notEmpty().withMessage("Nội dung không được để trống")
+    .notEmpty()
+    .withMessage("Nội dung không được để trống")
     .trim()
     .escape(), // Ngăn XSS
 ]);
 
-
-
-module.exports = { validateUser, validateLogin, validateMessage, validateNote };
+module.exports = {
+  validateRegister,
+  validateLogin,
+  validateMessage,
+  validateNote,
+};

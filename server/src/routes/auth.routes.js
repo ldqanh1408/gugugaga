@@ -6,7 +6,11 @@ const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
 const router = express.Router();
 const dotenv = require("dotenv");
-const { validateUser, validateLogin } = require("../middleware")
+const {
+  validateRegister,
+  validateLogin,
+  authenticateJWT,
+} = require("../middleware");
 dotenv.config();
 
 async function hashPassword(password) {
@@ -16,9 +20,20 @@ async function hashPassword(password) {
 }
 
 // // 📝 Đăng ký
-router.post("/register", validateUser , async (req, res) => {
+router.post("/register", validateRegister , async (req, res) => {
   try {
-    var { account, userName, password, email = "", phoneNumber = ""} = req.body;
+    var {
+      account,
+      userName,
+      password,
+      email = req.email || "",
+      phone = req.phone || "",
+      avatar = "",
+      bio = "",
+      dob = "",
+      gender = "male",
+
+    } = req.body;
     password = await hashPassword(password);
     const chat = new Chat();
     const journal = new Journal();
@@ -28,9 +43,13 @@ router.post("/register", validateUser , async (req, res) => {
       userName,
       password,
       email,
-      phoneNumber,
+      phone,
       chatId: chat._id,
       journalId: journal._id,
+      avatar,
+      bio,
+      gender, 
+      dob
     });
     chat.userId = newUser._id;
     journal.userId = newUser._id;
@@ -41,6 +60,7 @@ router.post("/register", validateUser , async (req, res) => {
 
     res.status(201).json({ message: "Đăng ký thành công" });
   } catch (err) {
+    console.error(err.message);
     res.status(500).json({ message: err.message });
   }
 });
@@ -54,7 +74,7 @@ router.post("/login", validateLogin, async (req, res) => {
     if (!user) return res.status(400).json("Người dùng không tồn tại");
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if(!isMatch) return res.status(400).json("Mật khẩu không hợp lệ");
+    if (!isMatch) return res.status(400).json("Mật khẩu không hợp lệ");
     const token = createToken(user);
     res.cookie("token", token, {
       httpOnly: true,
@@ -90,24 +110,28 @@ router.get("/get-token", async (req, res) => {
   }
 });
 
-router.get('/check-auth', (req, res) => {
+router.get("/check-auth", (req, res) => {
   const token = req.cookies.token;
   if (!token) {
-    return res.status(401).json({ isAuthenticated: false, message: 'Chưa đăng nhập' });
+    return res
+      .status(401)
+      .json({ isAuthenticated: false, message: "Chưa đăng nhập" });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ isAuthenticated: true, user: decoded });
+    const payload = verifyToken(token);
+    res.json({ isAuthenticated: true, user: payload });
   } catch (error) {
-    res.status(401).json({ isAuthenticated: false, message: 'Token không hợp lệ' });
+    res
+      .status(401)
+      .json({ isAuthenticated: false, message: "Token không hợp lệ" });
   }
 });
 
-router.get('/me', (req, res) => {
+router.get("/me", (req, res) => {
   const token = req.cookies.token; // Lấy token từ cookie
   if (!token) {
-    return res.status(401).json({ message: 'Chưa đăng nhập' });
+    return res.status(401).json({ message: "Chưa đăng nhập" });
   }
   try {
     const payload = verifyToken(token);
@@ -115,13 +139,50 @@ router.get('/me', (req, res) => {
       userId: payload._id,
       journalId: payload.journalId,
       chatId: payload.chatId,
-      userName: payload.userName
-
+      userName: payload.userName,
     });
   } catch (error) {
-    res.status(401).json({ message: 'Token không hợp lệ' });
+    res.status(401).json({ message: "Token không hợp lệ" });
+  }
+});
+
+router.post("/change-password", async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ message: "Chưa đăng nhập" });
+  }
+  try {
+    const payload = verifyToken(token);
+    const { newPassword, currentPassword } = req.body;
+    if (!newPassword || !currentPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Thiếu thông tin" });
+    }
+    const userId = payload._id;
+    var user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy user" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch)
+      return res
+        .status(404)
+        .json({ success: false, message: "Mật khẩu không khớp" });
+
+    user.password = await hashPassword(newPassword);
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Đổi mật khẩu thành công" });
+  } catch (error) {
+    return res.status(401).json({ message: error.message });
   }
 });
 
 module.exports = router;
-

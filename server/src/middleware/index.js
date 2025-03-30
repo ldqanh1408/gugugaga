@@ -4,11 +4,13 @@ const {
   validateLogin,
   validateMessage,
   validateNote,
+  validateRegister,
 } = require("./validationMiddleware");
 module.exports = {
   authenticateJWT,
-  validateUser,
+  validateRegister,
   validateLogin,
   validateMessage,
   validateNote
+
 };
