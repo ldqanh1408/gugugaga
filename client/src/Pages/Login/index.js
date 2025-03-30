@@ -115,7 +115,7 @@ function Login() {
           
           {/* Nút login hiển thị loading khi đang xử lý */}
           <div className="d-flex justify-content-end">  
-            <Button type="submit" onClick={handleSubmit} disabled={loading}>
+            <Button style={{ marginRight: '0' }} type="submit" onClick={handleSubmit} disabled={loading}>
               {loading ? <ClipLoader color="white" size={20} /> : "Login"}
             </Button>
           </div>
