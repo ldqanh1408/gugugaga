@@ -3,19 +3,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
 import userAva from "../../assets/imgs/userDefault.svg"; 
 import EditProfile from './EditProfile';
-import { fetchUser, fetchProfile, updateAvatar, fetchEntries } from '../../redux/userSlice';
+import { fetchUser, fetchProfile, updateAvatar, fetchEntries, fetchConsecutiveDays } from '../../redux/userSlice';
 import Loading from "../../components/Common/Loading"
 
 function Profile() {
     const dispatch = useDispatch();
-    const { user, profile, loading, entries } = useSelector((state) => state.user);
+    const { user, profile, loading, entries, consecutiveDays } = useSelector((state) => state.user);
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchProfile());
-        dispatch(fetchEntries());
+        if(!profile){
+            dispatch(fetchProfile());
+        }
+        if(!entries){
+            dispatch(fetchEntries());
+        }
+        if(!consecutiveDays){
+            dispatch(fetchConsecutiveDays());
+        }
     }, [dispatch]);
-
 
         
 
@@ -28,7 +34,6 @@ function Profile() {
     };
 
     if (loading) return <Loading></Loading>;
-console.log(entries)
     return (
         <div>
             {isEditing ? (
@@ -53,7 +58,7 @@ console.log(entries)
 
                         <div className="row profile-stats align-items-center">
                             <div className="col text-center">
-                                <h3>{5}</h3>
+                                <h3>{consecutiveDays}</h3>
                                 <p>days streak</p>
                             </div>
                             <div className="col-auto">

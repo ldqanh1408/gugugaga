@@ -5,6 +5,7 @@ import {
   loadProfile,
   uploadProfile,
   getEntries,
+  getConsecutiveDays
 } from "../services"; // API services
 
 // Thunk lấy user cơ bản (thông tin đăng nhập)
@@ -74,6 +75,20 @@ export const fetchEntries = createAsyncThunk(
   }
 );
 
+export const fetchConsecutiveDays = createAsyncThunk(
+  "user/fetchConsecutiveDays",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getConsecutiveDays();
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -85,6 +100,7 @@ const userSlice = createSlice({
     logoutLoading: false,
     logoutError: null,
     entries: 0,
+    consecutiveDays: 0,
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -98,6 +114,17 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchConsecutiveDays.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchConsecutiveDays.fulfilled, (state, action) => {
+        state.loading = false;
+        state.consecutiveDays = action.payload;
+      })
+      .addCase(fetchConsecutiveDays.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(fetchEntries.pending, (state) => {
         state.loading = true;
       })
