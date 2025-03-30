@@ -6,7 +6,7 @@ import {
   getAvatar,
   uploadAvatar,
   loadProfile,
-  uploadProfile
+  uploadProfile,
 } from "./userService.js";
 import {
   handleLogin,
@@ -24,7 +24,7 @@ import {
   register,
   changePassword,
 } from "./authService.js";
-import { getNotes } from "./journalService.js";
+import { getNotes, getEntries } from "./journalService.js";
 export {
   getNotes,
   getUsers,
@@ -45,5 +45,6 @@ export {
   getAvatar,
   uploadAvatar,
   loadProfile,
-  uploadProfile
+  uploadProfile,
+  getEntries,
 };

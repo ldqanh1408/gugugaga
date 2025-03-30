@@ -3,16 +3,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
 import userAva from "../../assets/imgs/userDefault.svg"; 
 import EditProfile from './EditProfile';
-import { fetchUser, fetchProfile, updateAvatar } from '../../redux/userSlice';
+import { fetchUser, fetchProfile, updateAvatar, fetchEntries } from '../../redux/userSlice';
 import Loading from "../../components/Common/Loading"
 
 function Profile() {
     const dispatch = useDispatch();
-    const { user, profile, loading } = useSelector((state) => state.user);
+    const { user, profile, loading, entries } = useSelector((state) => state.user);
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         dispatch(fetchProfile());
+        dispatch(fetchEntries());
     }, [dispatch]);
 
 
@@ -27,7 +28,7 @@ function Profile() {
     };
 
     if (loading) return <Loading></Loading>;
-
+console.log(entries)
     return (
         <div>
             {isEditing ? (
@@ -59,8 +60,8 @@ function Profile() {
                                 <div className="divider"></div>
                             </div>
                             <div className="col text-center">
-                                <h3>15</h3>
-                                <p>pages of diary entries</p>
+                                <h3>{entries.length}</h3>
+                                <p>Number of difference days entries</p>
                             </div>
                         </div>
 

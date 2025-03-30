@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getUser, logout, loadProfile , uploadProfile} from "../services"; // API services
+import {
+  getUser,
+  logout,
+  loadProfile,
+  uploadProfile,
+  getEntries,
+} from "../services"; // API services
 
 // Thunk lấy user cơ bản (thông tin đăng nhập)
 export const fetchUser = createAsyncThunk(
@@ -54,6 +60,20 @@ export const uploadProfileAsync = createAsyncThunk(
   }
 );
 
+export const fetchEntries = createAsyncThunk(
+  "user/fetchEntries",
+  async (_, { rejectWithValue }) => {
+    try {
+      const entries = await getEntries();
+      return entries;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -64,6 +84,7 @@ const userSlice = createSlice({
     error: null,
     logoutLoading: false,
     logoutError: null,
+    entries: 0,
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -77,6 +98,17 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchEntries.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchEntries.fulfilled, (state, action) => {
+        state.loading = false;
+        state.entries = action.payload;
+      })
+      .addCase(fetchEntries.rejected, (state, action) => {
+        state.loading = "false";
+        state.error = action.payload;
+      })
       // Fetch User (thông tin cơ bản)
       .addCase(fetchUser.pending, (state) => {
         state.loading = true;
@@ -131,11 +163,9 @@ const userSlice = createSlice({
         state.error = action.payload || "Failed to update profile"; // Xử lý lỗi khi thất bại
         state.loading = false;
       });
-
   },
 });
 
-export const { updateAvatar } = userSlice.actions;  // Action để đồng bộ avatar
-
+export const { updateAvatar } = userSlice.actions; // Action để đồng bộ avatar
 
 export default userSlice.reducer;

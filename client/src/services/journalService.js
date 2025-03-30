@@ -114,3 +114,33 @@ export const updateNote = async ({ note: updatedNote }) => {
     throw error;
   }
 };
+
+export const getEntries = async () => {
+  const token = await getToken();
+  if (!token) {
+    throw new Error("Không tìm thấy token");
+  }
+  try {
+    const { journalId } = await getPayLoad();
+    if (!journalId) {
+      throw new Error("Journal ID không tồn tại");
+    }
+    const url = `${API_URL}${journalId}/entries`;
+    const response = await axios.get(
+      url,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gửi token trong header
+        },
+      }
+    );
+  
+    return response.data.entries;
+  } catch (error) {
+    console.error(
+      "Error fetching notes:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
