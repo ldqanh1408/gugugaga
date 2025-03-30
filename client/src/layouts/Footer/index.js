@@ -45,7 +45,7 @@ const Footer = () => {
             <p>Second-year student</p>
           </Col>
           <Col className="d-flex flex-column align-items-center align-items-md-start mb-3">
-            <h5>Meaningful</h5>
+            <h5>Values</h5>
             <p>Stress Relief</p>
             <p>Mental Clarity</p>
             <p>Emotional Expression</p>

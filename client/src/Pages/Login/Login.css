@@ -25,10 +25,11 @@
 
 .form-2 {
     margin-top: 48px;
-    border: 1px solid var(--primary-color);
+    border: 1px solid #CDACA0;
     border-radius: 2%;
     padding: 20px 40px 40px;
     margin-bottom: 20px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15); /* Bóng đổ nhẹ tạo hiệu ứng nổi */
 }
 
 
@@ -43,4 +44,19 @@
     box-shadow: none;
     border: 2px solid var(--primary-color);
 
+}
+
+.login-header {
+    font-weight: bold;
+}
+
+.login-line {
+    color: #CDACA0;
+    background-color: #CDACA0;
+    width: 50%;
+    height: 2px;
+}
+.login-container {
+    margin-top: 40px !important;  
+    width: 95%!important;
 }
