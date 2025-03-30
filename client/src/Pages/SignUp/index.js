@@ -55,17 +55,18 @@ function SignUp() {
   return (
     <div className="containter form-1">
       {loading && <Loading />}
-      <div className="title">
-        <h1>SignUp</h1>
-      </div>
+      
+      <h1 className="signup-header">Sign Up</h1>
+      <hr className="signup-line"></hr>
+
       <div className="">
         <Form className="d-flex flex-column form-2 login">
-          <Form.Group>
-            <Form.Label className="fw-semibold">Tài khoản:</Form.Label>
+          <Form.Group className="mt-4">
+            <Form.Label className="signup-custom-h2-label">Username:</Form.Label>
             <Form.Control
               onChange={(e) => setAccount(e.target.value)}
-              placeholder="Nhập tên tài khoản..."
-              className="form-control"
+              placeholder="Enter your username..."
+              className="change-password-box"
               onBlur={() =>
                 handleBlur({
                   field: ACCOUNT,
@@ -90,19 +91,19 @@ function SignUp() {
               }
             ></Form.Control>
             <span className="notice d-block">
-              Nhập tài khoản từ 5-20 ký tự, chỉ gồm chữ cái (A-Z, a-z), số
-              (0-9), dấu chấm (.) hoặc gạch dưới (_). Không chứa ký tự đặc biệt
-              khác.
+              Enter an account name with 5-20 characters,
+              consisting only of letters (A-Z, a-z), numbers (0-9),
+              dots (.), or underscores (_). Special characters are not allowed. 
             </span>
             <Form.Text className="text-danger">{accountError}</Form.Text>
           </Form.Group>
           <Form.Group className="mt-4">
-            <Form.Label className="fw-semibold">Password:</Form.Label>
+            <Form.Label className="signup-custom-h2-label">Password:</Form.Label>
             <Form.Control
               type="password"
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Nhập mật khẩu..."
-              className="form-control"
+              placeholder="Enter your password..."
+              className="signup-box"
               onBlur={() =>
                 handleBlur({
                   field: PASSWORD,
@@ -127,14 +128,13 @@ function SignUp() {
               }
             ></Form.Control>
             <span className="notice d-block">
-              Nhập mật khẩu từ 8 đến 32 ký tự, gồm ít nhất 1 chữ thường (a-z), 1
-              chữ hoa (A-Z), 1 số (0-9), 1 ký tự đặc biệt (@, $, !, %, *, ?, &,
-              #) và không chứa khoảng trắng.
+              Enter a password with 8 to 32 characters, including at least 1 lowercase letter (a-z),
+              1 uppercase letter (A-Z), 1 number (0-9), 1 special character (@, $, !, %, , ?, &, #), and no spaces.
             </span>
             <Form.Text className="text-danger">{passwordError}</Form.Text>
           </Form.Group>
           <Form.Group className="mt-4">
-            <Form.Label className="fw-semibold">Confirm password:</Form.Label>
+            <Form.Label className="signup-custom-h2-label">Confirm password:</Form.Label>
             <Form.Control
               type="password"
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -146,19 +146,19 @@ function SignUp() {
                   setConfirmPasswordError,
                 });
               }}
-              placeholder="Nhập lại mật khẩu..."
-              className="form-control"
+              placeholder="Re-enter your password..."
+              className="signup-box"
             ></Form.Control>
             <Form.Text className="text-danger">
               {confirmPasswordError}
             </Form.Text>
           </Form.Group>
           <Form.Group className="mt-4">
-            <Form.Label className="fw-semibold">Name:</Form.Label>
+            <Form.Label className="signup-custom-h2-label">Name:</Form.Label>
             <Form.Control
               onChange={(e) => setUserName(e.target.value)}
-              placeholder="Nhập tên người dùng..."
-              className="form-control"
+              placeholder="Enter your name..."
+              className="signup-box"
               onBlur={() =>
                 handleBlur({
                   field: USER_NAME,
@@ -189,29 +189,31 @@ function SignUp() {
         <Form className="">
           <div className="d-flex flex-column form-2 additional">
             <Form.Group className="mt-4">
-              <Form.Label className="fw-semibold">Email:</Form.Label>
+              <Form.Label className="signup-custom-h2-label">Email:</Form.Label>
               <Form.Control
                 type="email"
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Nhập email..."
-                className="form-control"
+                className="signup-box"
               ></Form.Control>
               <Form.Text></Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
-              <Form.Label className="fw-semibold">Phone:</Form.Label>
+              <Form.Label className="signup-custom-h2-label">Phone:</Form.Label>
               <Form.Control
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Nhập số điện thoại..."
-                className="form-control"
+                className="signup-box"
               ></Form.Control>
               <Form.Text></Form.Text>
             </Form.Group>
           </div>
           {error && <p className="text-danger">{error}</p>}
-          <Button type="submit" onClick={handleSubmit} disabled={loading}>
-            {loading ? <ClipLoader color="white" size={20} /> : "Sign Up"}
-          </Button>
+          <div className="d-flex justify-content-end">  
+            <Button type="submit" onClick={handleSubmit} disabled={loading}>
+              {loading ? <ClipLoader color="white" size={20} /> : "Sign Up"}
+            </Button>
+          </div>  
         </Form>
       </div>
     </div>

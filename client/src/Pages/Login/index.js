@@ -41,7 +41,7 @@ function Login() {
   };
 
   return (
-    <div className={`container form-1`}>
+    <div className="container form-1`">
       {/* Overlay che toàn màn hình khi loading */}
       {loading && (
         <div className="loading-overlay">
@@ -56,10 +56,10 @@ function Login() {
         <Form className="">
           <div className="d-flex flex-column form-2">
             <Form.Group>
-              <Form.Label className="pass-custom-h2-label">User name:</Form.Label>
+              <Form.Label className="login-custom-h2-label">User name:</Form.Label>
               <Form.Control
                 placeholder="Enter your username..."
-                className="change-password-box"
+                className="login-box"
                 onChange={(e) => setAccount(e.target.value)}
                 onBlur={() =>
                   handleBlur({
@@ -83,11 +83,11 @@ function Login() {
               <Form.Text className="text-danger">{accountError}</Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
-              <Form.Label className="pass-custom-h2-label">Password:</Form.Label>
+              <Form.Label className="login-custom-h2-label">Password:</Form.Label>
               <Form.Control
                 type="password"
                 placeholder="Enter your password..."
-                className="change-password-box"
+                className="login-box"
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={() =>
                   handleBlur({
