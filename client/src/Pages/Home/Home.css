@@ -79,3 +79,13 @@
     margin-top: 4px;
     border-radius: 2%;
 }
+.are-you-oke-container {
+    display: flex;
+    justify-content: flex-end; /* Đẩy nội dung về mép phải */
+    padding-right: 0; /* Đảm bảo không có padding làm lệch */
+}
+
+.are-you-oke-img {
+    max-width: 100%;
+    height: auto;
+}

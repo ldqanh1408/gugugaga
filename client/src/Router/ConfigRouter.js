@@ -1,4 +1,4 @@
-import { Home, Calendar, Note, ChatBox, NoteEditor } from '../Pages'
+import { Home, Calendar, Note, NoteEditor, ChatBox } from '../Pages'
 import NoteViewer from '../Pages/Note/NoteViewer';
 
 const routes = [

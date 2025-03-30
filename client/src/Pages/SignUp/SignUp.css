@@ -39,19 +39,53 @@
 .form-2.login::before {
     content: "Login information";
     position: absolute;
-    top: -14px ;
+    top: -30px ;
     background-color: var(--white-color);
     padding: 2px;
+    font-size: 2rem;
+    font-weight: 650;
 }
 
 .form-2.additional::before {
     content: "Additional information";
     position: absolute;
-    top: -14px ;
+    top: -30px ;
     background-color: var(--white-color);
     padding: 2px;
+    font-size: 2rem;
+    font-weight: 650;
 }
 .notice {
-    font-size: 10px;
-    color: #ccc;
+    font-size: 13px;
+    color: black;
+    opacity: 0.42;
+}
+.signup-header {
+    font-weight: bold;
+}
+.signup-line {
+    color: #CDACA0;
+    background-color: #CDACA0;
+    width: 50%;
+    height: 2px;
+}
+.signup-custom-h2-label {
+    font-weight: 600;
+    font-size: 1.75rem;   
+}
+.signup-box {
+    background: #FEFEFF; /* Nền trắng trong suốt nhẹ */
+    backdrop-filter: blur(10px);           /* Hiệu ứng mờ nền */
+    border-radius: 20px;  
+    border: 1px solid #CDACA0 !important;                 /* Bo góc mềm mại */
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15); /* Bóng đổ nhẹ tạo hiệu ứng nổi */
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 120px;
+    margin-bottom: 15px;
+    padding: 20px 15px; /* Tăng padding trên/dưới */
+    margin-bottom: 15px; /* Tạo khoảng cách giữa các thanh */
+    max-height: fit-content;
 }
