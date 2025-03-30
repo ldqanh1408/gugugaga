@@ -4,6 +4,7 @@ import "./ChatBox.css";
 import axios from "axios";
 import SaveButton from "../../assets/imgs/SaveButton.svg";
 import { getMessages, addMessage, getNotes } from "../../services";
+import { getPayLoad } from "../../services/authService"; // Lấy chatId từ payload
 
 function ChatBox({ notes }) {
   const location = useLocation();
@@ -23,102 +24,72 @@ function ChatBox({ notes }) {
     }
 
     async function fetchBotMessage() {
-      return {}; // Dữ liệu rỗng để tránh lỗi
-    }
-  
 
-    // async function fetchBotMessage() {
-    //   var promptNote = "JOURNAL REVIEW\n";
-    //   promptNote += "Below are the user's journal entries. Summarize the entries, providing any insights or reflections on the user's emotions or thoughts.\n\n";
+      // Xây dựng prompt từ journal notes
+      let promptNote = "JOURNAL ENTRIES\n";
+      promptNote += "Below are the user's past journal entries for reference:\n\n";
       
-    //   promptNote += notes.map((note) => {
-    //     // Chuyển đổi ngày từ định dạng ISO sang định dạng dễ đọc
-    //     const date = new Date(note.date);
-    //     const day = date.getDate(); // Ngày
-    //     const month = date.toLocaleString('default', { month: 'long' }); // Tháng (Tên tháng)
-    //     const year = date.getFullYear(); // Năm
-    
-    //     return `Ngày: ${day}, Tháng: ${month}, Năm: ${year} | Mood: ${note.mood} | Title: "${note.header}" | Entry: ${note.text}`;
-    //   }).join("\n\n");
-    
-    //   promptNote += "\n\nPlease summarize the overall mood, emotional trends, and any notable observations based on the entries above.\n";
-    //   console.log(promptNote);
-    //   const response = await axios.post(
-    //     "http://127.0.0.1:8080/completion",
-    //     {
-    //       stream: false,
-    //       n_predict: 150,  // Increased response length for more detailed summaries
-    //       temperature: 0.7,
-    //       stop: ["</s>", "llama:", "User:"],
-    //       repeat_last_n: 256,
-    //       repeat_penalty: 1.18,
-    //       top_k: 40,
-    //       top_p: 0.5,
-    //       tfs_z: 1,
-    //       typical_p: 1,
-    //       presence_penalty: 0,
-    //       frequency_penalty: 0,
-    //       mirostat: 0,
-    //       mirostat_tau: 5,
-    //       mirostat_eta: 0.1,
-    //       prompt: promptNote,
-    //     },
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   );
-    
-    //   const botText = response.data?.content || "No response";
-    
-    //   const botMessage = { text: botText, role: "ai" };
-    //   await addMessage({ message: botMessage });
-    //   setMessages((prevMessages) => {
-    //     const updatedMessages = [...prevMessages, botMessage];
-    //     return updatedMessages;
-    //   });
-    // }
+      promptNote += notes
+        .map(({ date, mood, header, text }) => {
+          const d = new Date(date);
+          return `Date: ${d.toLocaleDateString()} | Mood: ${mood}\nTitle: "${header}"\nEntry: ${text}`;
+        })
+        .join("\n\n");
+      
+
+
+      try {
+        // Lấy chatId từ payload
+        const { chatId } = await getPayLoad();
+
+        // Gọi API của chroma_service với prompt tạo từ notes
+        const response = await axios.post(
+          "http://localhost:4000/api/chats/ai",
+          {
+            chatId: chatId,
+            message: promptNote,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const botText = response.data?.response || "No response";
+        const botMessage = { text: botText, role: "ai" };
+
+        // Lưu tin nhắn của bot vào chat
+        await addMessage({ message: botMessage });
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+      } catch (error) {
+        console.error("Error fetching bot note summary:", error.message);
+      }
+    }
     fetchMessages();
     fetchBotMessage();
-  }, []);
+  }, [notes]);
 
   const sendMessage = async () => {
     if (input.trim() === "") return;
 
-
+    // Thêm tin nhắn của người dùng vào chat
     const userMessage = { text: input, role: "user" };
-    const newMessage = await addMessage({ message: userMessage });
-    setMessages((prev) => {
-      const updatedMessages = [...prev, userMessage];
-      return updatedMessages;
-    });
-    setInput(""); //xoa inp sau khi gui'
+    await addMessage({ message: userMessage });
+    setMessages((prev) => [...prev, userMessage]);
+    const userInput = input;
+    setInput(""); // Xóa input sau khi gửi
 
     try {
-      const history = messages
-        .map((m) => `${m.role === "user" ? "User" : "llama"}: ${m.text}`)
-        .join("\n");
-      const prompt = history + `\nUser: ${input}\nllama:`;
+      // Lấy chatId từ payload
+      const { chatId } = await getPayLoad();
+
+      // Gọi API của chroma_service để nhận phản hồi từ GPT
       const response = await axios.post(
-        "http://127.0.0.1:8080/completion",
+        "http://localhost:4000/api/chats/ai",
         {
-          stream: false,
-          n_predict: 30,
-          temperature: 0.7,
-          stop: ["</s>", "llama:", "User:"],
-          repeat_last_n: 256,
-          repeat_penalty: 1.18,
-          top_k: 40,
-          top_p: 0.5,
-          tfs_z: 1,
-          typical_p: 1,
-          presence_penalty: 0,
-          frequency_penalty: 0,
-          mirostat: 0,
-          mirostat_tau: 5,
-          mirostat_eta: 0.1,
-          prompt: prompt,
+          chatId: chatId,
+          message: userInput,
         },
         {
           headers: {
@@ -126,20 +97,19 @@ function ChatBox({ notes }) {
           },
         }
       );
-      const botText = response.data?.content || "No response";
 
+      const botText = response.data?.response || "No response";
       const botMessage = { text: botText, role: "ai" };
+
+      // Thêm tin nhắn của bot vào chat
       await addMessage({ message: botMessage });
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages, botMessage];
-        return updatedMessages;
-      });
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      console.error("Gửi message không thành công");
+      console.error("Gửi message không thành công:", error.message);
     }
   };
 
-  //cuộn xuống mỗi khi gửi tn
+  // Cuộn xuống mỗi khi có tin nhắn mới
   useEffect(() => {
     if (chatReference.current) {
       chatReference.current.scrollTop = chatReference.current.scrollHeight;
