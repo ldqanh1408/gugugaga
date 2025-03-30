@@ -12,19 +12,20 @@ export const register = async ({
   account,
   password,
   email,
-  phoneNumber,
+  phone,
 }) => {
   try {
     const response = await axios.post(`${API_URL}/register`, {
       userName,
       password,
       account,
-      phoneNumber,
+      phone,
       email,
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching notes:", error);
+    
+    console.error("Error fetching:", error);
     throw error;
   }
 };
@@ -95,4 +96,28 @@ export async function getPayLoad() {
     console.error("Lỗi lấy payload:", error);
     return {};
   }
+}
+
+export async function changePassword({currentPassword, confirmNewPassword, newPassword, setError}) {
+    try{
+      if(newPassword !== confirmNewPassword){
+        setError("Đổi mật khẩu thất bại")
+        return { success: false, message: "Mật khẩu mới và mật khẩu xác nhận không khớp" };
+      }
+      const response = await axios.post(
+        `${API_URL}/change-password`,
+        { currentPassword, newPassword},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Nếu backend dùng cookie
+        }
+      );
+      return response.data;
+    }
+    catch(error){
+      console.error({message: error.message})
+      return { success: false, message: error.message };
+    }
 }

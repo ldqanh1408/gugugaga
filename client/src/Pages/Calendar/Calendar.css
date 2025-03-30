@@ -332,3 +332,99 @@
     width: 100%; /* Để lịch không vượt ra ngoài màn hình */
   }
 }
+
+/* Căn chỉnh nút Edit ở góc phải dưới */
+.history-edit-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: transparent;  /* Màu nền nút */
+  border: none;
+  padding: 10px;  /* Kích thước nút */
+  border-radius: 5px;  /* Bo góc của nút */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease-in-out; /* Thêm hiệu ứng chuyển màu */
+}
+
+/* Điều chỉnh biểu tượng trong nút để vừa với không gian */
+.history-edit-btn .edit-icon {
+  width: 20px;  /* Đặt kích thước icon */
+  height: 20px;  /* Đặt kích thước icon */
+  filter: brightness(2); /* Làm cho icon đậm hơn ngay từ ban đầu */
+}
+
+/* Thêm hiệu ứng hover cho nút Edit */
+.history-edit-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+  background-color: transparent;  /* Thay đổi màu nền khi hover */
+}
+
+.history-edit-btn:active {
+  opacity: 0.5; /* Làm nhạt nút khi nhấn */
+}
+
+/* Thêm hiệu ứng cho icon khi hover */
+.history-edit-btn:hover .edit-icon {
+  filter: brightness(1.2);  /* Làm sáng icon khi hover */
+}
+
+.filter-dropdown-container {
+  display: flex;
+  justify-content: flex-end; /* Đẩy filter sang góc phải */
+  align-items: center; /* Căn giữa icon với text */
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  padding: 5px;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important; /* Đổi màu nền */
+}
+
+.filter-btn img {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px; /* Khoảng cách giữa icon và text */
+}
+
+
+.dropdown-toggle::after {
+  display: none !important; /* Ẩn mũi tên mặc định của Bootstrap */
+}
+
+.dropdown-menu {
+  min-width: 100px !important; /* Đảm bảo kích thước đẹp */
+  width: fit-content !important;
+  height: fit-content !important;
+  background-color: white !important; /* Màu nền menu */
+  border: 1px solid #CDACA0 !important; /* Viền menu */
+}
+.dropdown-item:hover {
+  background-color: #E5CAC2 !important; /* Màu nền khi hover */
+  opacity: 0.4 !important; /*Giảm độ trong suốt khi hover*/
+}
+.dropdown-item.active {
+  background-color: #CDACA0 !important; /* Màu nền của mục đang chọn */
+  opacity: 0.8 !important;
+}
+.note-day::after {
+  content: "•";  /* Dấu chấm */
+  display: block;
+  font-size: 20px; 
+  line-height: 0;
+  color: black; /* Màu dấu chấm */
+  margin-top: 1px;
+  text-align: center;
+}

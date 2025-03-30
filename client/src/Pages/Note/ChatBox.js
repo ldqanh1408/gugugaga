@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import "./ChatBox.css";
 import axios from "axios";
 import SaveButton from "../../assets/imgs/SaveButton.svg";
@@ -6,6 +7,8 @@ import { getMessages, addMessage, getNotes } from "../../services";
 import { getPayLoad } from "../../services/authService"; // Lấy chatId từ payload
 
 function ChatBox({ notes }) {
+  const location = useLocation();
+  const isChatPage = location.pathname === "/chat"; // Kiểm tra nếu đang ở trang Chat
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const chatReference = useRef(null);
@@ -19,7 +22,9 @@ function ChatBox({ notes }) {
         console.error({ message: error.message });
       }
     }
+
     async function fetchBotMessage() {
+
       // Xây dựng prompt từ journal notes
       let promptNote = "JOURNAL ENTRIES\n";
       promptNote += "Below are the user's past journal entries for reference:\n\n";
@@ -113,7 +118,7 @@ function ChatBox({ notes }) {
 
   return (
     <div className="chat-box-container d-flex justify-content-center align-items-center">
-      <div className="chat-box">
+      <div className={`chat-box ${isChatPage ? "formattedBox" : ""}`}>
         <div className="chat-toolbar top">
           <div className="chat-toolbar-text">Gugugaga</div>
         </div>

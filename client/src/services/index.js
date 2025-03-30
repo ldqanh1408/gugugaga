@@ -1,4 +1,13 @@
-import { getUsers, getUserById, addUser } from "./userService.js";
+import {
+  getUsers,
+  getUserById,
+  addUser,
+  getUser,
+  getAvatar,
+  uploadAvatar,
+  loadProfile,
+  uploadProfile,
+} from "./userService.js";
 import {
   handleLogin,
   handleFocus,
@@ -7,11 +16,19 @@ import {
 } from "./validationService.js";
 
 import { getMessages, addMessage } from "./chatService.js";
-import { getNotes } from "./journalService.js";
+import {
+  getToken,
+  logout,
+  getPayLoad,
+  logging,
+  register,
+  changePassword,
+} from "./authService.js";
+import { getNotes, getEntries, getConsecutiveDays} from "./journalService.js";
 export {
   getNotes,
   getUsers,
-  getUserById,
+  getUser,
   addUser,
   handleFocus,
   handleBlur,
@@ -19,4 +36,16 @@ export {
   handleConfirm,
   getMessages,
   addMessage,
+  getToken,
+  logout,
+  getPayLoad,
+  logging,
+  register,
+  changePassword,
+  getAvatar,
+  uploadAvatar,
+  loadProfile,
+  uploadProfile,
+  getEntries,
+  getConsecutiveDays
 };
