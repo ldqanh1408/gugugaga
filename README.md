@@ -11,6 +11,7 @@
 - **JWT (JSON Web Token)** - Xác thực người dùng
 - **Bcrypt.js** - Mã hóa mật khẩu
 - **Swagger** - Tạo tài liệu API
+- **Cloudinary** - Lưu trữ file, ảnh...
 
 ---
 
