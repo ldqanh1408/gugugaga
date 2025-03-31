@@ -5,13 +5,23 @@ import axios from "axios";
 import SaveButton from "../../assets/imgs/SaveButton.svg";
 import { getMessages, addMessage, getNotes } from "../../services";
 import { getPayLoad } from "../../services/authService"; // Lấy chatId từ payload
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNotes } from "../../redux/notesSlice";
 
-function ChatBox({ notes }) {
+function ChatBox() {
   const location = useLocation();
   const isChatPage = location.pathname === "/chat"; // Kiểm tra nếu đang ở trang Chat
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const chatReference = useRef(null);
+  const {notes} = useSelector((state) => state.notes)
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(!notes){
+      dispatch(fetchNotes());
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -68,7 +78,7 @@ function ChatBox({ notes }) {
     }
     fetchMessages();
     fetchBotMessage();
-  }, [notes]);
+  }, []);
 
   const sendMessage = async () => {
     if (input.trim() === "") return;

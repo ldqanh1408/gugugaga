@@ -460,50 +460,65 @@
  */
 
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Message:
+ *       type: object
+ *       required:
+ *         - role
+ *         - text
+ *       properties:
+ *         role:
+ *           type: string
+ *           enum: [user, ai]
+ *           description: Vai trò của tin nhắn
+ *           example: "user"
+ *         text:
+ *           type: string
+ *           description: Nội dung tin nhắn
+ *           minLength: 1
+ *           maxLength: 2000
+ *           example: "Xin chào, bạn khỏe không?"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Thời gian tin nhắn được tạo
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Thời gian tin nhắn được cập nhật
+ */
 
 
 /**
  * @swagger
  * /api/v1/chats/{chatId}/messages:
  *   post:
- *     summary: Thêm một tin nhắn mới vào chat
- *     tags: [Chat]
+ *     summary: Thêm tin nhắn vào cuộc trò chuyện
+ *     tags:
+ *       - Chat
  *     parameters:
  *       - in: path
  *         name: chatId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID của chat cần thêm tin nhắn
- *         example: "507f1f77bcf86cd799439011"
+ *         description: ID của cuộc trò chuyện
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - message
+ *             required: [message]
  *             properties:
  *               message:
- *                 type: object
- *                 required:
- *                   - role
- *                   - text
- *                 properties:
- *                   role:
- *                     type: string
- *                     description: Vai trò của người gửi tin nhắn
- *                     enum: ["user", "assistant", "system"]
- *                     example: "user"
- *                   text:
- *                     type: string
- *                     description: Nội dung tin nhắn (tối đa 2000 ký tự)
- *                     maxLength: 2000
- *                     example: "Xin chào, bạn khỏe không?"
+ *                 $ref: "#/components/schemas/Message"
  *     responses:
  *       200:
- *         description: Thêm tin nhắn thành công
+ *         description: Tin nhắn đã được thêm thành công
  *         content:
  *           application/json:
  *             schema:
@@ -511,42 +526,30 @@
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   example: true
  *                 message:
- *                   type: string
- *                 data:
+ *                   $ref: "#/components/schemas/Message"
+ *       400:
+ *         description: Dữ liệu không hợp lệ (thiếu chatId hoặc thông tin tin nhắn)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
  *                   type: object
  *                   properties:
- *                     role:
+ *                     code:
+ *                       type: integer
+ *                       example: 400
+ *                     message:
  *                       type: string
- *                       enum: ["user", "assistant", "system"]
- *                     text:
- *                       type: string
- *                     createdAt:
- *                       type: string
- *                       format: date-time
- *                     updatedAt:
- *                       type: string
- *                       format: date-time
- *             example:
- *               success: true
- *               message: "Thêm tin nhắn thành công"
- *       
- *       400:
- *         description: Thiếu hoặc sai thông tin đầu vào
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *               example:
- *                 success: false
- *                 message: "Vui lòng cung cấp đầy đủ thông tin message (role và text)"
+ *                       example: "Vui lòng cung cấp đầy đủ thông tin message (role và text)"
  *       404:
- *         description: Không tìm thấy chat
+ *         description: Không tìm thấy cuộc trò chuyện
  *         content:
  *           application/json:
  *             schema:
@@ -554,29 +557,75 @@
  *               properties:
  *                 success:
  *                   type: boolean
- *                 message:
- *                   type: string
- *               example:
- *                 success: false
- *                 message: "Không tìm thấy chat với ID đã cung cấp"
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
+ *                   example: false
  *                 error:
- *                   type: string
- *               example:
- *                 success: false
- *                 message: "Lỗi server khi thêm tin nhắn"
- *                 error: "Database connection failed"
+ *                   type: object
+ *                   properties:
+ *                     code:
+ *                       type: integer
+ *                       example: 404
+ *                     message:
+ *                       type: string
+ *                       example: "Không tìm thấy chat với ID đã cung cấp"
+ *       500:
+ *         description: Lỗi server khi thêm tin nhắn
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: object
+ *                   properties:
+ *                     code:
+ *                       type: integer
+ *                       example: 500
+ *                     message:
+ *                       type: string
+ *                       example: "Lỗi server khi thêm tin nhắn"
+ *                     details:
+ *                       type: string
+ *                       example: "Error stack trace or more information"
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Chat:
+ *       type: object
+ *       required:
+ *         - userId
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: ID của cuộc trò chuyện
+ *           example: "6610d1f9c6b1b2a3d4e5f6g7"
+ *         userId:
+ *           type: string
+ *           description: ID của người dùng sở hữu cuộc trò chuyện
+ *           example: "660abc123def456ghi789jkl"
+ *         messages:
+ *           type: array
+ *           description: Danh sách tin nhắn trong cuộc trò chuyện (tối đa 1000 tin nhắn)
+ *           maxItems: 1000
+ *           items:
+ *             $ref: "#/components/schemas/Message"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Thời gian cuộc trò chuyện được tạo
+ *           example: "2025-03-31T12:34:56.789Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Thời gian cuộc trò chuyện được cập nhật gần nhất
+ *           example: "2025-03-31T15:00:00.123Z"
+ */
+
 
 /**
  * @swagger
@@ -780,6 +829,212 @@
 
 
 // ========================= USERS ==============================
+
+/**
+ * @swagger
+ * /api/v1/user/upload-profile/{userId}:
+ *   post:
+ *     summary: Cập nhật hồ sơ người dùng
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng cần cập nhật
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickName:
+ *                 type: string
+ *                 example: "john_doe"
+ *               userName:
+ *                 type: string
+ *                 example: "johndoe123"
+ *               bio:
+ *                 type: string
+ *                 example: "Fullstack developer"
+ *               dob:
+ *                 type: string
+ *                 format: date
+ *                 example: "1995-08-21"
+ *               gender:
+ *                 type: string
+ *                 enum: [male, female, other]
+ *                 example: "male"
+ *               phone:
+ *                 type: string
+ *                 example: "+84123456789"
+ *               email:
+ *                 type: string
+ *                 example: "johndoe@example.com"
+ *               avatar:
+ *                 type: string
+ *                 format: uri
+ *                 example: "https://example.com/avatar.jpg"
+ *     responses:
+ *       200:
+ *         description: Hồ sơ đã được cập nhật thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "✅ Hồ sơ đã được cập nhật thành công."
+ *                 profile:
+ *                   type: object
+ *                   properties:
+ *                     avatar:
+ *                       type: string
+ *                       example: "https://example.com/avatar.jpg"
+ *                     nickName:
+ *                       type: string
+ *                       example: "john_doe"
+ *                     userName:
+ *                       type: string
+ *                       example: "johndoe123"
+ *                     bio:
+ *                       type: string
+ *                       example: "Fullstack developer"
+ *                     dob:
+ *                       type: string
+ *                       format: date
+ *                       example: "1995-08-21"
+ *                     gender:
+ *                       type: string
+ *                       enum: [male, female, other]
+ *                       example: "male"
+ *                     phone:
+ *                       type: string
+ *                       example: "+84123456789"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *       404:
+ *         description: Người dùng không tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "❌ Người dùng không tồn tại."
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
+
+
+
+/**
+ * @swagger
+ * /api/v1/user/load-profile/{userId}:
+ *   get:
+ *     summary: Lấy thông tin hồ sơ người dùng
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng
+ *     responses:
+ *       200:
+ *         description: Trả về thông tin hồ sơ người dùng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 profile:
+ *                   type: object
+ *                   properties:
+ *                     avatar:
+ *                       type: string
+ *                       example: "https://example.com/avatar.jpg"
+ *                     nickName:
+ *                       type: string
+ *                       example: "john_doe"
+ *                     userName:
+ *                       type: string
+ *                       example: "johndoe123"
+ *                     bio:
+ *                       type: string
+ *                       example: "Fullstack developer"
+ *                     dob:
+ *                       type: string
+ *                       format: date
+ *                       example: "1995-08-21"
+ *                     gender:
+ *                       type: string
+ *                       enum: [male, female, other]
+ *                       example: "male"
+ *                     phone:
+ *                       type: string
+ *                       example: "+84123456789"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     avatarPreview:
+ *                       type: string
+ *                       example: "https://example.com/avatar.jpg"
+ *       404:
+ *         description: Người dùng không tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "❌ Người dùng không tồn tại."
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
 
 
 /**

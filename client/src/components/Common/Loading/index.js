@@ -1,12 +1,15 @@
 import "./Loading.css";
 import React from "react";
 import ReactDOM from "react-dom";
-import {ClipLoader} from "react-spinners"
+import { ClipLoader } from "react-spinners";
 
 function Loading() {
   return (
-    <div className="loading-overlay">
-      <ClipLoader color="#ffffff" size={50} />
+    <div>
+      <div className="coating"></div>
+      <div className="loading-overlay">
+        <ClipLoader color="#ffffff" size={50} />
+      </div>
     </div>
   );
 }
