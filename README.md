@@ -40,9 +40,9 @@ nvcc --version
 
 ### Hướng Dẫn Chạy llama.cpp Trên GPU/CPU Bằng Script Tự Động  
 
-#### 🔸 **Bảng So Sánh Cài Đặt GPU vs CPU**  
+### 🔸 **Bảng So Sánh Cài Đặt GPU vs CPU**  
 
-| **GPU** (Tối ưu tốc độ)                          | **CPU** (Dành cho thử nghiệm)                  |
+| **GPU** (Tối ưu tốc độ)                          | **CPU** (Dành cho thử nghiệm)                   |
 |--------------------------------------------------|-------------------------------------------------|
 | **Yêu cầu:**                                     | **Yêu cầu:**                                    |
 | - Card NVIDIA hỗ trợ CUDA                        | - Không cần card NVIDIA                         |
@@ -53,21 +53,30 @@ nvcc --version
 | ```powershell                                    | ```powershell                                   |
 | Set-ExecutionPolicy Bypass -Scope Process -Force | Set-ExecutionPolicy Bypass -Scope Process -Force|
 | ```                                              | ```                                             |
-| 3. Chạy script build GPU:                        | 3. Chạy script build CPU:                       |
+| 3. **Di chuyển đến folder cha** của file script: | 3. **Di chuyển đến folder cha** của file script:|
+| setupnbuild_2run_model_oGPU                      | setupnbuild_2run_model_oCPU                     |
+| ```                                              | ```                                             |
+| 4. Chạy script build GPU:                        | 4. Chạy script build CPU:                       |
 | ```powershell                                    | ```powershell                                   |
 | .\setupnbuild_2run_model_oGPU.ps1                | .\setupnbuild_2run_model_oCPU.ps1               |
 | ```                                              | ```                                             |
 | **Script sẽ tự động:**                           | **Script sẽ tự động:**                          |
 | - Clone repo llama.cpp                           | - Clone repo llama.cpp                          |
 | - Build project với CUDA hỗ trợ GPU              | - Build project cho CPU                         |
-| - Tạo file thực thi `main.exe`                   | - Tạo file thực thi `main.exe`                  |
 | **Chạy mô hình:**                                | **Chạy mô hình:**                               |
-| ```powershell                                    | ```powershell                                   |
-| .\main -m model.gguf --n-gpu-layers 32           | .\main -m model.gguf --threads 8                |
+|                                                  |                                                 |
+| .\llama-server.exe -m model.gguf --n-gpu-layers 32           | .\llama-server.exe -m model.gguf --threads 8                |
 | ```                                              | ```                                             |
 | **Lưu ý:**                                       | **Lưu ý:**                                      |
 | - Điều chỉnh `--n-gpu-layers` theo VRAM (ví dụ: 32). | - Tốc độ chậm hơn đáng kể (khuyến nghị dùng GPU). |
 | - Dùng `--threads` để tối ưu đa luồng CPU.       | - Phù hợp cho mô hình nhỏ (dưới 7B).            |
+
+---
+
+### Giải Thích Bổ Sung:  
+- **Folder cha của script**: Đảm bảo bạn đang ở **thư mục chứa file script** (ví dụ: nếu script nằm trong thư mục `scripts`, hãy chạy `cd ..` để ra thư mục gốc trước khi chạy script).  
+- **Tệp thực thi `main.exe`**: Được tự động tạo ra sau khi build thành công, nằm trong thư mục `build` hoặc `build_cpu`.  
+- **Quyền Admin**: Bắt buộc để script có quyền cài đặt các phụ thuộc hệ thống.
 
 ---
 
