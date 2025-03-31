@@ -4,6 +4,9 @@
 **Gugugaga** là một ứng dụng hỗ trợ ghi nhật ký, trò chuyện và theo dõi tâm trạng cá nhân. Dự án sử dụng **Node.js, Express, MongoDB** để xây dựng backend API.
 
 ---
+## 📌 Hướng dẫn clone nhánh
+Đối với chặng 2: Chuyển sang nhánh dev trước khi clone code để đảm bảo đồng bộ với phiên bản mới nhất.
+---
 
 ## 🚀 Công nghệ sử dụng
 - **Node.js & Express.js** - Xây dựng server backend
@@ -17,16 +20,25 @@
 
 ## 📂 Cấu trúc thư mục
 ```
-📦 gugugaga
-├── 📁 config         # Cấu hình môi trường và kết nối database
-├── 📁 controllers    # Xử lý logic API
-├── 📁 models         # Định nghĩa Schema cho MongoDB
-├── 📁 routes         # Định nghĩa các API endpoint
-├── 📁 scripts        # Scripts hỗ trợ backup database
-├── 📁 utils          # Chứa helper functions như JWT, hash mật khẩu
-├── server.js        # File chính để khởi chạy server
-├── swagger.json     # Cấu hình tài liệu API Swagger
-└── README.md        # Hướng dẫn sử dụng
+📁 Gugugaga
+├── 📁 client
+│   ├── 📁 data
+│   ├── 📁 public
+│   ├── 📁 src
+│   ├── 📄 .gitignore
+│   ├── 📄 README.md
+│   ├── 📄 package-lock.json
+│   ├── 📄 package.json
+│   └── 📄 webpack.config.js
+│
+├── 📁 server
+│   ├── 📁 node_modules
+│   ├── 📁 src
+│   ├── 📄 .env
+│   ├── 📄 package-lock.json
+│   ├── 📄 package.json
+│   └── 📄 server.js
+
 ```
 
 ---
