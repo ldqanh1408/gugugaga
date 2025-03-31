@@ -108,6 +108,10 @@
   ```powershell
   Set-ExecutionPolicy Bypass -Scope Process -Force
   ```
+  - **Di chuyển đến folder chứa file script sau:**\
+  ```powershell
+  setup_storage4_mode
+  ```
 - **Chạy script để thiết lập lưu trữ dữ liệu:**
   ```powershell
   .\setup_storage4_model.ps1
