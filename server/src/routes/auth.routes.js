@@ -120,7 +120,7 @@ router.get("/check-auth", (req, res) => {
 
   try {
     const payload = verifyToken(token);
-    res.json({ isAuthenticated: true, user: payload });
+    res.status(200).json({ isAuthenticated: true, user: payload });
   } catch (error) {
     res
       .status(401)

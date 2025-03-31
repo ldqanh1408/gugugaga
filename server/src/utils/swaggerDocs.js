@@ -71,6 +71,66 @@
 
 /**
  * @swagger
+ * /api/v1/journals/{journalId}/consecutive-days:
+ *   get:
+ *     summary: Lấy số ngày liên tiếp có ghi chép trong nhật ký
+ *     description: Kiểm tra số ngày liên tiếp mà người dùng đã ghi chép trong journal.
+ *     tags:
+ *       - Journal
+ *     parameters:
+ *       - in: path
+ *         name: journalId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của nhật ký cần kiểm tra
+ *         example: "660abc123def456ghi789jkl"
+ *     responses:
+ *       200:
+ *         description: Trả về số ngày ghi chép liên tiếp
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 consecutiveDays:
+ *                   type: integer
+ *                   description: Số ngày liên tiếp có ghi chép
+ *                   example: 5
+ *       404:
+ *         description: Không tìm thấy nhật ký
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Không tìm thấy journal"
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi server khi lấy số ngày liên tiếp"
+ */
+
+
+/**
+ * @swagger
  * /api/v1/journals/{journalId}/notes:
  *   get:
  *     summary: Lấy notes của một journal
@@ -743,6 +803,256 @@
 
 
 // ================= Authentication =============================
+
+/**
+ * @swagger
+ * /api/v1/logout:
+ *   post:
+ *     summary: Đăng xuất người dùng
+ *     description: Xóa token khỏi cookie để đăng xuất người dùng.
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Đăng xuất thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Logged out"
+ *       400:
+ *         description: Lỗi khi đăng xuất
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Có lỗi xảy ra khi đăng xuất"
+ */
+
+
+
+/**
+ * @swagger
+ * /api/v1/get-token:
+ *   get:
+ *     summary: Lấy token từ cookie
+ *     description: API này lấy token của người dùng từ cookie nếu có.
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Lấy token thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       404:
+ *         description: Không tìm thấy token trong cookie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Token not found"
+ *                 token:
+ *                   type: string
+ *                   nullable: true
+ *                   example: null
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/check-auth:
+ *   get:
+ *     summary: Kiểm tra trạng thái đăng nhập
+ *     description: API này xác minh xem người dùng có đăng nhập hay không bằng cách kiểm tra token trong cookie.
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Người dùng đã đăng nhập hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isAuthenticated:
+ *                   type: boolean
+ *                   example: true
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "660a7f9b4e0a7b001c3f5f8a"
+ *                     userName:
+ *                       type: string
+ *                       example: "john_doe"
+ *                     journalId:
+ *                       type: string
+ *                       example: "660b7e1a4e0a7b001c3f5f9b"
+ *                     chatId:
+ *                       type: string
+ *                       example: "660b7f9c4e0a7b001c3f5fa1"
+ *       401:
+ *         description: Người dùng chưa đăng nhập hoặc token không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isAuthenticated:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Chưa đăng nhập"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/change-password:
+ *   post:
+ *     summary: Đổi mật khẩu người dùng
+ *     description: API này cho phép người dùng đổi mật khẩu bằng cách nhập mật khẩu hiện tại và mật khẩu mới.
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: "oldpassword123"
+ *               newPassword:
+ *                 type: string
+ *                 example: "newpassword456"
+ *     responses:
+ *       200:
+ *         description: Đổi mật khẩu thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Đổi mật khẩu thành công"
+ *       400:
+ *         description: Thiếu thông tin hoặc không tìm thấy user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Thiếu thông tin"
+ *       401:
+ *         description: Người dùng chưa đăng nhập hoặc token không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Chưa đăng nhập"
+ *       404:
+ *         description: Mật khẩu không khớp
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Mật khẩu không khớp"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/me:
+ *   get:
+ *     summary: Lấy thông tin người dùng từ token
+ *     description: API dùng để xác thực người dùng dựa trên token được lưu trong cookie.
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Lấy thông tin người dùng thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                   example: "660abc123def456ghi789jkl"
+ *                 journalId:
+ *                   type: string
+ *                   example: "660xyz123uvw456rst789opq"
+ *                 chatId:
+ *                   type: string
+ *                   example: "660chat123uvw456rst789xyz"
+ *                 userName:
+ *                   type: string
+ *                   example: "john_doe"
+ *       401:
+ *         description: Chưa đăng nhập hoặc token không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Chưa đăng nhập"
+ */
 
 
 
