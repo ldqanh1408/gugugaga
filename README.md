@@ -86,7 +86,7 @@ Có thể backup dữ liệu (import hoặc export) bằng API
 ---
 
 
-## 📌 Mở rộng tính năng
+## 📌 Mở rộng tính năng (Trong tương lai)
 📊 Dashboard theo dõi tâm trạng
 
 Hiển thị biểu đồ cảm xúc dựa trên nhật ký.
