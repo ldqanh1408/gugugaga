@@ -53,7 +53,11 @@
   ```powershell
   Set-ExecutionPolicy Bypass -Scope Process -Force
   ```
-- **Di chuyển đến folder chứa file script: setupnbuild_2run_model_oGPU**\
+- **Di chuyển đến folder chứa file script sau:**\
+
+  ```powershell
+  setupnbuild_2run_model_oGPU
+  ```
 - **Chạy script build cho GPU:**
   ```powershell
   .\setupnbuild_2run_model_oGPU.ps1
@@ -71,10 +75,10 @@
   ```powershell
   Set-ExecutionPolicy Bypass -Scope Process -Force
   ```
-- **Di chuyển đến folder chứa file script: setupnbuild_2run_model_oCPU**\
-  Nếu cần, chuyển ra thư mục gốc:
+- **Di chuyển đến folder chứa file script sau:**\
+
   ```powershell
-  cd ..  # nếu cần
+  setupnbuild_2run_model_oCPU
   ```
 - **Chạy script build cho CPU:**
   ```powershell
