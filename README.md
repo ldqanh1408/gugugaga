@@ -6,7 +6,7 @@
 ---
 
 ## 📌 Hướng dẫn clone nhánh
-Đối với chặng 2: Chuyển sang nhánh dev trước khi clone code để đảm bảo đồng bộ với phiên bản mới nhất.
+Đối với chặng 2: Chuyển sang nhánh develop trước khi clone code để đảm bảo đồng bộ với phiên bản mới nhất.
 
 ---
 
