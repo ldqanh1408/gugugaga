@@ -105,7 +105,19 @@ Dưới đây là phiên bản hướng dẫn cập nhật, bao gồm bước c�
 
 ---
 
-## 4. Tải Mô Hình và Ví Dụ Lệnh
+## 4. Chạy Script Thiết Lập Lưu Trữ Dữ Liệu Cho Model
+
+- **Mở PowerShell với quyền Admin:**
+  ```powershell
+  Set-ExecutionPolicy Bypass -Scope Process -Force
+  ```
+- **Chạy script để thiết lập lưu trữ dữ liệu:**
+  ```powershell
+  .\setup_storage4_model.ps1
+  ```
+
+
+## 5. Tải Mô Hình và Ví Dụ Lệnh
 
 • Tải mô hình GGUF từ [HuggingFace Hub](https://huggingface.co/models?search=gguf).\
 • Ví dụ chạy trên GPU với mô hình 7B:
