@@ -50,23 +50,17 @@ nvcc --version
 | **Cài đặt tự động:**                             | **Cài đặt tự động:**                            |
 | 1. Mở PowerShell **với quyền Admin**.            | 1. Mở PowerShell **với quyền Admin**.           |
 | 2. Cho phép chạy script:                         | 2. Cho phép chạy script:                        |
-| ```powershell                                    | ```powershell                                   |
 | Set-ExecutionPolicy Bypass -Scope Process -Force | Set-ExecutionPolicy Bypass -Scope Process -Force|
-| ```                                              | ```                                             |
 | 3. **Di chuyển đến folder cha** của file script: | 3. **Di chuyển đến folder cha** của file script:|
 | setupnbuild_2run_model_oGPU                      | setupnbuild_2run_model_oCPU                     |
-| ```                                              | ```                                             |
 | 4. Chạy script build GPU:                        | 4. Chạy script build CPU:                       |
-| ```powershell                                    | ```powershell                                   |
 | .\setupnbuild_2run_model_oGPU.ps1                | .\setupnbuild_2run_model_oCPU.ps1               |
-| ```                                              | ```                                             |
 | **Script sẽ tự động:**                           | **Script sẽ tự động:**                          |
 | - Clone repo llama.cpp                           | - Clone repo llama.cpp                          |
 | - Build project với CUDA hỗ trợ GPU              | - Build project cho CPU                         |
 | **Chạy mô hình:**                                | **Chạy mô hình:**                               |
 |                                                  |                                                 |
 | .\llama-server.exe -m model.gguf --n-gpu-layers 32           | .\llama-server.exe -m model.gguf --threads 8                |
-| ```                                              | ```                                             |
 | **Lưu ý:**                                       | **Lưu ý:**                                      |
 | - Điều chỉnh `--n-gpu-layers` theo VRAM (ví dụ: 32). | - Tốc độ chậm hơn đáng kể (khuyến nghị dùng GPU). |
 | - Dùng `--threads` để tối ưu đa luồng CPU.       | - Phù hợp cho mô hình nhỏ (dưới 7B).            |
