@@ -44,7 +44,7 @@ phiên bản 6.0.
 
 ### 2️⃣ **Cài đặt dependencies**
 ```sh
-npm install
+npm run install-all
 ```
 
 ### 3️⃣ **Cấu hình môi trường**
