@@ -43,6 +43,7 @@ phiên bản 6.0.
 
 
 ### 2️⃣ **Cài đặt dependencies**
+Vào thư mục **./client** và gõ lệnh
 ```sh
 npm run install-all
 ```
