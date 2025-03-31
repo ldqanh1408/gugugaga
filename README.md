@@ -38,32 +38,51 @@ nvcc --version
 
 ### 7. Chạy llama.cpp Trên GPU/CPU Bằng PowerShell Script  
 
-#### 🔸 **Bảng So Sánh GPU vs CPU**  
+### Hướng Dẫn Chạy llama.cpp Trên GPU/CPU Bằng Script Tự Động  
 
-| **GPU** (Tối ưu tốc độ)                           | **CPU** (Dành cho thử nghiệm)                    |
-|---------------------------------------------------|---------------------------------------------------|
-| **Yêu cầu:**                                      | **Yêu cầu:**                                      |
-| - Card NVIDIA hỗ trợ CUDA                         | - Không cần card NVIDIA                          |
-| - Đã cài CUDA Toolkit và driver NVIDIA            |                                                  |
-| **Cài đặt:**                                      | **Cài đặt:**                                      |
-| 1. Mở PowerShell (Admin):                         | 1. Mở PowerShell (Admin):                        |
-| ```powershell                                     | ```powershell                                     |
-| Set-ExecutionPolicy -Scope Process Bypass         | Set-ExecutionPolicy -Scope Process Bypass        |
-| ```                                               | ```                                               |
-| 2. Clone repo và chạy script GPU:                 | 2. Clone repo và chạy script CPU:                |
-| ```powershell                                     | ```powershell                                     |
-| git clone https://github.com/ggerganov/llama.cpp  | git clone https://github.com/ggerganov/llama.cpp  |
-| cd llama.cpp                                      | cd llama.cpp                                      |
-| .\setupnbuild_2run_model_oGPU.ps1                 | .\setupnbuild_2run_model_oCPU.ps1                |
-| ```                                               | ```                                               |
-| **Chạy mô hình:**                                 | **Chạy mô hình:**                                 |
-| ```powershell                                     | ```powershell                                     |
-| .\main -m model.gguf --n-gpu-layers 32            | .\main -m model.gguf --threads 8                 |
-| ```                                               | ```                                               |
-| **Lưu ý:**                                        | **Lưu ý:**                                        |
-| - Điều chỉnh `--n-gpu-layers` theo VRAM (ví dụ: 32). | - Tốc độ chậm hơn 10-50x so với GPU.             |
-| - Sử dụng `--threads` để tận dụng đa luồng CPU.   | - Chỉ phù hợp với mô hình nhỏ (dưới 7B).          |
+#### 🔸 **Bảng So Sánh Cài Đặt GPU vs CPU**  
 
+| **GPU** (Tối ưu tốc độ)                          | **CPU** (Dành cho thử nghiệm)                  |
+|--------------------------------------------------|-------------------------------------------------|
+| **Yêu cầu:**                                     | **Yêu cầu:**                                    |
+| - Card NVIDIA hỗ trợ CUDA                        | - Không cần card NVIDIA                         |
+| - Đã cài CUDA Toolkit và driver NVIDIA           |                                                 |
+| **Cài đặt tự động:**                             | **Cài đặt tự động:**                            |
+| 1. Mở PowerShell **với quyền Admin**.            | 1. Mở PowerShell **với quyền Admin**.           |
+| 2. Cho phép chạy script:                         | 2. Cho phép chạy script:                        |
+| ```powershell                                    | ```powershell                                   |
+| Set-ExecutionPolicy Bypass -Scope Process -Force | Set-ExecutionPolicy Bypass -Scope Process -Force|
+| ```                                              | ```                                             |
+| 3. Chạy script build GPU:                        | 3. Chạy script build CPU:                       |
+| ```powershell                                    | ```powershell                                   |
+| .\setupnbuild_2run_model_oGPU.ps1                | .\setupnbuild_2run_model_oCPU.ps1               |
+| ```                                              | ```                                             |
+| **Script sẽ tự động:**                           | **Script sẽ tự động:**                          |
+| - Clone repo llama.cpp                           | - Clone repo llama.cpp                          |
+| - Build project với CUDA hỗ trợ GPU              | - Build project cho CPU                         |
+| - Tạo file thực thi `main.exe`                   | - Tạo file thực thi `main.exe`                  |
+| **Chạy mô hình:**                                | **Chạy mô hình:**                               |
+| ```powershell                                    | ```powershell                                   |
+| .\main -m model.gguf --n-gpu-layers 32           | .\main -m model.gguf --threads 8                |
+| ```                                              | ```                                             |
+| **Lưu ý:**                                       | **Lưu ý:**                                      |
+| - Điều chỉnh `--n-gpu-layers` theo VRAM (ví dụ: 32). | - Tốc độ chậm hơn đáng kể (khuyến nghị dùng GPU). |
+| - Dùng `--threads` để tối ưu đa luồng CPU.       | - Phù hợp cho mô hình nhỏ (dưới 7B).            |
+
+---
+
+### Giải Thích Chi Tiết Script:  
+- **`setupnbuild_2run_model_oGPU.ps1`** và **`setupnbuild_2run_model_oCPU.ps1`**:  
+  - Tự động clone repository llama.cpp từ GitHub.  
+  - Build project với cấu hình tối ưu cho GPU (CUDA) hoặc CPU.  
+  - Không cần chạy lệnh `cmake` hoặc `git clone` thủ công.  
+- **Quyền Admin**: Cần thiết để đảm bảo script có quyền cài đặt các thành phần hệ thống.  
+
+⚠️ **Lỗi thường gặp:**  
+- Nếu gặp lỗi *"Script cannot be loaded"*, chạy lệnh sau trước khi thực thi script:  
+  ```powershell
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser  
+  ```
 ---
 
 ### 8. Tải Mô Hình và Ví Dụ Lệnh  
