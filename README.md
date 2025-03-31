@@ -84,20 +84,32 @@ Dự án hỗ trợ backup MongoDB bằng `mongodump`.
 Có thể backup dữ liệu (import hoặc export) bằng API
 
 ---
+.
 
-## 👨‍💻 Đóng góp
-1. Fork repository
-2. Tạo nhánh mới (`git checkout -b feature-moi`)
-3. Commit thay đổi (`git commit -m 'Thêm tính năng mới'`)
-4. Push lên GitHub (`git push origin feature-moi`)
-5. Tạo pull request
+## 📌 ** Mở rộng tính năng**
+📊 Dashboard theo dõi tâm trạng
 
----
+Hiển thị biểu đồ cảm xúc dựa trên nhật ký.
 
-## 📜 Giấy phép
-Dự án được phát hành dưới giấy phép **MIT License**. Bạn có thể tự do sử dụng, sửa đổi và chia sẻ.
+🔔 Gửi thông báo (Email hoặc Telegram Bot)
 
----
+Thông báo khi có tin nhắn mới hoặc nhắc nhở viết nhật ký.
+
+🎨 Dark Mode
+
+Cho phép chuyển đổi giao diện Sáng/Tối.
+
+📜 Xuất dữ liệu nhật ký thành PDF
+
+Dùng thư viện pdfkit để xuất nhật ký cá nhân.
+
+
+1️⃣ Sử dụng MongoDB Atlas (Không cần lưu trữ cục bộ)
+2️⃣ Triển khai Backend lên Vercel hoặc Render
+3️⃣ Thêm Redis Cache để tăng tốc API
+5️⃣ Thêm Xác Thực Đa Yếu Tố (2FA) với Google Authenticator
+🔧 Thêm đăng nhập bằng google
+🔧 Thêm khôi phục tài khoản bằng gmail 
 
 **🔥 Chúc bạn code vui vẻ!** 🚀
 
