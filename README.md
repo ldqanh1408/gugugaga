@@ -1,45 +1,27 @@
 # Gugugaga
 
 ## 📌 Giới thiệu
-**Gugugaga** là một ứng dụng hỗ trợ ghi nhật ký, trò chuyện và theo dõi tâm trạng cá nhân. Dự án sử dụng **Node.js, Express, MongoDB** để xây dựng backend API.
+
+Dự án website dùng FastAPI để xây dựng API cho chatbot với llama.cpp, hỗ trợ GPU và CPU. Dưới đây là hướng dẫn cài đặt và danh sách các thư viện cần thiết.
 
 ---
 
-## 📌 Hướng dẫn clone nhánh
-Đối với chặng 2: Chuyển sang nhánh develop trước khi clone code để đảm bảo đồng bộ với phiên bản mới nhất.
+## 📌 Công Nghệ Sử Dụng
+
+- **FastAPI**: Xây dựng API cho chatbot.
+- **llama.cpp**: Xử lý mô hình AI. ( hướng dẫn sử dụng [llama.cpp](https://github.com/ggml-org/llama.cpp) )
+- **MongoDB + PyMongo**: Lưu trữ hội thoại chatbot.
+- **ChromaDB + Sentence Transformers**: Tìm kiếm ngữ nghĩa.
+- **CUDA Toolkit**: Hỗ trợ GPU cho mô hình AI.
+- **Uvicorn**: Chạy máy chủ ASGI.
+- **Pydantic**: Xác thực dữ liệu API.
+- **Requests**: Gửi yêu cầu HTTP đến llama.cpp.
+- **BSON (PyMongo tích hợp sẵn)**: Chuyển đổi ObjectId của MongoDB.
+- **CORS Middleware (FastAPI tích hợp sẵn)**: Hỗ trợ Cross-Origin Resource Sharing (CORS).
 
 ---
-
-## 🚀 Công nghệ sử dụng
-- **Node.js & Express.js** - Xây dựng server backend
-- **MongoDB & Mongoose** - Quản lý cơ sở dữ liệu
-- **JWT (JSON Web Token)** - Xác thực người dùng
-- **Bcrypt.js** - Mã hóa mật khẩu
-- **Swagger** - Tạo tài liệu API
-- **Cloudinary** - Lưu trữ file, ảnh...
-
----
-
 ## 📂 Cấu trúc thư mục
 ```
-📁 Gugugaga
-├── 📁 client
-│   ├── 📁 data
-│   ├── 📁 public
-│   ├── 📁 src
-│   ├── 📄 .gitignore
-│   ├── 📄 README.md
-│   ├── 📄 package-lock.json
-│   ├── 📄 package.json
-│   └── 📄 webpack.config.js
-│
-├── 📁 server
-│   ├── 📁 node_modules
-│   ├── 📁 src
-│   ├── 📄 .env
-│   ├── 📄 package-lock.json
-│   ├── 📄 package.json
-│   └── 📄 server.js
 ├──📁 llama.cpp
 ├──📄run_model.bat
 ├──📄chatbot_api.py
@@ -49,91 +31,109 @@
 ```
 
 ---
+## 📌 Hướng Dẫn Cài Đặt
+## 1. Cài Đặt llama.cpp
+### 1.1 Cài Đặt llama.cpp Chạy Trên GPU (cách 1, lâu dài)
 
-## 🔧 Cài đặt và chạy dự án
-### 1️⃣ **Clone dự án**
-```sh
-git clone https://github.com/ldqanh1408/gugugaga.git
-cd gugugaga
+#### 1. Cài Đặt Visual Studio 2022
+
+- **Tải Visual Studio** từ [Visual Studio](https://visualstudio.microsoft.com/).
+- **Cài đặt**:
+  - Mở tệp cài đặt `VisualStudioSetup.exe`.
+  - Chờ quá trình tải xuống hoàn tất.
+  - Chọn tùy chọn: `Desktop development with C++`.
+  - Nhấn **Install** và chờ cài đặt hoàn tất.
+
+#### 2. Cài Đặt NVIDIA Driver & CUDA Toolkit
+
+##### Kiểm Tra Phiên Bản Driver NVIDIA
+
+- Mở **Command Prompt** (Win + S, gõ `cmd`, nhấn Enter).
+- Chạy lệnh:
+  ```sh
+  nvidia-smi
+  ```
+- Ghi lại **Driver Version** (ví dụ: `531.79`).
+
+##### Cập Nhật Driver NVIDIA (nếu cần)
+
+- Mở **NVIDIA App** trên máy tính.
+- Chọn **Driver** > **Update Driver** nếu có bản mới.
+- Chọn **Express Installation** và hoàn tất cài đặt.
+
+##### Cài Đặt CUDA Toolkit
+
+- Truy cập [CUDA Toolkit Downloads](https://developer.nvidia.com/cuda-downloads) và tải phiên bản phù hợp.
+- **Chọn cài đặt tùy chỉnh** (Custom Installation), chỉ cài CUDA.
+- Sau khi cài đặt, kiểm tra bằng lệnh:
+  ```sh
+  nvcc --version
+  ```
+- Nếu lệnh hiển thị phiên bản CUDA, cài đặt đã thành công! 🎉
+
+#### 3. Build Dự Án llama.cpp Trên GPU
+
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force
+cd "Thư mục cha của file setupnbuild_2run_model_oGPU"
+.\setupnbuild_2run_model_oGPU.ps1
 ```
-###Cài đặt MongoDB
-
-Dự án yêu cầu MongoDB. Nếu chưa cài đặt, hãy tải về từ trang chính thức và làm theo hướng dẫn cài đặt tại https://www.mongodb.com/try/download/community
-phiên bản 6.0.21
-
-
-### 2️⃣ **Cài đặt dependencies**
-Vào thư mục **./client** và gõ lệnh
-```sh
-npm run install-all
-```
-
-### 3️⃣ **Cấu hình môi trường**
-Tạo file `.env` trong thư mục gốc và điền các giá trị sau:
-```env
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/Diary
-JWT_SECRET= 6b01fe644626b1037d5f240391bdb8e25d26b70555e983c4cc325f16a2a4a039
-API_SECRET_KEY = your_secret_key
-API_KEY = your_key
-CLOUD_NAME = your_cloud name
-```
-Các thông số : API_KEY, SECRET_KEY, CLOUD_NAME, có thể nhận được khi đăng kí cloudinary trên web.
-### 4️⃣ **Chạy server**
-Vào thư mục client và gõ lệnh sau:
-```sh
-npm start
-```
-Mặc định server sẽ chạy trên `http://localhost:5000`
 
 ---
 
-## 📌 API Endpoints
-- Tất cả API nằm trong http://localhost:5000/api-docs/
-📌 **Xem chi tiết API với Swagger:**
-Sau khi chạy server, mở trình duyệt và truy cập:
-```sh
-http://localhost:5000/api-docs
+### 1.2. Cài Đặt llama.cpp Chạy Trên CPU (cách 2, không lâu dài)
+
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force
+cd "Thư mục cha của file setupnbuild_2run_model_oCPU"
+.\setupnbuild_2run_model_oCPU.ps1
 ```
 
 ---
 
-## 🔄 Backup Database
-Dự án hỗ trợ backup MongoDB bằng `mongodump`. 
-Có thể backup dữ liệu (import hoặc export) bằng API
+## 2. Chạy Script Thiết Lập Lưu Trữ Dữ Liệu Cho Model
+
+1. **Mở PowerShell với quyền Admin:**
+   ```powershell
+   Set-ExecutionPolicy Bypass -Scope Process -Force
+   ```
+2. **Di chuyển đến thư mục chứa file script:**
+   ```powershell
+   cd "Thư mục cha của file setup_storage4_mode"
+   ```
+3. **Chạy script để thiết lập lưu trữ dữ liệu:**
+   ```powershell
+   .\setup_storage4_model.ps1
+   ```
 
 ---
 
+## 3. Tải Mô Hình và Chạy
 
-## 📌 Mở rộng tính năng (Trong tương lai)
-📊 Dashboard theo dõi tâm trạng
+- **Tải mô hình GGUF** từ [HuggingFace](https://huggingface.co/models?search=gguf).
+- **Cấu hình file run_model.bat**:
+  ```powershell
+  @echo off
+  set "BASE_DIR=%~dp0"
+  
+  start "Llama Server" cmd /k "%BASE_DIR%llama.cpp\build\bin\llama-server.exe -m %BASE_DIR%"NAME_MODEL" --gpu-layers xx --threads yy --port 8090"
+  start "Chroma Service" cmd /k python "%BASE_DIR%chatbot_api.py"
 
-Hiển thị biểu đồ cảm xúc dựa trên nhật ký.
+  ```
+- thay xx là số lớp GPU bạn muốn chia
+- thay yy là số luồng CPU bạn muốn dùng
+- "NAME_MODEL" = tên model của AI (ví dụ "MODEL_NAME" = mistral.gguf)
 
-🔔 Gửi thông báo (Email hoặc Telegram Bot)
+---
 
-Thông báo khi có tin nhắn mới hoặc nhắc nhở viết nhật ký.
+## 🔥 Lưu Ý
 
-🎨 Dark Mode
+- Nếu gặp lỗi “Script cannot be loaded”, chạy:
+  ```powershell
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
+- GPU giúp tăng tốc mô hình, CPU phù hợp thử nghiệm mô hình nhỏ.
 
-Cho phép chuyển đổi giao diện Sáng/Tối.
+Với hướng dẫn này, bạn đã có thể cài đặt và chạy dự án trên GPU hoặc CPU! 🚀
 
-📜 Xuất dữ liệu nhật ký thành PDF
-
-Dùng thư viện pdfkit để xuất nhật ký cá nhân.
-
-
-1️⃣ Sử dụng MongoDB Atlas (Không cần lưu trữ cục bộ)
-
-2️⃣ Triển khai Backend lên Vercel hoặc Render
-
-3️⃣ Thêm Redis Cache để tăng tốc API
-
-5️⃣ Thêm Xác Thực Đa Yếu Tố (2FA) với Google Authenticator
-
-🔧 Thêm đăng nhập bằng google
-
-🔧 Thêm khôi phục tài khoản bằng gmail 
-
-**🔥 Chúc bạn code vui vẻ!** 🚀
 
