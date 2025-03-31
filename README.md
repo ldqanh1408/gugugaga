@@ -1,6 +1,3 @@
-Dưới đây là phiên bản hướng dẫn cập nhật, bao gồm bước cập nhật driver NVIDIA qua NVIDIA App trước khi cài đặt CUDA Toolkit và build dự án trên GPU.
-
----
 
 ## 1. Cấu Hình và Chạy trên GPU (Tối Ưu Tốc Độ)
 
@@ -56,11 +53,7 @@ Dưới đây là phiên bản hướng dẫn cập nhật, bao gồm bước c�
   ```powershell
   Set-ExecutionPolicy Bypass -Scope Process -Force
   ```
-- **Di chuyển đến folder chứa file script:**\
-  Nếu file script nằm trong thư mục con (ví dụ: `scripts`), chuyển ra thư mục gốc:
-  ```powershell
-  cd ..  # nếu cần
-  ```
+- **Di chuyển đến folder chứa file script: setupnbuild_2run_model_oGPU**\
 - **Chạy script build cho GPU:**
   ```powershell
   .\setupnbuild_2run_model_oGPU.ps1
@@ -78,7 +71,7 @@ Dưới đây là phiên bản hướng dẫn cập nhật, bao gồm bước c�
   ```powershell
   Set-ExecutionPolicy Bypass -Scope Process -Force
   ```
-- **Di chuyển đến folder chứa file script của CPU:**\
+- **Di chuyển đến folder chứa file script: setupnbuild_2run_model_oCPU**\
   Nếu cần, chuyển ra thư mục gốc:
   ```powershell
   cd ..  # nếu cần
