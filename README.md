@@ -59,7 +59,7 @@ API_SECRET_KEY = your_secret_key
 API_KEY = your_key
 CLOUD_NAME = your_cloud name
 ```
-
+Các thông số : API_KEY, SECRET_KEY, CLOUD_NAME, có thể nhận được khi đăng kí cloudinary trên web.
 ### 4️⃣ **Chạy server**
 Vào thư mục client và gõ lệnh sau:
 ```sh
