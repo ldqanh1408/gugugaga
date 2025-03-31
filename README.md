@@ -40,7 +40,7 @@ cd gugugaga
 ###Cài đặt MongoDB
 
 Dự án yêu cầu MongoDB. Nếu chưa cài đặt, hãy tải về từ trang chính thức và làm theo hướng dẫn cài đặt tại https://www.mongodb.com/try/download/community
-phiên bản 6.0.
+phiên bản 6.0.21
 
 
 ### 2️⃣ **Cài đặt dependencies**
