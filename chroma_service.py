@@ -155,7 +155,7 @@ def create_prompt(chatId, user_message):
 
 
     if context.strip():
-        final_prompt = f"{system_prompt}\n---\nPrevious user messages:\n{context}\n---\nUser just said: {user_message}\nYou:"
+        final_prompt = f"{system_prompt}\nPrevious user messages:\n{context}\nUser just said: {user_message}\nYou:"
     else:
         final_prompt = f"{system_prompt}\nUser just said: {user_message}\nYou:"
 
@@ -175,10 +175,10 @@ def chat_api(req: ChatRequest):
     save_message(req.chatId, req.message, ai_reply)  # Lưu hội thoại vào DB
     print("Phản hồi từ AI:")
     print(ai_reply)
-    
+    # này nó phản hồi tận 2 lầ, mà trong khi t in print(..) có 1 , m coi thử coi coi cái API của nhật kí á, thường bị cái nhật kí
     # Xử lý loại bỏ dòng trống thừa
     ai_reply = re.sub(r'\n\s*\n+', '\n', ai_reply.strip())
-    ai_reply = clean_response(ai_reply)
+    # ai_reply = clean_response(ai_reply)
     
     return {"response": ai_reply}
 
