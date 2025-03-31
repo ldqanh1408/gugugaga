@@ -105,10 +105,15 @@ Dùng thư viện pdfkit để xuất nhật ký cá nhân.
 
 
 1️⃣ Sử dụng MongoDB Atlas (Không cần lưu trữ cục bộ)
+
 2️⃣ Triển khai Backend lên Vercel hoặc Render
+
 3️⃣ Thêm Redis Cache để tăng tốc API
+
 5️⃣ Thêm Xác Thực Đa Yếu Tố (2FA) với Google Authenticator
+
 🔧 Thêm đăng nhập bằng google
+
 🔧 Thêm khôi phục tài khoản bằng gmail 
 
 **🔥 Chúc bạn code vui vẻ!** 🚀
