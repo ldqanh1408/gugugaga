@@ -4,8 +4,10 @@
 **Gugugaga** là một ứng dụng hỗ trợ ghi nhật ký, trò chuyện và theo dõi tâm trạng cá nhân. Dự án sử dụng **Node.js, Express, MongoDB** để xây dựng backend API.
 
 ---
+
 ## 📌 Hướng dẫn clone nhánh
 Đối với chặng 2: Chuyển sang nhánh dev trước khi clone code để đảm bảo đồng bộ với phiên bản mới nhất.
+
 ---
 
 ## 🚀 Công nghệ sử dụng
