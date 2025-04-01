@@ -22,6 +22,7 @@ Dự án website dùng FastAPI để xây dựng API cho chatbot với llama.cpp
 ---
 ## 📂 Cấu trúc thư mục
 ```
+├──📁 chromadb_store
 ├──📁 llama.cpp
 ├──📄run_model.bat
 ├──📄chatbot_api.py
