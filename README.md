@@ -151,7 +151,7 @@ API của **llama.cpp** được gọi trong hàm `call_llama` để tạo phả
 Dưới đây là đoạn mã hiện tại trong file `chatbot_api.py` gọi API của **llama.cpp**:
 
 ```python
-LLAMA_API_URL = "http://127.0.0.1:8090/completion"
+LLAMA_API_URL = "http://127.0.0.1:8080/completion"
 
 def call_llama(prompt: str) -> str:
     payload = {
