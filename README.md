@@ -5,10 +5,6 @@
 
 ---
 
-## 📌 Hướng dẫn clone nhánh
-Đối với chặng 2: Clone code và chuyển sang nhánh develop để đảm bảo đồng bộ với phiên bản mới nhất.
-
----
 
 ## 🚀 Công nghệ sử dụng
 - **Node.js & Express.js** - Xây dựng server backend
@@ -40,12 +36,14 @@
 │   ├── 📄 package-lock.json
 │   ├── 📄 package.json
 │   └── 📄 server.js
-├──📁 llama.cpp
-├──📄run_model.bat
-├──📄chatbot_api.py
-├──📄setup_storage4_model.ps1 (chạy file powershell setup_storage4_model để setup cho chatbot_api.py)
-├──📄setupnbuild_2run_model_oCPU.ps1 (chạy 1 trong 2 file powershell (setupnbuild_2run_model_oCPU, setupnbuild_2run_model_oGPU) để tạo folder llama.cpp)
-├──📄setupnbuild_2run_model_oGPU.ps1
+├── 📁 AI 
+    ├──📁 llama.cpp
+    ├──📄run_model.bat
+    ├──📄chatbot_api.py
+    ├──📄setup_storage4_model.ps1 (chạy file powershell setup_storage4_model để setup cho chatbot_api.py)
+    ├──📄setupnbuild_2run_model_oCPU.ps1 (chạy 1 trong 2 file powershell (setupnbuild_2run_model_oCPU, setupnbuild_2run_model_oGPU) để tạo folder llama.cpp)
+    ├──📄setupnbuild_2run_model_oGPU.ps1
+    ├──your_model.gguf (model AI mà bạn muốn)
 ```
 
 ---
