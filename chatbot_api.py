@@ -52,7 +52,7 @@ def get_embedding(text: str):
 # ---------------------------
 # 4. Gọi API của llama.cpp
 # ---------------------------
-LLAMA_API_URL = "http://127.0.0.1:8090/completion"
+LLAMA_API_URL = "http://127.0.0.1:8080/completion"
 
 def call_llama(prompt: str) -> str:
     payload = {
