@@ -52,7 +52,6 @@
 ### 1️⃣ **Clone dự án**
 ```sh
 git clone https://github.com/ldqanh1408/gugugaga.git
-git clone --branch AI --single-branch https://github.com/ldqanh1408/gugugaga.git
 cd gugugaga
 ```
 ###Cài đặt MongoDB
