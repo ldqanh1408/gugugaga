@@ -88,6 +88,10 @@ Vào thư mục client và gõ lệnh sau:
 ```sh
 npm start
 ```
+```sh
+double click vào file run_model.bat
+```
+
 Mặc định server sẽ chạy trên `http://localhost:5000`
 
 ---
