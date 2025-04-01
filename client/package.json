@@ -36,9 +36,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "cd ../server && npm run dev",
-    "install-server": "cd ../server && npm install",        
-    "install-all": "npm install && npm run install-server"  
-
+    "install-server": "cd ../server && npm install",
+    "install-all": "npm install && npm run install-server"
   },
   "eslintConfig": {
     "extends": [

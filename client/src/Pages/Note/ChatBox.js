@@ -32,51 +32,8 @@ function ChatBox() {
       }
     }
 
-    async function fetchBotMessage() {
-
-      // Xây dựng prompt từ journal notes
-      let promptNote = "JOURNAL ENTRIES\n";
-      promptNote += "Below are the user's past journal entries for reference:\n\n";
-      
-      promptNote += notes
-        .map(({ date, mood, header, text }) => {
-          const d = new Date(date);
-          return `Date: ${d.toLocaleDateString()} | Mood: ${mood}\nTitle: "${header}"\nEntry: ${text}`;
-        })
-        .join("\n\n");
-      
-
-
-      try {
-        // Lấy chatId từ payload
-        const { chatId } = await getPayLoad();
-
-        // Gọi API của chroma_service với prompt tạo từ notes
-        const response = await axios.post(
-          "http://localhost:4000/api/chats/ai",
-          {
-            chatId: chatId,
-            message: promptNote,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const botText = response.data?.response || "No response";
-        const botMessage = { text: botText, role: "ai" };
-
-        // Lưu tin nhắn của bot vào chat
-        await addMessage({ message: botMessage });
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      } catch (error) {
-        console.error("Error fetching bot note summary:", error.message);
-      }
-    }
+   
     fetchMessages();
-    fetchBotMessage();
   }, []);
   
   const sendMessage = async () => {
