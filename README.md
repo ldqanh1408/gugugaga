@@ -267,7 +267,7 @@ Dưới đây là danh sách các tham số chính trong payload của API **lla
 
 ## Cách Sửa Tham Số
 
-1. **Mở file `app.py`**:
+1. **Mở file `chatbot_api.py`**:
    - Tìm hàm `call_llama` trong mã nguồn.
 
 2. **Sửa payload**:
@@ -289,9 +289,10 @@ Dưới đây là danh sách các tham số chính trong payload của API **lla
 3. **Lưu và chạy lại server**:
    - Sau khi sửa, lưu file và chạy lại server bằng lệnh:
      ```bash
-     python app.py
+     python chatbot_api.py
      ```
-
+   - chatbot_api.py sẽ khởi chạy server FastAPI trên cổng 4000.
+   - llama.cpp của bạn được khởi chạy trên cổng 8080.
 ---
 
 ## Ví Dụ Minh Họa
