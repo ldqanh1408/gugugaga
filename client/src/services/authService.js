@@ -25,7 +25,7 @@ export const register = async ({
     return response.data;
   } catch (error) {
     
-    console.error("Error fetching:", error);
+    console.error("Error fetching:", error?.response?.data?.errors);
     throw error;
   }
 };
@@ -101,7 +101,7 @@ export async function getPayLoad() {
 export async function changePassword({currentPassword, confirmNewPassword, newPassword, setError}) {
     try{
       if(newPassword !== confirmNewPassword){
-        setError("Đổi mật khẩu thất bại")
+        setError("Change password has failed")
         return { success: false, message: "Mật khẩu mới và mật khẩu xác nhận không khớp" };
       }
       const response = await axios.post(
@@ -117,6 +117,7 @@ export async function changePassword({currentPassword, confirmNewPassword, newPa
       return response.data;
     }
     catch(error){
+      setError("Change password has failed")
       console.error({message: error.message})
       return { success: false, message: error.message };
     }

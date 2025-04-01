@@ -25,6 +25,9 @@ function SignUp() {
   const [accountError, setAccountError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [userNameError, setUserNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,8 +49,15 @@ function SignUp() {
       console.log("You have successfully registered.");
       navigate("/login");
     } catch (error) {
+      if(email) {
+        setEmailError("Email can available")
+      }
+      if(phone){
+        setPhoneError("Phone number can available")
+      }
       setError("Registration has failed");
       console.error({ message: error.message });
+      
     }
     setLoading(false);
   };
@@ -195,8 +205,9 @@ function SignUp() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email..."
                 className="signup-box"
+
               ></Form.Control>
-              <Form.Text></Form.Text>
+              <Form.Text className="text-danger">{emailError}</Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
               <Form.Label className="signup-custom-h2-label">Phone:</Form.Label>
@@ -205,7 +216,7 @@ function SignUp() {
                 placeholder="Enter your phone number..."
                 className="signup-box"
               ></Form.Control>
-              <Form.Text></Form.Text>
+              <Form.Text className="text-danger">{phoneError}</Form.Text>
             </Form.Group>
           </div>
           {error && <p className="text-danger">{error}</p>}

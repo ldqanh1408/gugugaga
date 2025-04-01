@@ -14,6 +14,7 @@ function ChatBox() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const chatReference = useRef(null);
+
   const {notes} = useSelector((state) => state.notes);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -21,6 +22,7 @@ function ChatBox() {
       dispatch(fetchNotes());
     }
   }, [dispatch])
+
 
   useEffect(() => {
     async function fetchMessages() {
@@ -34,6 +36,7 @@ function ChatBox() {
 
    
     fetchMessages();
+
   }, []);
   
   const sendMessage = async () => {

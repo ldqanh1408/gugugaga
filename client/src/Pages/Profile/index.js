@@ -59,14 +59,14 @@ function Profile() {
                         <div className="row profile-stats align-items-center">
                             <div className="col text-center">
                                 <h3>{consecutiveDays}</h3>
-                                <p>days streak</p>
+                                <p>Number of days in streak  </p>
                             </div>
                             <div className="col-auto">
                                 <div className="divider"></div>
                             </div>
                             <div className="col text-center">
                                 <h3>{entries.length}</h3>
-                                <p>Number of difference days entries</p>
+                                <p>Number of days with different entries</p>
                             </div>
                         </div>
 

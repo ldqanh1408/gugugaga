@@ -35,7 +35,7 @@ const validateRegister = validate([
     .withMessage("Nickname is required.")
     .isLength({ min: 3, max: 30 })
     .withMessage("Nickname phải từ 3 đến 30 ký tự.")
-    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .matches(/^[\p{L}0-9 ._-]+$/u)
     .withMessage(
       "Nickname chỉ được chứa chữ cái, số, khoảng trắng, dấu gạch dưới (_), gạch ngang (-), và dấu chấm."
     ),
@@ -59,7 +59,7 @@ const validateRegister = validate([
     .withMessage("Password không được chứa khoảng trắng."),
 
   body("email")
-    .optional()
+    .optional({ checkFalsy: true }) // Bỏ qua cả "", null, undefined
     .isEmail()
     .withMessage("Invalid email format.")
     .custom(async (email) => {
@@ -72,7 +72,7 @@ const validateRegister = validate([
     }),
 
   body("phone")
-    .optional()
+    .optional({ checkFalsy: true }) // Bỏ qua cả "", null, undefined
     .isMobilePhone()
     .withMessage("Invalid phone number.")
     .custom(async (phone) => {

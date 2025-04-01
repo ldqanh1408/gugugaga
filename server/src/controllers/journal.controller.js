@@ -151,7 +151,6 @@ exports.deleteNote = async (req, res) => {
       { new: false } // Trả về document TRƯỚC khi cập nhật
     );
 
-    console.log("📜 Journal trước khi xóa:", journal);
 
     if (!journal) {
       return res.status(404).json({
