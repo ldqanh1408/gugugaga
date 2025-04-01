@@ -1,7 +1,7 @@
 # Gugugaga
 
 ## 📌 Giới thiệu
-**Gugugaga** là một ứng dụng hỗ trợ ghi nhật ký, trò chuyện và theo dõi tâm trạng cá nhân. Dự án sử dụng **Node.js, Express, MongoDB** để xây dựng backend API.
+**Gugugaga** là một ứng dụng hỗ trợ ghi nhật ký, trò chuyện với AI thấu hiểu cảm xúc và theo dõi tâm trạng cá nhân. Dự án sử dụng **Node.js, Express, MongoDB** để xây dựng backend API.
 
 ---
 
@@ -60,7 +60,10 @@ cd gugugaga
 
 Dự án yêu cầu MongoDB. Nếu chưa cài đặt, hãy tải về từ trang chính thức và làm theo hướng dẫn cài đặt tại https://www.mongodb.com/try/download/community
 phiên bản 6.0.21
-
+###📦 Yêu cầu hệ thống:
+- Node.js v18+
+- MongoDB 6.0.21
+- Python 3.10+ (cho AI model)
 
 ### 2️⃣ **Cài đặt dependencies**
 Vào thư mục **./client** và gõ lệnh
