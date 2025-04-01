@@ -9,7 +9,7 @@ Dự án website dùng FastAPI để xây dựng API cho chatbot với llama.cpp
 ## 📌 Công Nghệ Sử Dụng
 
 - **FastAPI**: Xây dựng API cho chatbot.
-- **llama.cpp**: Xử lý mô hình AI. ( hướng dẫn sử dụng [llama.cpp](https://github.com/ggml-org/llama.cpp) )
+- **llama.cpp**: Xử lý mô hình AI.
 - **MongoDB + PyMongo**: Lưu trữ hội thoại chatbot.
 - **ChromaDB + Sentence Transformers**: Tìm kiếm ngữ nghĩa.
 - **CUDA Toolkit**: Hỗ trợ GPU cho mô hình AI.
