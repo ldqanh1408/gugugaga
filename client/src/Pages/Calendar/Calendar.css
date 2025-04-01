@@ -1,0 +1,430 @@
+.custom-left {
+  background-color: #E8D9D1;
+  color: black;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1)
+}
+  
+.custom-right {
+  background-color: none; /* Màu xanh dương tùy chỉnh */
+  color: black;    
+  border-radius: 8px; 
+  border: none;
+  padding: none;
+  flex:1
+}
+
+.heading{
+  font-size: 50px;
+  text-indent: 15px;
+}
+
+.paragraph{
+  font-style: italic;
+  font-size: 25px;
+  text-indent: 15px;
+}
+
+.parent {
+  width: 100vw; /* Full màn hình */
+  justify-content: space-between;
+  padding: 0 2px; /* Cho khoảng cách nhỏ 2 bên */
+  min-height: 100vh;
+  margin-top: 48px;
+}
+
+/* Full width cho lịch */
+.react-datepicker {
+  width: 100% !important;  
+  height: auto;
+  padding: 20px;
+  font-size: 1.5rem;
+  border: none !important; 
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Header (tháng, năm) */
+.react-datepicker__header {
+  background-color: transparent !important;
+  color: black !important;
+  font-size: 2rem;
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;
+}
+
+/* Phần ngày trong lịch */
+.react-datepicker__day {
+  flex: 1; /* Đảm bảo các ô ngày co giãn đều */
+  max-width: 60px; /* Điều chỉnh kích thước tối đa */
+  height: 40px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 1.4rem;
+  margin: 0 5px; /* Tăng khoảng cách ngang */
+  border-radius: 8px;
+  padding: 5px 0 !important;  
+}
+
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-between; /* Căn đều các ngày */
+  gap: 50px; /* Tăng khoảng cách ngang giữa các ngày */
+}
+
+/* Dòng chứa thứ trong tuần */
+.react-datepicker__day-names {
+  display: flex;
+  justify-content: space-evenly; /* Chia đều khoảng cách */
+  width: 100%;
+  padding: 10px 0;
+  gap: 40px;
+}
+
+/* Ô thứ (Mon, Tue,...) */
+.react-datepicker__day-name {
+  flex: 1;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Khi chọn ngày */
+/* Chỉnh ô khi chọn thành hình tròn */
+.react-datepicker__day--selected {
+  border-radius: 50% !important; /* Tạo đường viền tròn */
+  background-color: #E5CAC2 !important; /* Thay đổi màu nền nếu cần */
+  color: white !important; /* Màu chữ cho ô ngày được chọn */
+  width: 36px !important; /* Chiều rộng của ô ngày */
+  height: 36px !important; /* Chiều cao của ô ngày */
+  line-height: 27px !important; /* Căn chỉnh chữ giữa */
+  text-align: center !important; /* Căn giữa chữ */
+  display: inline-block !important; /* Đảm bảo ô ngày giữ đúng hình dạng */
+}
+
+/* Khi chọn bằng bàn phím */
+.react-datepicker__day--keyboard-selected {
+    background-color: #CDACA0 !important;
+    border-radius: 50% !important;
+    width: 36px !important; /* Chiều rộng của ô ngày */
+    height: 36px !important; /* Chiều cao của ô ngày */
+    line-height: 27px !important; /* Căn chỉnh chữ giữa */
+    text-align: center !important; /* Căn giữa chữ */
+    display: inline-block !important; /* Đảm bảo ô ngày giữ đúng hình dạng */  
+}
+
+/* Chỉnh ô ngày khi di chuột qua (hover) */
+.react-datepicker__day:hover {
+  background-color: #e0e0e0 !important; /* Màu nền khi di chuột qua */
+  border-radius: 50% !important; /* Tạo hình tròn khi hover */
+  color: #000 !important; /* Màu chữ khi hover */
+  
+  line-height: 27px !important; /* Căn chỉnh chữ giữa */
+  text-align: center !important; /* Căn giữa chữ */
+  display: inline-block !important; /* Đảm bảo ô ngày giữ đúng hình dạng */  
+
+}
+
+.react-datepicker__navigation {
+  margin-top: 27px;
+}
+
+.react-datepicker__current-month {
+  display: none !important;
+}
+
+/* Làm nhạt các ngày không phải của tháng hiện tại */
+.react-datepicker__day--outside-month {
+  color: #999 !important;  /* Màu nhạt cho các ngày ngoài tháng hiện tại */
+  opacity: 0.6 !important;  /* Làm mờ thêm nếu cần */
+}
+
+.react-datepicker__year-read-view,
+.react-datepicker__month-read-view {
+  font-weight: bold !important; 
+  cursor: pointer;
+}
+
+.react-datepicker__month-read-view--down-arrow,
+.react-datepicker__year-read-view--down-arrow {
+    display: none !important; 
+}
+
+
+.react-datepicker__month-option,
+.react-datepicker__year-option {
+    font-size: 1.0rem !important;
+    padding: 8px 0 !important;  /* Tạo khoảng cách dọc giữa các mục */
+}
+
+.react-datepicker__month-dropdown {
+  max-height: 250px !important; /* Đảm bảo đủ không gian cho tất cả các tháng */
+  overflow-y: auto !important;  /* Thêm thanh cuộn nếu cần */
+}
+
+.react-datepicker__month-dropdown-container,
+.react-datepicker__year-dropdown-container {  
+  margin: 0 !important; /* Loại bỏ margin giữa các dropdown */
+  margin-right: 5px !important;
+  padding: 0 !important; /* Bỏ padding */
+  display: inline-flex; /* Đảm bảo các dropdown nằm cùng dòng */
+  align-items: center; /* Đặt các dropdown vào giữa nhau */
+}
+
+/* Điều chỉnh thêm khoảng cách và kích thước của các dropdown */
+.react-datepicker__month-dropdown,
+.react-datepicker__year-dropdown {
+  width: auto; /* Để dropdown co giãn tự động theo nội dung */
+  min-width: 60px; /* Đảm bảo chiều rộng đủ cho chữ */
+  font-size: 1rem; 
+}
+
+/* Đảm bảo DatePicker không bị vỡ layout khi zoom */
+.datepicker-wrapper {
+  max-width: 100%;
+  overflow: hidden;
+  display: block;
+}
+
+/* Bạn có thể điều chỉnh kích thước này sao cho phù hợp */
+.custom-datepicker-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Các style tùy chỉnh khác */
+.custom-datepicker {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.custom-card-title {
+  background-color: #CDACA0;  /* Màu xanh dương */
+  color: black;
+  font-weight: bold;
+  font-size: 20px;
+  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1)
+}
+
+.custom-card {
+  border: none;
+  background-color: #E8D9D1;
+  transition: all 0.3s ease-in-out;
+  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1)
+}
+
+.custom-card:hover {
+  transform: translateY(-3px); /* Đẩy nhẹ lên trên */
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng nổi */
+}
+
+.custom-card-content {
+  position: relative;
+  padding: 10px;
+}
+
+.card-header {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  font-size: 12px;
+  color: black;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-header {
+  background: transparent;
+  border: none;
+}
+
+.date-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.title-text {
+  font-size: 14px;
+  color: black;
+  margin-top: 2px;
+}
+
+.mood-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.mood-label {
+  font-size: 14px;
+  color: black;
+}
+
+.mood-icon {
+  font-size: 16px;
+  width: 16px;
+  height: auto;
+}
+
+.mood-icon.happy { color: black; }
+.mood-icon.neutral { color: black; }
+.mood-icon.sad { color: black; }
+
+.notification-container {
+  max-height: 500px; /* Giới hạn chiều cao, có thể chỉnh theo ý */
+  overflow-y: auto; /* Hiển thị thanh cuộn khi nội dung quá dài */
+  padding-right: 10px; /* Tạo khoảng trống tránh che nội dung */
+}
+
+/* Tùy chỉnh thanh cuộn (chỉ áp dụng trên Chrome, Edge) */
+.notification-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.notification-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+/* Giữ cho lịch không bị tràn ra khỏi màn hình */
+.custom-datepicker-container {
+  width: 100%; /* Đảm bảo lịch chiếm đủ không gian */
+  max-width: 100%; /* Tránh tràn ra ngoài */
+  display: flex;
+  justify-content: center;
+}
+
+
+.custom-datepicker {
+  width: 100%;
+  min-width: 280px; /* Đảm bảo không quá nhỏ */
+}
+/* Giới hạn kích thước của lịch */
+.react-datepicker {
+  max-width: 100%; /* Không vượt quá kích thước cột */
+  width: 280px; /* Kích thước cố định để tránh tràn */
+  min-width: 200px; /* Không nhỏ hơn mức này */
+}
+
+/* Điều chỉnh cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .custom-left {
+    width: 100%; /* Đảm bảo cột không bị cố định */
+    max-width: 100%;
+  }
+
+  .react-datepicker {
+    width: 100%; /* Để lịch không vượt ra ngoài màn hình */
+  }
+}
+
+/* Căn chỉnh nút Edit ở góc phải dưới */
+.history-edit-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: transparent;  /* Màu nền nút */
+  border: none;
+  padding: 10px;  /* Kích thước nút */
+  border-radius: 5px;  /* Bo góc của nút */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease-in-out; /* Thêm hiệu ứng chuyển màu */
+}
+
+/* Điều chỉnh biểu tượng trong nút để vừa với không gian */
+.history-edit-btn .edit-icon {
+  width: 20px;  /* Đặt kích thước icon */
+  height: 20px;  /* Đặt kích thước icon */
+  filter: brightness(2); /* Làm cho icon đậm hơn ngay từ ban đầu */
+}
+
+/* Thêm hiệu ứng hover cho nút Edit */
+.history-edit-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+  background-color: transparent;  /* Thay đổi màu nền khi hover */
+}
+
+.history-edit-btn:active {
+  opacity: 0.5; /* Làm nhạt nút khi nhấn */
+}
+
+/* Thêm hiệu ứng cho icon khi hover */
+.history-edit-btn:hover .edit-icon {
+  filter: brightness(1.2);  /* Làm sáng icon khi hover */
+}
+
+.filter-dropdown-container {
+  display: flex;
+  justify-content: flex-end; /* Đẩy filter sang góc phải */
+  align-items: center; /* Căn giữa icon với text */
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  padding: 5px;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important; /* Đổi màu nền */
+}
+
+.filter-btn img {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px; /* Khoảng cách giữa icon và text */
+}
+
+
+.dropdown-toggle::after {
+  display: none !important; /* Ẩn mũi tên mặc định của Bootstrap */
+}
+
+.dropdown-menu {
+  min-width: 100px !important; /* Đảm bảo kích thước đẹp */
+  width: fit-content !important;
+  height: fit-content !important;
+  background-color: white !important; /* Màu nền menu */
+  border: 1px solid #CDACA0 !important; /* Viền menu */
+}
+.dropdown-item:hover {
+  background-color: #E5CAC2 !important; /* Màu nền khi hover */
+  opacity: 0.4 !important; /*Giảm độ trong suốt khi hover*/
+}
+.dropdown-item.active {
+  background-color: #CDACA0 !important; /* Màu nền của mục đang chọn */
+  opacity: 0.8 !important;
+}
+.note-day::after {
+  content: "•";  /* Dấu chấm */
+  display: block;
+  font-size: 20px; 
+  line-height: 0;
+  color: black; /* Màu dấu chấm */
+  margin-top: 1px;
+  text-align: center;
+}

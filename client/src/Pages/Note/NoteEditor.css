@@ -1,0 +1,175 @@
+.note-editor-container {
+  width: 90vw;
+  max-width: 1200px;
+  height: 90vh;
+  max-height: 600px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #cdaca0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.mood {
+    margin-left: 8px;
+  display: inline-block;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+/* Màu sắc theo từng tâm trạng */
+.mood-neutral {
+  background-color: #ccc;
+}
+
+.mood-excited {
+  background-color: #ff9800; /* Cam */
+
+}
+
+.mood-angry {
+  background-color: #f44336; /* Đỏ */
+
+}
+
+.mood-happy {
+  background-color: #4caf50; /* Xanh lá */
+
+}
+
+.mood-sad {
+  background-color: #2196f3; /* Xanh dương */
+
+}
+
+.viewer-mode {
+  background-color: #ffffff; /* Xanh nhạt */
+  border: 2px dashed #cdaca0; /* Viền chấm xanh */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 20px 0px 0px 20px;
+
+  margin-left: 50px;
+  margin-right: 0;
+  margin-top: 30px;
+
+  width: 90vw;
+  max-width: 1200px;
+  height: 90vh;
+  max-height: 603px;
+}
+
+.viewer-diary {
+  font-size: 25px;
+  text-align: center;
+  background-color: #e5cac2 !important;
+  color: white;
+  display: inline-block;
+  width: auto; /* Không bị kéo dài */
+  max-width: fit-content; /* Chỉ rộng theo nội dung */
+  border-radius: 8px;
+  margin: auto;
+  margin-top: 0px !important;
+  padding: 0px 30px 0px 30px !important;
+  margin-bottom: 50px;
+}
+
+.note-diary {
+  font-size: 65px;
+  text-align: center;
+  background-color: #e8d9d1;
+  color: white;
+  display: inline-block;
+  width: auto; /* Không bị kéo dài */
+  max-width: fit-content; /* Chỉ rộng theo nội dung */
+  border-radius: 8px;
+  margin: auto;
+  margin-top: -40px;
+  padding: 0px 30px 0px 30px;
+  margin-bottom: 50px;
+}
+
+.note-title,
+.note-date,
+.note-content {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.note-title {
+  border: none;
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
+  padding-bottom: 0px;
+  outline: none;
+}
+
+.note-line {
+  border: solid 2px #a87f70;;
+  background-color: #a87f70;
+  width: 25%; /* Chỉ dài 1/4 màn hình */
+  margin-left: 9px;
+}
+
+.date-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: fit-content; /* Tùy chỉnh chiều rộng */
+}
+
+.note-date {
+  outline: none;
+  border: none;
+  padding: 8px 40px 8px 10px; /* Để chừa chỗ cho icon */
+  font-size: 16px;
+}
+
+.note-content {
+  min-height: 150px;
+  outline: none;
+  resize: vertical;
+  border: none;
+  max-height: 500px; /* Độ cao tối đa (tuỳ chỉnh) */
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* Đẩy nội dung về bên phải */
+}
+
+.save-btn {
+  background: #e5cac2;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-top: 15px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow:
+    inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
+    inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  width: auto; /* Không bị kéo dài */
+  max-width: fit-content; /* Chỉ rộng theo nội dung */
+  transition: all 0.2s ease-in-out; /* Hiệu ứng mượt */
+}
+
+.save-btn:hover {
+  background: #e5cac2;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+  transform: translateY(-2px); /* Nhấc nút lên một chút */
+}

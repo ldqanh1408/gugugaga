@@ -1,0 +1,154 @@
+.note-viewer-container {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+  }
+  
+.note-viewer {
+    width: 90vw;
+    max-width: 1200px;
+    height: 90vh;
+    max-height: 600px;
+    border: 2px solid #CDACA0;
+    border-radius: 10px;
+    background-color: white;
+    border-radius: 20px 0px 0px 20px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0px;
+    margin-top: 30px;
+    margin-left: 50px !important;
+    box-sizing: content-box;
+    overflow: hidden; /* Chặn tràn */
+}
+  
+.toolbar {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    background-color: #E5CAC2;
+    position: relative;
+}
+
+.toolbar .btn {
+    background-color: transparent !important;
+    padding: 0px 15px 15px 5px;
+    font-size: 18px;
+    color: #E8D9D1;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;  
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.toolbar .btn:hover {
+    border: transparent;
+    background-color: transparent;
+    color: white;
+    text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3); /* Bóng đổ */;
+}
+
+.note-viewer-data {
+    flex: 1;
+    padding: 15px;
+    overflow: auto;
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.edit-btn {
+    position:absolute;
+    right: 10px !important;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.create-btn{
+    position:absolute;
+    right: 70px !important;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Giữ nút tam giác ở giữa */
+.triangle-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+  
+.edit-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}
+
+.create-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}
+
+.edit-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.note-viewer-title, .note-viewer-date, .note-viewer-content {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+.note-viewer-title {
+    border: none;
+    font-size: 30px;
+    font-weight: bold;
+    color: black;
+    padding-bottom: 0px;
+    outline: none;
+    padding-top: 20px;
+}
+
+.note-viewer-line {
+    border: solid 2px #a87f70;;
+    width: 25%; /* Chỉ dài 1/4 màn hình */
+    height: 2px;
+    margin-left: 9px;
+}
+
+.date-viewer-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content; /* Tùy chỉnh chiều rộng */
+}
+
+.note-viewer-date {
+    outline: none;
+    border: none;
+    padding: 8px 40px 8px 10px; /* Để chừa chỗ cho icon */
+    font-size: 16px;
+}
+
+.note-viewer-content {
+    min-height: 150px;
+    outline: none;
+    resize: vertical;
+    border: none;
+    max-height: 500px; /* Độ cao tối đa (tuỳ chỉnh) */
+}
+
+.create-icon {
+    width: 28px;
+}
