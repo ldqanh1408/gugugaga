@@ -5,10 +5,6 @@
 
 ---
 
-## 📌 Hướng dẫn clone nhánh
-Đối với chặng 2: Clone code và chuyển sang nhánh develop để đảm bảo đồng bộ với phiên bản mới nhất.
-
----
 
 ## 🚀 Công nghệ sử dụng
 - **Node.js & Express.js** - Xây dựng server backend
