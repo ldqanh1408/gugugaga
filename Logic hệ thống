@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.2.8" pages="2">
   <diagram name="User" id="b5b7bab2-c9e2-2cf4-8b2a-24fd1a2a6d21">
-    <mxGraphModel dx="1305" dy="659" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+    <mxGraphModel dx="746" dy="376" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -35,10 +35,13 @@
           <mxGeometry x="96" y="2" width="15" height="20" as="geometry" />
         </mxCell>
         <mxCell id="6e0c8c40b5770093-15" value="Calendar" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" parent="6e0c8c40b5770093-18" vertex="1">
-          <mxGeometry x="18" y="40" width="112" height="70" as="geometry" />
+          <mxGeometry x="18" y="40" width="62" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="6e0c8c40b5770093-17" value="package" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" parent="6e0c8c40b5770093-18" vertex="1">
-          <mxGeometry x="148" y="40" width="112" height="70" as="geometry" />
+        <mxCell id="n6fdoUSvsbZC3zwNou3q-7" value="Chat" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="6e0c8c40b5770093-18">
+          <mxGeometry x="168.5" y="40" width="72" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="6e0c8c40b5770093-17" value="Notes" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" parent="6e0c8c40b5770093-18" vertex="1">
+          <mxGeometry x="88.5" y="40" width="70" height="50" as="geometry" />
         </mxCell>
         <mxCell id="6e0c8c40b5770093-19" value="" style="group" parent="1" vertex="1" connectable="0">
           <mxGeometry x="685.5" y="298.5" width="280" height="130" as="geometry" />
