@@ -165,10 +165,10 @@
         <mxCell id="Ng671gL0gMtP23MLKsal-2" value="Expert Nhận Yêu Cầu&lt;br&gt;&lt;div&gt;-&amp;gt;Nếu có nhiều user&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;chọn cùng giờ&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;-&amp;gt;Expert &lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;chọn 1 (accept)&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;và từ chối (reject)&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;các user còn lại&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="uOsghLbsVyObCoIhMdrT-14">
           <mxGeometry x="30" y="310" width="440" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="NcR1TO-edCXDqEVRhvwL-44" value="" style="endArrow=block;dashed=1;endFill=0;endSize=12;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;" parent="1" target="uOsghLbsVyObCoIhMdrT-14" edge="1">
+        <mxCell id="NcR1TO-edCXDqEVRhvwL-44" value="" style="endArrow=block;dashed=1;endFill=0;endSize=12;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0;exitDx=210;exitDy=49.25;exitPerimeter=0;" parent="1" target="uOsghLbsVyObCoIhMdrT-14" edge="1" source="uOsghLbsVyObCoIhMdrT-4">
           <mxGeometry width="160" relative="1" as="geometry">
-            <mxPoint x="1110" y="207.16" as="sourcePoint" />
-            <mxPoint x="1270" y="207.16" as="targetPoint" />
+            <mxPoint x="1220" y="180" as="sourcePoint" />
+            <mxPoint x="1355" y="272.84" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Khz6z7zNxV7vULcjlyF0-1" value="dispatch data" style="html=1;verticalAlign=bottom;startArrow=oval;startFill=1;endArrow=block;startSize=8;rounded=0;exitX=0;exitY=0;exitDx=0;exitDy=43.5;exitPerimeter=0;entryX=0;entryY=0;entryDx=0;entryDy=33.5;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="6e0c8c40b5770093-8" target="n6fdoUSvsbZC3zwNou3q-7" edge="1">
