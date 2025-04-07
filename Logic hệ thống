@@ -220,10 +220,10 @@
           <mxGeometry x="180" y="-332.75" width="370" height="130" as="geometry" />
         </mxCell>
         <mxCell id="lLePIw5t_YZid9sZvBRh-9" value="&lt;font&gt;Account Status Control&lt;/font&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="200" y="-285.5" width="150" height="60" as="geometry" />
+          <mxGeometry x="200" y="-300" width="140" height="74.5" as="geometry" />
         </mxCell>
-        <mxCell id="lLePIw5t_YZid9sZvBRh-10" value="&lt;font&gt;Expert Credential Management&lt;/font&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="360" y="-290" width="180" height="64.5" as="geometry" />
+        <mxCell id="lLePIw5t_YZid9sZvBRh-10" value="&lt;font&gt;Expert Credential &lt;br&gt;Management&lt;/font&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="360" y="-300" width="140" height="74.5" as="geometry" />
         </mxCell>
         <mxCell id="Qv0SVJgoGlbbWi6DXuRC-0" value="" style="group" vertex="1" connectable="0" parent="rsIdNNMoYSBkg6oJDMqt-1">
           <mxGeometry x="650" y="-260" width="340" height="110" as="geometry" />
@@ -231,11 +231,11 @@
         <mxCell id="Qv0SVJgoGlbbWi6DXuRC-1" value="" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="Qv0SVJgoGlbbWi6DXuRC-0">
           <mxGeometry width="340" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="Qv0SVJgoGlbbWi6DXuRC-2" value="Expert Feedback &amp;amp; Ratings" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="Qv0SVJgoGlbbWi6DXuRC-0">
-          <mxGeometry x="9.714285714285714" y="33.84333333333333" width="174.85714285714286" height="49.35333333333333" as="geometry" />
+        <mxCell id="Qv0SVJgoGlbbWi6DXuRC-2" value="Expert &lt;br&gt;Feedback &amp;amp; Ratings" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="Qv0SVJgoGlbbWi6DXuRC-0">
+          <mxGeometry x="9.71" y="33.84" width="140.29" height="56.16" as="geometry" />
         </mxCell>
         <mxCell id="Qv0SVJgoGlbbWi6DXuRC-3" value="&lt;strong data-end=&quot;206&quot; data-start=&quot;192&quot;&gt;Center Complaints&lt;/strong&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="Qv0SVJgoGlbbWi6DXuRC-0">
-          <mxGeometry x="194.28571428571428" y="34.54" width="116.57142857142857" height="48.656666666666666" as="geometry" />
+          <mxGeometry x="190" y="34.54" width="120.86" height="55.46" as="geometry" />
         </mxCell>
         <mxCell id="txdYJdein0FkU9xZtjq_-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=61.5;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="NSZ74dJr7P-wyv8yF8Ft-2" target="lLePIw5t_YZid9sZvBRh-7">
           <mxGeometry relative="1" as="geometry">
