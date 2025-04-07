@@ -143,9 +143,9 @@
             <mxPoint x="700" y="239.75" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="uOsghLbsVyObCoIhMdrT-14" value="Therapy booking" style="swimlane;startSize=30;horizontal=1;containerType=tree;" parent="1" vertex="1">
-          <mxGeometry x="1150" y="130" width="490" height="510" as="geometry">
-            <mxRectangle x="1120" y="110" width="130" height="30" as="alternateBounds" />
+        <mxCell id="uOsghLbsVyObCoIhMdrT-14" value="Therapy booking" style="swimlane;startSize=30;horizontal=1;containerType=tree;" parent="1" collapsed="1" vertex="1">
+          <mxGeometry x="1160" y="50" width="130" height="30" as="geometry">
+            <mxRectangle x="1150" y="130" width="490" height="510" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="NcR1TO-edCXDqEVRhvwL-31" value="So Khớp Thời Gian&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;-&amp;gt;Tìm các khung&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;giờ&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;trống (giờ nguyên)&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="uOsghLbsVyObCoIhMdrT-14" vertex="1">
