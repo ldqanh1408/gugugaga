@@ -253,7 +253,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="o9YtEUzSz80TwAcrVRlV" name="Expert">
-    <mxGraphModel dx="2635" dy="928" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1391" dy="714" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -290,49 +290,25 @@
         <mxCell id="O6Tkq6QOcR4LD9eSjBQ9-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=25;entryDy=0;entryPerimeter=0;" parent="1" source="8i9zI-NPkBkHpMcjtYSA-2" target="O6Tkq6QOcR4LD9eSjBQ9-5" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="KFF-wmWKnxwPRv6kVsOy-1" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Schedule&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Module1:&amp;nbsp;&lt;span style=&quot;text-align: center;&quot;&gt;Xem danh sách người dùng booking requests&lt;/span&gt;&lt;br&gt;+ Module2:&amp;nbsp;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Xem danh sách lịch sắp tới của Expert&lt;/span&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="-20" y="550" width="480" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="KFF-wmWKnxwPRv6kVsOy-2" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KFF-wmWKnxwPRv6kVsOy-1">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
+        <mxCell id="KFF-wmWKnxwPRv6kVsOy-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=25;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="ZbVbK-oc_AZdop2ZSoDe-2" target="58N8Vt9ccR1CgXdbgYvr-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="220" y="550" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="KFF-wmWKnxwPRv6kVsOy-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZbVbK-oc_AZdop2ZSoDe-2" target="KFF-wmWKnxwPRv6kVsOy-1">
+        <mxCell id="58N8Vt9ccR1CgXdbgYvr-1" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="90" y="700" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="58N8Vt9ccR1CgXdbgYvr-2" value="View list of users booking requests" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="58N8Vt9ccR1CgXdbgYvr-1">
+          <mxGeometry x="8.86" width="221.14" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="58N8Vt9ccR1CgXdbgYvr-3" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="320" y="700" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="58N8Vt9ccR1CgXdbgYvr-4" value="View Expert&#39;s upcoming schedule list" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="58N8Vt9ccR1CgXdbgYvr-3">
+          <mxGeometry x="8.86" width="221.14" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="58N8Vt9ccR1CgXdbgYvr-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=25;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="ZbVbK-oc_AZdop2ZSoDe-2" target="58N8Vt9ccR1CgXdbgYvr-2">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-1" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Profile&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Module1:&amp;nbsp;&lt;span style=&quot;text-align: center;&quot;&gt;Xem profile của Expert&lt;/span&gt;&lt;br&gt;+ Module2: ...&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="238.43" y="830" width="480" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-2" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="1IgxZeGJ0d422dChCC5K-1">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="O6Tkq6QOcR4LD9eSjBQ9-2" target="1IgxZeGJ0d422dChCC5K-1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="1IgxZeGJ0d422dChCC5K-4" target="1IgxZeGJ0d422dChCC5K-7">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-4" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;History Feedback &amp;amp; Rating&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Module1:&amp;nbsp;&lt;span style=&quot;text-align: center;&quot;&gt;History&lt;/span&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="534" y="480" width="346" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-5" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="1IgxZeGJ0d422dChCC5K-4">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="O6Tkq6QOcR4LD9eSjBQ9-5" target="1IgxZeGJ0d422dChCC5K-4">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-7" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;History&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Attribute1: Feedback &amp;amp; Ratings tại buổi đó&lt;br&gt;+ Attribute2: Bản hướng dẫn trị liệu cho user&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="690" y="730" width="290" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="1IgxZeGJ0d422dChCC5K-8" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="1IgxZeGJ0d422dChCC5K-7">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
