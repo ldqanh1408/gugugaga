@@ -197,7 +197,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Company" id="ik6ThdKGHfbb2ATyfyLA">
-    <mxGraphModel dx="1391" dy="1883" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1644" dy="2013" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
       <root>
         <mxCell id="rsIdNNMoYSBkg6oJDMqt-0" />
         <mxCell id="rsIdNNMoYSBkg6oJDMqt-1" parent="rsIdNNMoYSBkg6oJDMqt-0" />
@@ -231,9 +231,6 @@
         <mxCell id="lLePIw5t_YZid9sZvBRh-9" value="&lt;font&gt;Account Status Control&lt;/font&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="rsIdNNMoYSBkg6oJDMqt-1" vertex="1">
           <mxGeometry x="200" y="-300" width="140" height="74.5" as="geometry" />
         </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="lLePIw5t_YZid9sZvBRh-10" target="KBvbLcen2_ND7CDiV-_I-0">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="lLePIw5t_YZid9sZvBRh-10" value="&lt;font&gt;Expert Credential &lt;br&gt;Management&lt;/font&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="rsIdNNMoYSBkg6oJDMqt-1" vertex="1">
           <mxGeometry x="360" y="-300" width="140" height="74.5" as="geometry" />
         </mxCell>
@@ -262,20 +259,29 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="btrLAyaF8juZNT3Tg8To-5" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Account&#39;s Expert Control&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Attribute 1:&amp;nbsp;&lt;span style=&quot;text-align: center;&quot;&gt;Quản lý cho phép Expert hoạt động, tạn nghỉ, khóa tài khoản.&lt;/span&gt;&lt;br&gt;+ Attribute 2:&amp;nbsp;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Cấp tài khoản và xóa tài khoản của Expert&lt;/span&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="520" y="110" width="430" height="90" as="geometry" />
+          <mxGeometry x="10" y="560" width="430" height="90" as="geometry" />
         </mxCell>
         <mxCell id="btrLAyaF8juZNT3Tg8To-6" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="btrLAyaF8juZNT3Tg8To-5">
           <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
             <mxPoint x="-24" y="4" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-0" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;Expert Credential Management&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;&lt;/p&gt;&lt;div style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+ Module1: Danh sách Expert&lt;/span&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="420" y="-110" width="280" height="90" as="geometry" />
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-0" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Expert Credential Management&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;&lt;/p&gt;&lt;div style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;text-align: left;&quot;&gt;Attribute&amp;nbsp;1&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;: Lưu hồ sơ Expert&lt;/span&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="557" y="500" width="280" height="90" as="geometry" />
         </mxCell>
         <mxCell id="KBvbLcen2_ND7CDiV-_I-1" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-0">
           <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
             <mxPoint x="-24" y="4" as="offset" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-4" target="btrLAyaF8juZNT3Tg8To-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-4" target="KBvbLcen2_ND7CDiV-_I-0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-4" target="KBvbLcen2_ND7CDiV-_I-19">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="KBvbLcen2_ND7CDiV-_I-4" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Expert List&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Module 1:&amp;nbsp;&lt;span style=&quot;text-align: center;&quot;&gt;Account&#39;s Expert Control&lt;/span&gt;&lt;br&gt;+ Module 2:&amp;nbsp;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Expert Credential Management&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px 0px 0px 8px;&quot;&gt;+ Module 3:&lt;font&gt;&amp;nbsp;&lt;span style=&quot;font-family: Verdana; text-align: center; text-wrap-mode: nowrap; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Expert&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-family: Verdana; text-align: center; text-wrap-mode: nowrap; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Feedback &amp;amp; Ratings&lt;/span&gt;&lt;/font&gt;&lt;/p&gt;&lt;div&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
           <mxGeometry x="370" y="270" width="300" height="90" as="geometry" />
@@ -305,10 +311,27 @@
         <mxCell id="KBvbLcen2_ND7CDiV-_I-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=55;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-10" target="KBvbLcen2_ND7CDiV-_I-11">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-14" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Accp&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Attribute1: Type&lt;br&gt;+ Attribute2: Type&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="430" y="440" width="180" height="90" as="geometry" />
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-19" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Expert Feedback &amp;amp; Ratings&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;&lt;/p&gt;&lt;div style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;text-align: left;&quot;&gt;Attribute&amp;nbsp;1&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;: Xem Feedback &amp;amp; Ratings&lt;/span&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="760" y="350" width="280" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-15" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-14">
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-20" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-19">
+          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
+            <mxPoint x="-24" y="4" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-22" target="KBvbLcen2_ND7CDiV-_I-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-22" value="&lt;strong data-end=&quot;206&quot; data-start=&quot;192&quot;&gt;Complaints&lt;/strong&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="413" y="90" width="120.86" height="65.46" as="geometry" />
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=25;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-10" target="KBvbLcen2_ND7CDiV-_I-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-24" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Complaints&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Module 1: Xem danh sách khiếu nại và phản hồi&lt;br&gt;&lt;br&gt;&lt;/p&gt;&lt;div&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="580" y="130" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="KBvbLcen2_ND7CDiV-_I-25" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-24">
           <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
             <mxPoint x="-24" y="4" as="offset" />
           </mxGeometry>
