@@ -197,70 +197,20 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Company" id="ik6ThdKGHfbb2ATyfyLA">
-    <mxGraphModel dx="1644" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1391" dy="714" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
       <root>
         <mxCell id="rsIdNNMoYSBkg6oJDMqt-0" />
         <mxCell id="rsIdNNMoYSBkg6oJDMqt-1" parent="rsIdNNMoYSBkg6oJDMqt-0" />
         <mxCell id="rsIdNNMoYSBkg6oJDMqt-19" value="" style="group" parent="rsIdNNMoYSBkg6oJDMqt-1" vertex="1" connectable="0">
           <mxGeometry x="963.5" y="20" width="230" height="480" as="geometry" />
         </mxCell>
-        <mxCell id="rsIdNNMoYSBkg6oJDMqt-41" value="package" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" parent="rsIdNNMoYSBkg6oJDMqt-1" vertex="1">
-          <mxGeometry y="1100" width="108.5" height="55.5" as="geometry" />
-        </mxCell>
-        <mxCell id="btrLAyaF8juZNT3Tg8To-5" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Account&#39;s Expert Control&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Attribute 1:&amp;nbsp;&lt;span style=&quot;text-align: center;&quot;&gt;Quản lý cho phép Expert hoạt động, tạn nghỉ, khóa tài khoản.&lt;/span&gt;&lt;br&gt;+ Attribute 2:&amp;nbsp;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Cấp tài khoản và xóa tài khoản của Expert&lt;/span&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="10" y="560" width="430" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="btrLAyaF8juZNT3Tg8To-6" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="btrLAyaF8juZNT3Tg8To-5">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-0" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Expert Credential Management&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;&lt;/p&gt;&lt;div style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;text-align: left;&quot;&gt;Attribute&amp;nbsp;1&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;: Lưu hồ sơ Expert&lt;/span&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="557" y="500" width="280" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-1" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-0">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-4" target="btrLAyaF8juZNT3Tg8To-5">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-4" target="KBvbLcen2_ND7CDiV-_I-0">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-4" target="KBvbLcen2_ND7CDiV-_I-19">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-4" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Expert List&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Module 1:&amp;nbsp;&lt;span style=&quot;text-align: center;&quot;&gt;Account&#39;s Expert Control&lt;/span&gt;&lt;br&gt;+ Module 2:&amp;nbsp;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Expert Credential Management&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px 0px 0px 8px;&quot;&gt;+ Module 3:&lt;font&gt;&amp;nbsp;&lt;span style=&quot;font-family: Verdana; text-align: center; text-wrap-mode: nowrap; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Expert&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-family: Verdana; text-align: center; text-wrap-mode: nowrap; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Feedback &amp;amp; Ratings&lt;/span&gt;&lt;/font&gt;&lt;/p&gt;&lt;div&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="370" y="270" width="300" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-5" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-4">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="KBvbLcen2_ND7CDiV-_I-10" value="&lt;font&gt;Company&lt;/font&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
           <mxGeometry x="100" y="80" width="110" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-11" target="KBvbLcen2_ND7CDiV-_I-4">
-          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="KBvbLcen2_ND7CDiV-_I-11" value="Expert List" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
           <mxGeometry x="190" y="270" width="110" height="60" as="geometry" />
         </mxCell>
         <mxCell id="KBvbLcen2_ND7CDiV-_I-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=55;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-10" target="KBvbLcen2_ND7CDiV-_I-11">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-19" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Expert Feedback &amp;amp; Ratings&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;&lt;/p&gt;&lt;div style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;text-align: left;&quot;&gt;Attribute&amp;nbsp;1&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;: Xem Feedback &amp;amp; Ratings&lt;/span&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="760" y="350" width="280" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-20" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-19">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-22" target="KBvbLcen2_ND7CDiV-_I-24">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="KBvbLcen2_ND7CDiV-_I-22" value="&lt;strong data-end=&quot;206&quot; data-start=&quot;192&quot;&gt;Complaints&lt;/strong&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=50;tabHeight=17;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
@@ -269,13 +219,35 @@
         <mxCell id="KBvbLcen2_ND7CDiV-_I-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=25;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-10" target="KBvbLcen2_ND7CDiV-_I-22">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-24" value="&lt;p style=&quot;margin:0px;margin-top:6px;text-align:center;&quot;&gt;&lt;b&gt;Complaints&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Module 1: Xem danh sách khiếu nại và phản hồi&lt;br&gt;&lt;br&gt;&lt;/p&gt;&lt;div&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="align=left;overflow=fill;html=1;dropTarget=0;whiteSpace=wrap;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
-          <mxGeometry x="580" y="130" width="300" height="90" as="geometry" />
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-2" value="&lt;span style=&quot;font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;Account&#39;s&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Expert&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;&amp;nbsp;Control&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="90" y="390" width="160" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="KBvbLcen2_ND7CDiV-_I-25" value="" style="shape=component;jettyWidth=8;jettyHeight=4;" vertex="1" parent="KBvbLcen2_ND7CDiV-_I-24">
-          <mxGeometry x="1" width="20" height="20" relative="1" as="geometry">
-            <mxPoint x="-24" y="4" as="offset" />
-          </mxGeometry>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=61.5;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-11" target="4hTcYnKiSYdFt-JyZK4s-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=61.5;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-11" target="4hTcYnKiSYdFt-JyZK4s-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-6" value="&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 12px; font-weight: 400; background-color: transparent;&quot;&gt;Expert&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 12px; font-weight: 400; background-color: transparent;&quot;&gt;Feedback &amp;amp; Ratings&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="680" y="320" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=61.5;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="KBvbLcen2_ND7CDiV-_I-11" target="4hTcYnKiSYdFt-JyZK4s-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-8" value="&lt;font face=&quot;Helvetica&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;Manage&amp;nbsp;&lt;/span&gt;&lt;/font&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400; text-wrap-mode: wrap; font-family: Helvetica; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Expert&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;permissions&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400; text-wrap-mode: wrap; font-family: Helvetica; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(activity,&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); text-wrap-mode: wrap; font-size: 12px; font-weight: 400; font-family: Helvetica;&quot;&gt;leave,&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); text-wrap-mode: wrap; font-size: 12px; font-weight: 400; font-family: Helvetica;&quot;&gt;account&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); text-wrap-mode: wrap; font-family: Helvetica; font-size: 12px; font-weight: 400;&quot;&gt;lock).&lt;/span&gt;&lt;/div&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry y="570" width="296.57" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=61.5;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="4hTcYnKiSYdFt-JyZK4s-2" target="4hTcYnKiSYdFt-JyZK4s-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-10" value="&lt;font face=&quot;Helvetica&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;Provide&lt;/span&gt;&lt;/font&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400; text-wrap-mode: wrap; font-family: Helvetica; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;account&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;and&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;delete&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;Expert&#39;s&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;account&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="610" y="750" width="296.57" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=61.5;entryDy=0;entryPerimeter=0;" edge="1" parent="rsIdNNMoYSBkg6oJDMqt-1" source="4hTcYnKiSYdFt-JyZK4s-2" target="4hTcYnKiSYdFt-JyZK4s-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4hTcYnKiSYdFt-JyZK4s-4" value="&lt;span style=&quot;font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;Expert&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Credential&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-family: Helvetica; font-size: 12px; font-weight: 400; text-wrap-mode: wrap;&quot;&gt;Managemen&lt;/span&gt;" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;" vertex="1" parent="rsIdNNMoYSBkg6oJDMqt-1">
+          <mxGeometry x="350" y="400" width="200" height="90" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
