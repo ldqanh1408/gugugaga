@@ -55,7 +55,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/chats", chatRoutes);
 app.use("/api/v1/journals", journalRoutes);
 app.use("/api/v1/backup", backupRoutes);
-app.use("/api/v1", authRoutes);
+app.use("/api", authRoutes);
 
 // Middleware xử lý lỗi
 app.use(require("./src/middleware/errorHandler"));
