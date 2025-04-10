@@ -1,5 +1,6 @@
 const Expert = require("../models/expert.model");
 const Business = require("../models/business.model")
+const Treatment = require("../models/treatment.model")
 const bcrypt = require("bcrypt")
 const mongoose = require("mongoose")
 async function hashPassword(password) {
@@ -26,7 +27,7 @@ exports.addExpert = async (req, res) => {
     const role = "EXPERT";
     const number_of_treatment = 0;
     const newExpert = new Expert({
-      account, 
+      account,
       password,
       expert_name,
       gendar,
@@ -69,4 +70,8 @@ exports.getTreatment = async (req, res) => {
     catch(error){
         return res.status(500).json({ success: false, message: error.message });
     }
+}
+
+exports.getAvailableExperts = async (req, res) => {
+
 }

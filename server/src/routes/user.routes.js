@@ -6,6 +6,7 @@ const {
   getUser,
   loadProfile,
   uploadProfile,
+  getTreatment,
 } = require("../controllers/user.controller");
 const {
   upload,
@@ -14,10 +15,11 @@ const {
 const { authenticateJWT } = require("../middleware");
 
 // Định nghĩa route
-router.get("/", getUsers);
-router.delete("/:userId", deleteUser);
+router.get("/v1/users", getUsers);
+router.delete("/v1/users/:userId", deleteUser);
 router.get("/:userId", getUser);
-router.post("/upload", upload.single("avatar"), uploadAvatar); // Route upload ảnh
-router.get("/load-profile/:userId", loadProfile);
-router.patch("/upload-profile/:userId", uploadProfile);
+router.post("/v1/users/upload", upload.single("avatar"), uploadAvatar); // Route upload ảnh
+router.get("/v1/users/me/treatments", authenticateJWT, getTreatment);
+router.get("/v1/users/load-profile/:userId", loadProfile);
+router.patch("/v1/users/upload-profile/:userId", uploadProfile);
 module.exports = router;

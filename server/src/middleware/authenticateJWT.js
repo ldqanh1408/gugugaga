@@ -1,4 +1,4 @@
-const {verifyToken, verifyTokenForBusiness} = require("../utils/jwtHelper")
+const {verifyToken, verifyTokenForBusiness, verifyTokenForExpert} = require("../utils/jwtHelper")
 const dotenv = require("dotenv");
 dotenv.config();
 const authenticateJWT = async (req, res, next) => {

@@ -86,7 +86,7 @@ function Calendar() {
         return <AngryIcon className="mood-icon" />;
       default:
         return null;
-    }brbr
+    }
   };
 
   const displayedNotes = filterMode === "all" ? notes : filteredNotes;

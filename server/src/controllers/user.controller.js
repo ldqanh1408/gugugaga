@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
+const Treatment = require("../models/treatment.model");
 const bcrypt = require("bcrypt");
 
 async function hashPassword(password) {
@@ -140,4 +141,20 @@ exports.uploadProfile = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
+  
 };
+
+
+exports.getTreatment = async (req, res) => {
+    try{
+        let {_id} = req.user;
+        const user = await User.findOne({_id: _id});
+        if(!user) return res.status(404).json({success: false, message: "Found not user"})
+          console.log(user);
+        const treatments = await Treatment.find({user_id: _id});
+        return res.status(200).json({success:true, treatments});
+    }
+    catch(error){
+        return res.status(500).json({ success: false, message: error.message });
+    }
+}

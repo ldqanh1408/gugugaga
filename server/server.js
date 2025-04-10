@@ -54,7 +54,7 @@ const {
   treatmentRoutes,
 } = require("./src/routes");
 
-app.use("/api/v1/users", userRoutes);
+app.use("/api", userRoutes);
 app.use("/api/v1/chats", chatRoutes);
 app.use("/api/v1/journals", journalRoutes);
 app.use("/api/v1/backup", backupRoutes);
