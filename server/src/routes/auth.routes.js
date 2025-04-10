@@ -245,36 +245,8 @@ router.post("/v2/register", async (req, res) => {
       });
 
       await newBusiness.save();
-    } else if (role === "EXPERT") {
-      let {
-        account,
-        password,
-        expertName,
-        gendar,
-        role,
-        number_of_treatment,
-        diploma_url,
-        business_id,
-        avatar_url,
-      } = req.body;
-
-      password = await hashPassword(password);
-      business_id = new mongoose.Types.ObjectId(business_id);
-
-      const newExpert = new Expert({
-        account,
-        password,
-        expertName,
-        gendar,
-        role,
-        number_of_treatment,
-        diploma_url,
-        business_id,
-        avatar_url,
-      });
-
-      await newExpert.save();
     }
+
     return res
       .status(200)
       .json({ success: true, message: "Register successfully" });

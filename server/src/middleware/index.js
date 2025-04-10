@@ -1,4 +1,4 @@
-const {authenticateJWT, authenticateBusinessJWT} = require("./authenticateJWT");
+const {authenticateJWT, authenticateBusinessJWT, authenticateExpertJWT} = require("./authenticateJWT");
 const {
   validateUser,
   validateLogin,
@@ -12,5 +12,6 @@ module.exports = {
   validateLogin,
   validateMessage,
   validateNote,
-  authenticateBusinessJWT
+  authenticateBusinessJWT,
+  authenticateExpertJWT
 };

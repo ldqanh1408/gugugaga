@@ -49,6 +49,9 @@ const {
   journalRoutes,
   authRoutes,
   backupRoutes,
+  expertRoutes,
+  businessRoutes,
+  treatmentRoutes,
 } = require("./src/routes");
 
 app.use("/api/v1/users", userRoutes);
@@ -56,7 +59,9 @@ app.use("/api/v1/chats", chatRoutes);
 app.use("/api/v1/journals", journalRoutes);
 app.use("/api/v1/backup", backupRoutes);
 app.use("/api", authRoutes);
-
+app.use("/api", expertRoutes);
+app.use("/api", businessRoutes);
+app.use("/api", treatmentRoutes);
 // Middleware xử lý lỗi
 app.use(require("./src/middleware/errorHandler"));
 

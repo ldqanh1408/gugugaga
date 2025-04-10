@@ -11,7 +11,7 @@ const expertSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    expertName: {
+    expert_name: {
       type: String,
     },
     gendar: {

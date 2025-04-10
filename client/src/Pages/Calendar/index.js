@@ -54,7 +54,9 @@ function Calendar() {
   };
 
   useEffect(() => {
-    dispatch(fetchNotes()); // Fetch notes khi component mount
+    if(!notes){
+      dispatch(fetchNotes()); // Fetch notes khi component mount
+    }
   }, [dispatch]);
 
   // Lọc các ghi chú theo ngày được chọn
@@ -84,7 +86,7 @@ function Calendar() {
         return <AngryIcon className="mood-icon" />;
       default:
         return null;
-    }
+    }brbr
   };
 
   const displayedNotes = filterMode === "all" ? notes : filteredNotes;

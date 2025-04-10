@@ -14,12 +14,10 @@ const treatmentSchema = new mongoose.Schema(
     },
     summary: {
       type: String,
-      required: true,
       trim: true,
     },
     rating: {
       type: Number,
-      required: true,
       min: 1,
       max: 5, // giả định kiểu `rate` là số sao đánh giá
     },
