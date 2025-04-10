@@ -26,7 +26,7 @@ exports.addExpert = async (req, res) => {
     const role = "EXPERT";
     const number_of_treatment = 0;
     const newExpert = new Expert({
-      account,
+      account, 
       password,
       expert_name,
       gendar,
