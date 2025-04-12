@@ -150,7 +150,6 @@ exports.getTreatment = async (req, res) => {
         let {_id} = req.user;
         const user = await User.findOne({_id: _id});
         if(!user) return res.status(404).json({success: false, message: "Found not user"})
-          console.log(user);
         const treatments = await Treatment.find({user_id: _id});
         return res.status(200).json({success:true, treatments});
     }

@@ -8,5 +8,5 @@ const { addExpert, getExperts, getTreatment, getAvailableExperts } = require("..
 router.post("/v1/experts", authenticateBusinessJWT,addExpert);
 router.get("/v1/experts",authenticateBusinessJWT, getExperts);
 router.get("/v1/experts/me/treatments", authenticateExpertJWT, getTreatment);
-router.get("/v1/experts/available", getAvailableExperts  );
+router.post("/v1/experts/available", getAvailableExperts  );
 module.exports = router

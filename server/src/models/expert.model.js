@@ -16,7 +16,7 @@ const expertSchema = new mongoose.Schema(
     },
     gendar: {
       type: String,
-      enum: ["Male", "Female", "Other"], // giả sử enum Gender có 3 giá trị
+      enum: ["male", "female", "other"], // giả sử enum Gender có 3 giá trị
     },
     number_of_treatment: {
       type: Number,
