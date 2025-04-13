@@ -370,10 +370,50 @@
     </mxGraphModel>
   </diagram>
   <diagram id="V8u8qVrfjRF5jzwDiiK5" name="Model">
-    <mxGraphModel dx="904" dy="464" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1064" dy="546" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-13" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="810" y="420" width="560" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-17" value="" style="whiteSpace=wrap;html=1;shape=mxgraph.basic.document" vertex="1" parent="1">
+          <mxGeometry x="30" y="390" width="320" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-14" value="dispatch" style="html=1;verticalAlign=bottom;endArrow=block;rounded=0;entryX=0;entryY=0;entryDx=61.5;entryDy=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryPerimeter=0;" edge="1" target="o1XnSTLJiYTNrLvkko-f-1" parent="1" source="o1XnSTLJiYTNrLvkko-f-21">
+          <mxGeometry x="-0.0022" relative="1" as="geometry">
+            <mxPoint x="140" y="1100.1399999999999" as="sourcePoint" />
+            <mxPoint x="720" y="1080.1399999999999" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-21" value="TEXT, AUDIO, IMAGE(role: user)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-24" value="TEXT, IMAGE, AUDIO(role: ai)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;" vertex="1" parent="1">
+          <mxGeometry x="140" y="600" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-15" value="return" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;exitPerimeter=0;" edge="1" source="o1XnSTLJiYTNrLvkko-f-3" parent="1" target="o1XnSTLJiYTNrLvkko-f-24">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450.0000000000002" y="615" as="targetPoint" />
+            <mxPoint x="931.6800000000001" y="953.6800000000001" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-3" value="LLM(TEXT, IMAGE(meme))" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="810" width="180" height="64.5" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=61.5;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="o1XnSTLJiYTNrLvkko-f-1" target="o1XnSTLJiYTNrLvkko-f-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="o1XnSTLJiYTNrLvkko-f-3" target="o1XnSTLJiYTNrLvkko-f-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-1" value="&amp;nbsp;(AUDIO TEXT, IMAGE, TEXT) TO TEXT" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=123;tabHeight=24;tabPosition=left;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="1">
+          <mxGeometry x="1015" y="620" width="235" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="o1XnSTLJiYTNrLvkko-f-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="o1XnSTLJiYTNrLvkko-f-3" target="o1XnSTLJiYTNrLvkko-f-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
