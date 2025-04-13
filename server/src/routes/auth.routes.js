@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const { createToken, verifyToken, createTokenForBusiness, createTokenForExpert } = require("../utils/jwtHelper");
+const { createToken, verifyToken, createTokenForBusiness, createTokenForExpert, createRefreshToken } = require("../utils/jwtHelper");
 const User = require("../models/user.model");
 const Business = require("../models/business.model");
 const Expert = require("../models/expert.model");
@@ -8,11 +8,15 @@ const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
 const router = express.Router();
 const dotenv = require("dotenv");
+const ROLE_MODELS = require("../utils/roleHelper");
+const redisHelper = require("../utils/redisHelper");
 const {
   validateRegister,
   validateLogin,
   authenticateJWT,
 } = require("../middleware");
+
+const jwtHelper = require("../utils/jwtHelper");
 const mongoose = require("mongoose");
 dotenv.config();
 
@@ -298,8 +302,42 @@ router.post("/v2/login", async (req, res) => {
       });
       res.status(201).json({ message: "Đăng nhập thành công" });
     }
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.nessage });
+  } catch (error) { 
+    return res.status(500).json({ success: false, message: error.message });
   }
 });
+
+router.post("/v3/login", async (req, res) => {
+  const { account, password, role } = req.body;
+  try {
+    if (!ROLE_MODELS[role]) {
+      return res.status(400).json({ message: "Vai trò không hợp lệ" });
+    }
+  
+    const { model } = ROLE_MODELS[role];
+  
+      const roleModel = await model.findOne({ account });
+      if (!roleModel) return res.status(400).json({ message: "Người dùng không tồn tại" });
+  
+      const isMatch = await bcrypt.compare(password, roleModel.password);
+      if (!isMatch) return res.status(400).json({ message: "Mật khẩu không hợp lệ" });
+  
+      const accessToken = jwtHelper.createAccessToken(roleModel);
+      const refreshToken = jwtHelper.createRefreshToken(roleModel);
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+    
+      await redisHelper.saveRefreshToken(roleModel._id, refreshToken);
+      
+      res.status(201).json({success: true, accessToken, roleModel });
+    
+  } catch (error) { 
+      res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;
