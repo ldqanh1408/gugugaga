@@ -5,6 +5,9 @@ import CreateNewButton from "../../assets/imgs/CreateNewButton.svg";
 import NoteEditor from "./NoteEditor";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentIndex, setIsEditing } from "../../redux/notesSlice";
+import ImageButton from "../../assets/imgs/ImageButton.svg";
+import RecordButton from "../../assets/imgs/RecordButton.svg";
+import VideoButton from "../../assets/imgs/VideoButton.svg";
 
 function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
   function formatDate(dateString) {
@@ -48,6 +51,15 @@ function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
             <hr class="note-viewer-line"></hr>
             <p className="note-viewer-date">{formatDate(currentNote?.date) || ""}</p>
             <p className="note-viewer-content">{currentNote?.text || ""}</p>
+            {/* Media Preview */}
+            <div className="media-preview mt-2">
+              {currentNote.media?.map((m, idx) => {
+                if (m.type === "image") return <img key={idx} src={m.url} alt={m.name} width="100" />;
+                if (m.type === "video") return <video key={idx} src={m.url} width="100" controls />;
+                if (m.type === "audio") return <audio key={idx} src={m.url} controls />;
+                return null;
+              })}
+            </div>
           </div>
 
           <div className="toolbar bottom">

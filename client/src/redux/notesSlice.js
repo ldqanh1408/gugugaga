@@ -46,6 +46,7 @@ const notesSlice = createSlice({
       date: getVietnamDate(),
       text: "",
       mood: "neutral",
+      media: [], // <-- Thêm chỗ này để chứa media
     },
   },
   reducers: {
@@ -56,6 +57,7 @@ const notesSlice = createSlice({
         date: new Date().toISOString().split("T")[0],
         text: "",
         mood: "neutral",
+        media: [],
       }; // Nếu không có ghi chú nào, tạo note trắng trống
     },
     setCurrentNote: (state, action) => {
@@ -73,9 +75,15 @@ const notesSlice = createSlice({
         date: new Date().toISOString().split("T")[0],
         text: "",
         mood: "neutral",
+        media: [],
       };
       state.isEditing = true; // Tự động bật chế độ edit
     },
+    addMediaToCurrentNote: (state, action) => {
+      const { type, url } = action.payload;
+      if (!state.currentNote.media) state.currentNote.media = [];
+      state.currentNote.media.push({ type, url });
+    },  
   },
   extraReducers: (builder) => {
     builder
@@ -106,6 +114,6 @@ const notesSlice = createSlice({
   },
 });
 
-export const { setCurrentIndex, setIsEditing, setCurrentNote } =
+export const { setCurrentIndex, setIsEditing, setCurrentNote, addMediaToCurrentNote } =
   notesSlice.actions;
 export default notesSlice.reducer;

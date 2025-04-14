@@ -2,7 +2,8 @@
   width: 90vw;
   max-width: 850px;
   height: 90vh;
-  max-height: 600px;
+  max-height: auto;
+  overflow: visible;
   margin: auto;
   padding: 20px;
   border-radius: 20px;
@@ -172,4 +173,24 @@
   background: #e5cac2;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
   transform: translateY(-2px); /* Nhấc nút lên một chút */
+}
+.media-preview {
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  padding-right: 10px;
+  padding-left: 5px;
+}
+
+.media-preview img,
+.media-preview video,
+.media-preview audio {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
 }
