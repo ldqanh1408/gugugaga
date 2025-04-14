@@ -1,0 +1,42 @@
+/* Personalize.css */
+.personalize-container {
+padding: 40px;
+width: 850px;
+}
+
+.personalize-header {
+font-weight: bold;
+font-size: 24px;
+border-bottom: 1px solid #ccc !important;
+padding-bottom: 10px;
+}
+
+.personalize-options {
+margin-top: 30px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+.personalize-option {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 20px;
+border: 1px solid #eee;
+border-radius: 20px;
+background-color: #fff;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+cursor: pointer;
+}
+
+.personalize-option-content {
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 16px;
+}
+
+.personalize-option-arrow {
+font-size: 18px;
+}

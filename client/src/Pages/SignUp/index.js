@@ -63,7 +63,7 @@ function SignUp() {
   };
 
   return (
-    <div className="containter form-1">
+    <div className="container form-1">
       {loading && <Loading />}
       
       <h1 className="signup-header">Sign Up</h1>
@@ -76,7 +76,7 @@ function SignUp() {
             <Form.Control
               onChange={(e) => setAccount(e.target.value)}
               placeholder="Enter your username..."
-              className="change-password-box"
+              className="signup-box"
               onBlur={() =>
                 handleBlur({
                   field: ACCOUNT,

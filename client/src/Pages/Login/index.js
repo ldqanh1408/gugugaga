@@ -41,7 +41,7 @@ function Login() {
   };
 
   return (
-    <div className="container form-1`">
+    <div className="container form-1">
       {/* Overlay che toàn màn hình khi loading */}
       {loading && (
         <div className="loading-overlay">

@@ -14,12 +14,13 @@
 .title {
     border-bottom: #333 solid 1px;
     width: 50%;
+    margin: 0 auto;
 }
 
 .form-1{
-    margin-left: 10%;
-    margin-right: 10%;
-    margin-top: 28px;
+    margin: 28px auto !important;
+    padding: 0 20px;
+    max-width: 700px;
     min-height: 100vh;
 }
 
@@ -27,7 +28,7 @@
     margin-top: 48px;
     border: 1px solid #CDACA0;
     border-radius: 2%;
-    padding: 20px 40px 40px;
+    padding: 20px 30px 30px;
     margin-bottom: 20px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15); /* Bóng đổ nhẹ tạo hiệu ứng nổi */
 }
@@ -73,7 +74,7 @@
     padding: 10px 15px;
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 70%;
     height: 120px;
     margin-bottom: 15px;
     padding: 20px 15px; /* Tăng padding trên/dưới */

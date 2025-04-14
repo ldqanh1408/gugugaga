@@ -40,6 +40,9 @@ function UserAvatar() {
               <Dropdown.Item as={Link} to="/profile">
                 Profile
               </Dropdown.Item>
+              <Dropdown.Item as={Link} to="/personalize">
+                Personalize
+              </Dropdown.Item>
               <Link to="/change-password" state={{ user: profile }} className="dropdown-item">
                 Change Password
               </Link>
