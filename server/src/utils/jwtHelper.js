@@ -54,13 +54,14 @@ const createAccessToken = (payload) => {
       role: payload.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION }
+    { expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRATION)  }
   );
 };
 
 const verifyAccessToken = (token) => {
   return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 };
+
 
 const createRefreshToken = (payload) => {
   return jwt.sign(
@@ -69,7 +70,7 @@ const createRefreshToken = (payload) => {
       role: payload.role,
     },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION }
+    { expiresIn: Number(process.env.REFRESH_TOKEN_EXPIRATION) }
   );
 };
 
@@ -87,5 +88,6 @@ module.exports = {
   createAccessToken,
   verifyAccessToken,
   createRefreshToken,
+  verifyRefreshToken,
   verifyAccessToken
 };

@@ -3,6 +3,7 @@ const Business = require("../models/business.model");
 const Treatment = require("../models/treatment.model");
 const Schedule = require("../models/schedule.model");
 const bcrypt = require("bcrypt");
+const redisHelper = require("../utils/redisHelper")
 const mongoose = require("mongoose");
 async function hashPassword(password) {
   const saltRounds = 10; // Số lần hash (càng cao càng an toàn nhưng chậm)
@@ -42,7 +43,15 @@ exports.addExpert = async (req, res) => {
 
 exports.getExperts = async (req, res) => {
   try {
-    const temp_business = req.business;
+    console.log(1)
+    const temp_business = req.payload;
+    const cacheKey = `experts:business:${temp_business._id}`;
+    const cachedData = await redisHelper.get(cacheKey);
+
+    if (cachedData) {
+      // Nếu có cache, trả về luôn
+      return res.status(200).json({ success: true, experts: cachedData, msg: "OF REDIS" });
+    }
     let business_id = new mongoose.Types.ObjectId(temp_business._id);
     const business = await Business.findOne({ _id: business_id });
     if (!business)
@@ -50,6 +59,8 @@ exports.getExperts = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Found not business" });
     const experts = await Expert.find({ business_id: business_id });
+
+    await redisHelper.set(cacheKey, experts);
     return res.status(200).json({ success: true, experts });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
