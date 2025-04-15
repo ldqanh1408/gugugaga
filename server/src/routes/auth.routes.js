@@ -1,16 +1,23 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const { createToken, verifyToken } = require("../utils/jwtHelper");
+const { createToken, verifyToken, createTokenForBusiness, createTokenForExpert, createRefreshToken } = require("../utils/jwtHelper");
 const User = require("../models/user.model");
+const Business = require("../models/business.model");
+const Expert = require("../models/expert.model");
 const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
 const router = express.Router();
 const dotenv = require("dotenv");
+const ROLE_MODELS = require("../utils/roleHelper");
+const redisHelper = require("../utils/redisHelper");
 const {
   validateRegister,
   validateLogin,
   authenticateJWT,
 } = require("../middleware");
+
+const jwtHelper = require("../utils/jwtHelper");
+const mongoose = require("mongoose");
 dotenv.config();
 
 async function hashPassword(password) {
@@ -20,7 +27,7 @@ async function hashPassword(password) {
 }
 
 // // 📝 Đăng ký
-router.post("/register", validateRegister , async (req, res) => {
+router.post("/v1/register", validateRegister, async (req, res) => {
   try {
     var {
       account,
@@ -32,7 +39,6 @@ router.post("/register", validateRegister , async (req, res) => {
       bio = "",
       dob = "",
       gender = "male",
-
     } = req.body;
     password = await hashPassword(password);
     const chat = new Chat();
@@ -48,8 +54,8 @@ router.post("/register", validateRegister , async (req, res) => {
       journalId: journal._id,
       avatar,
       bio,
-      gender, 
-      dob
+      gender,
+      dob,
     });
     chat.userId = newUser._id;
     journal.userId = newUser._id;
@@ -66,7 +72,7 @@ router.post("/register", validateRegister , async (req, res) => {
 });
 
 // 🔐 Đăng nhập
-router.post("/login", validateLogin, async (req, res) => {
+router.post("/v1/login", validateLogin, async (req, res) => {
   try {
     var { account, password } = req.body;
 
@@ -87,7 +93,7 @@ router.post("/login", validateLogin, async (req, res) => {
   }
 });
 
-router.post("/logout", async (req, res) => {
+router.post("/v1/logout", async (req, res) => {
   try {
     res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
     res.status(200).json({ success: true, message: "Logged out" });
@@ -96,7 +102,7 @@ router.post("/logout", async (req, res) => {
   }
 });
 
-router.get("/get-token", async (req, res) => {
+router.get("/v1/get-token", async (req, res) => {
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -110,7 +116,7 @@ router.get("/get-token", async (req, res) => {
   }
 });
 
-router.get("/check-auth", (req, res) => {
+router.get("/v1/check-auth", (req, res) => {
   const token = req.cookies.token;
   if (!token) {
     return res
@@ -128,7 +134,7 @@ router.get("/check-auth", (req, res) => {
   }
 });
 
-router.get("/me", (req, res) => {
+router.get("/v1/me", (req, res) => {
   const token = req.cookies.token; // Lấy token từ cookie
   if (!token) {
     return res.status(401).json({ message: "Chưa đăng nhập" });
@@ -146,7 +152,7 @@ router.get("/me", (req, res) => {
   }
 });
 
-router.post("/change-password", async (req, res) => {
+router.post("/v1/change-password", async (req, res) => {
   const token = req.cookies.token;
   if (!token) {
     return res.status(401).json({ message: "Chưa đăng nhập" });
@@ -185,4 +191,216 @@ router.post("/change-password", async (req, res) => {
   }
 });
 
+router.post("/v2/register", async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!role) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Please provide role" });
+    }
+    if (role === "USER") {
+      const {
+        account,
+        userName,
+        password,
+        email = req.email || "",
+        phone = req.phone || "",
+        avatar = "",
+        bio = "",
+        dob = "",
+        gender = "male",
+      } = req.body;
+      password = await hashPassword(password);
+      const chat = new Chat();
+      const journal = new Journal();
+
+      const newUser = new User({
+        account,
+        userName,
+        password,
+        email,
+        phone,
+        chatId: chat._id,
+        journalId: journal._id,
+        avatar,
+        bio,
+        gender,
+        dob,
+        role,
+      });
+      chat.userId = newUser._id;
+      journal.userId = newUser._id;
+
+      await newUser.save();
+      await chat.save();
+      await journal.save();
+    } else if (role === "BUSINESS") {
+      let { account, password, business_name, business_email, role } = req.body;
+
+      password = await hashPassword(password);
+
+      const newBusiness = new Business({
+        account,
+        password,
+        business_name,
+        business_email,
+        role,
+      });
+
+      await newBusiness.save();
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Register successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post("/v2/login", async (req, res) => {
+  const { account, password, role } = req.body;
+  try {
+    if (role === "USER") {
+      const user = await User.findOne({ account });
+      if (!user) return res.status(400).json("Người dùng không tồn tại");
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return res.status(400).json("Mật khẩu không hợp lệ");
+      const token = createToken(user);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+      res.status(201).json({ message: "Đăng nhập thành công" });
+    } else if (role === "BUSINESS") {
+      const business = await Business.findOne({ account });
+      if (!business) return res.status(400).json("Người dùng không tồn tại");
+
+      const isMatch = await bcrypt.compare(password, business.password);
+      if (!isMatch) return res.status(400).json("Mật khẩu không hợp lệ");
+      const token = createTokenForBusiness(business);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+      res.status(201).json({ message: "Đăng nhập thành công" });
+    } else if (role === "EXPERT") {
+      const expert = await Expert.findOne({ account });
+      if (!expert) return res.status(400).json("Người dùng không tồn tại");
+
+      const isMatch = await bcrypt.compare(password, expert.password);
+      if (!isMatch) return res.status(400).json("Mật khẩu không hợp lệ");
+      const token = createTokenForExpert(expert);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+      res.status(201).json({ message: "Đăng nhập thành công" });
+    }
+  } catch (error) { 
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post("/v3/login", async (req, res) => {
+  const { account, password, role } = req.body;
+  try {
+    if (!ROLE_MODELS[role]) {
+      return res.status(400).json({ message: "Vai trò không hợp lệ" });
+    }
+  
+    const { model } = ROLE_MODELS[role];
+  
+      const roleModel = await model.findOne({ account });
+      if (!roleModel) return res.status(400).json({ message: "Người dùng không tồn tại" });
+  
+      const isMatch = await bcrypt.compare(password, roleModel.password);
+      if (!isMatch) return res.status(400).json({ message: "Mật khẩu không hợp lệ" });
+  
+      const accessToken = jwtHelper.createAccessToken(roleModel);
+      const refreshToken = jwtHelper.createRefreshToken(roleModel);
+
+      res.clearCookie("refreshToken");
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+    
+      await redisHelper.saveRefreshToken(roleModel._id, refreshToken);
+      await redisHelper.saveAccessToken(roleModel._id, accessToken);
+
+      
+      res.status(201).json({success: true, accessToken, data: roleModel});
+    
+  } catch (error) { 
+      res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post('/v1/refresh-token', async (req, res) => {
+  const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
+
+  // Kiểm tra xem refresh token có tồn tại không
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token provided" });
+  }
+
+  // Kiểm tra xem refresh token có bị blacklist không
+  const isBlacklisted = await redisHelper.isBlacklisted(refreshToken);
+  if (isBlacklisted) {
+    return res.status(403).json({ message: "Refresh token is blacklisted" });
+  }
+
+  try {
+    // Xác minh refresh token
+    const decoded = await jwtHelper.verifyRefreshToken(refreshToken);
+
+    // Tạo Access Token mới
+    const newAccessToken = jwtHelper.createAccessToken(decoded.user);
+
+    // Tạo lại Refresh Token mới nếu cần (tùy thuộc vào yêu cầu bảo mật của bạn)
+    const newRefreshToken = jwtHelper.createRefreshToken(decoded.user);
+
+    // Lưu refresh token mới vào Redis hoặc cơ sở dữ liệu nếu cần
+    await redisHelper.saveRefreshToken(decoded._id, newRefreshToken);
+
+    // Gửi lại Access Token và Refresh Token mới trong cookie
+    res.cookie('access_token', newAccessToken, { httpOnly: true, secure: true });
+    res.cookie('refresh_token', newRefreshToken, { httpOnly: true, secure: true });
+
+    return res.status(200).json({ message: "Tokens refreshed successfully" });
+  } catch (error) {
+    return res.status(403).json({ message: "Invalid refresh token" });
+  }
+});
+
+router.get('/v2/logout', async (req, res) => {
+  const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
+
+  if (!refreshToken) {
+    return res.status(400).json({ message: "No refresh token provided" });
+  }
+
+  // Đưa refresh token vào blacklist trong Redis
+  try {
+    // Kiểm tra xem refresh token có hợp lệ không trước khi đưa vào blacklist
+    const decoded = await jwtHelper.verifyRefreshToken(refreshToken); // Giả sử verifyRefreshToken sẽ trả về thông tin người dùng nếu token hợp lệ
+    const expiresInSeconds =  decoded.exp - Math.floor(Date.now() / 1000)
+    // Lưu token vào blacklist (thời gian hết hạn giống với thời gian hết hạn của refresh token)
+    await redisHelper.blacklistToken(refreshToken, expiresInSeconds);
+
+    // Xóa refresh token khỏi cookie
+    res.clearCookie('refreshToken', { httpOnly: true, secure: true }); // Xóa cookie refresh token
+
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error during logout", error: error.message });
+  }
+})
 module.exports = router;

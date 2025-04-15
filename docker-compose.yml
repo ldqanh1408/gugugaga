@@ -1,0 +1,35 @@
+
+services:
+  # Backend service (Express.js)
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/diary  # Map thư mục server từ host vào container
+      - /diary/node_modules  # Đảm bảo node_modules không bị xóa trong container
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/Diary
+      - REDIS_HOST=redis
+    depends_on:
+      - mongo
+      - redis
+    command: npm run dev  # Chạy ứng dụng với "npm run dev"
+
+  # MongoDB service
+  mongo:
+    image: mongo:6  # Sử dụng image mongo version 6
+    ports:
+      - "27017:27017"  # Mở cổng MongoDB
+    volumes:
+      - mongo-data:/data/db  # Volume để lưu trữ dữ liệu MongoDB
+  # Redis service
+  redis:
+    image: redis:6  # Sử dụng image redis version 6
+    ports:
+      - "6379:6379"  # Mở cổng Redis
+volumes:
+  mongo-data:
+  
