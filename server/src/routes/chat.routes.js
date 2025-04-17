@@ -11,7 +11,8 @@ router.get("/:chatId/messages" ,authenticateAndAuthorize(["USER"]), getMessages)
 
 router.post("/:chatId/messages", authenticateAndAuthorize(["USER"]), addMessage);
 
-router.delete("/:chatId/messages/:messageId", authenticateJWT, deleteMessage);
+router.delete("/:chatId/messages/:messageId", authenticateAndAuthorize(["USER"]), deleteMessage);
 
-router.patch("/:chatId/messages/:messageId", validateMessage ,authenticateJWT, updateMessage);
+router.patch("/:chatId/messages/:messageId", validateMessage ,authenticateAndAuthorize(["USER"]), updateMessage);
+
 module.exports = router;

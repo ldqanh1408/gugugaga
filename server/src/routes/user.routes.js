@@ -13,13 +13,14 @@ const {
   uploadAvatar,
 } = require("../controllers/upload.controller");
 const { authenticateJWT } = require("../middleware");
+const jwt = require("../middleware/authenticateJWT")
 
 // Định nghĩa route
 router.get("/v1/users", getUsers);
 router.delete("/v1/users/:userId", deleteUser);
 router.get("/:userId", getUser);
 router.post("/v1/users/upload", upload.single("avatar"), uploadAvatar); // Route upload ảnh
-router.get("/v1/users/me/treatments", authenticateJWT, getTreatment);
-router.get("/v1/users/load-profile/:userId", loadProfile);
-router.patch("/v1/users/upload-profile/:userId", uploadProfile);
+router.get("/v1/users/me/treatments", jwt.authenticateAndAuthorize(["USER"]), getTreatment);
+router.get("/v1/users/load-profile/:userId", jwt.authenticateAndAuthorize(["USER"]), loadProfile);
+router.patch("/v1/users/upload-profile/:userId", jwt.authenticateAndAuthorize(["USER"]), uploadProfile);
 module.exports = router;

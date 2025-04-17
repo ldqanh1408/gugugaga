@@ -6,6 +6,6 @@ const { addExpert, getExperts, getTreatment, getAvailableExperts } = require("..
 router.post("/v1/experts", jwt.authenticateAndAuthorize(['BUSINESS']),addExpert);
 router.get("/v1/experts",jwt.authenticateAndAuthorize(['BUSINESS']), getExperts);
 router.get("/v1/experts/me/treatments", jwt.authenticateAndAuthorize(['BUSINESS', 'EXPERT']), getTreatment);
-router.post("/v1/experts/available", getAvailableExperts  );
+router.post("/v1/experts/available", jwt.authenticateAndAuthorize(["USER"]), getAvailableExperts  );
 
 module.exports = router

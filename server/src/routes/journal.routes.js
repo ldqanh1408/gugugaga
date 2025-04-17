@@ -9,19 +9,20 @@ const {
   deleteNote,
   getConsecutiveDays
 } = require("../controllers/journal.controller");
+const jwt = require("../middleware/authenticateJWT")
 
 // Định nghĩa route
 
-router.get("/:journalId/notes", authenticateJWT, getNotes);
+router.get("/:journalId/notes", jwt.authenticateAndAuthorize(["USER"]), getNotes);
 
-router.patch("/:journalId/notes/:noteId", authenticateJWT, updateNote);
+router.patch("/:journalId/notes/:noteId", jwt.authenticateAndAuthorize(["USER"]), updateNote);
 
-router.post("/:journalId/notes", authenticateJWT, addNote);
+router.post("/:journalId/notes", jwt.authenticateAndAuthorize(["USER"]), addNote);
 
-router.delete("/:journalId/notes/:noteId", authenticateJWT, deleteNote);
+router.delete("/:journalId/notes/:noteId", jwt.authenticateAndAuthorize(["USER"]), deleteNote);
 
-router.get("/:journalId/entries", authenticateJWT, getEntries);
+router.get("/:journalId/entries", jwt.authenticateAndAuthorize(["USER"]), getEntries);
 
-router.get("/:journalId/consecutive-days", authenticateJWT, getConsecutiveDays);
+router.get("/:journalId/consecutive-days", jwt.authenticateAndAuthorize(["USER"]), getConsecutiveDays);
 
 module.exports = router;

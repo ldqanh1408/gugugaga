@@ -10,6 +10,7 @@ const router = express.Router();
 const dotenv = require("dotenv");
 const ROLE_MODELS = require("../utils/roleHelper");
 const redisHelper = require("../utils/redisHelper");
+const jwt = require("../middleware/authenticateJWT")
 const {
   validateRegister,
   validateLogin,
@@ -102,7 +103,7 @@ router.post("/v1/logout", async (req, res) => {
   }
 });
 
-router.get("/v1/get-token", async (req, res) => {
+router.get("/v1/get-token",jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]), async (req, res) => {
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -134,7 +135,7 @@ router.get("/v1/check-auth", (req, res) => {
   }
 });
 
-router.get("/v1/me", (req, res) => {
+router.get("/v1/me",jwt.authenticateAndAuthorize(["USER"]), (req, res) => {
   const token = req.cookies.token; // Lấy token từ cookie
   if (!token) {
     return res.status(401).json({ message: "Chưa đăng nhập" });
@@ -343,7 +344,7 @@ router.post("/v3/login", async (req, res) => {
   }
 });
 
-router.post('/v1/refresh-token', async (req, res) => {
+router.post('/v1/refresh-token',jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]), async (req, res) => {
   const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
 
   // Kiểm tra xem refresh token có tồn tại không
@@ -380,7 +381,7 @@ router.post('/v1/refresh-token', async (req, res) => {
   }
 });
 
-router.get('/v2/logout', async (req, res) => {
+router.get('/v2/logout',jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]), async (req, res) => {
   const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
 
   if (!refreshToken) {
