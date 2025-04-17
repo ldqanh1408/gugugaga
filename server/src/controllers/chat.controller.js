@@ -111,6 +111,8 @@ exports.addMessage = async (req, res) => {
     chat.messages = [...chat.messages, message];
     await chat.save();
 
+
+
     // Trả về response thành công
     return res.status(200).json({
       success: true,
