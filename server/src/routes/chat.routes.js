@@ -9,7 +9,7 @@ const { authenticateAndAuthorize } = require("../middleware/authenticateJWT");
 
 router.get("/:chatId/messages" ,authenticateAndAuthorize(["USER"]), getMessages);
 
-router.post("/:chatId/messages", authenticateJWT, addMessage);
+router.post("/:chatId/messages", authenticateAndAuthorize(["USER"]), addMessage);
 
 router.delete("/:chatId/messages/:messageId", authenticateJWT, deleteMessage);
 
