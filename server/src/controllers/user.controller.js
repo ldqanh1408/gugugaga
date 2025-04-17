@@ -79,12 +79,12 @@ exports.loadProfile = async (req, res) => {
   try {
     const { userId } = req.params;
     // Kiểm tra xem user có tồn tại không
-    const user = await User.findOne({ _id: userId });
-    const cacheKey = `${constants.USER_CACHE_KEY}:profiles:${userId}`;
+    const cacheKey = `${constants.CHANEL_PROFILES}:${userId}`;
     const cacheData = await redis.get(cacheKey);
     if (cacheData) {
       return res.status(200).json({ success: true, profile: cacheData });
     }
+    const user = await User.findOne({ _id: userId });
     if (!user) {
       return res
         .status(404)
@@ -138,7 +138,7 @@ exports.uploadProfile = async (req, res) => {
     // Kiểm tra và upload ảnh lên Cloudinary nếu có file được tải lên
 
     // Cập nhật thông tin khác của user (và avatar mới nếu có)
-    user.avatar = avatar || user.avatar;
+    user.avatar = avatar || user.avatar; 
     user.userName = nickName || user.userName;
     user.bio = bio || user.bio;
     user.dob = dob || user.dob;
@@ -147,8 +147,8 @@ exports.uploadProfile = async (req, res) => {
     user.email = email || user.email;
 
     await user.save();
-
-    await pubSub.publishInvalidation(constants.CHANEL_USERS, userId);
+    const chanel = constants.CHANEL_USERS;
+    await pubSub.publishInvalidation(chanel, {userId});
     console.log("User sau khi cập nhật trong MongoDB:", user);
 
     return res.status(200).json({

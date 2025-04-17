@@ -26,19 +26,18 @@ const subscribeInvalidation = async (channel, callback) => {
   });
 };
 
-const startPubSub = async () => {
-  subscribeInvalidation(chanelExperts, async ({ businessId }) => {
-    const key = `experts:business:${businessId}`;
-    console.log("💥 Invalidate cache for:", key);
-    await redis.del(key); // Xoá cache khi có cập nhật dữ liệu
-  });
-  subscribeInvalidation(channelUsers, async ({ userId }) => {
-    const key = `users:${userId}`;
-    console.log("💥 Invalidate cache for:", key);
-    await redis.del(key); // Xoá cache khi có cập nhật dữ liệu
-  });
-};
 
+const startPubSub = async (subscriptions) => {
+  for(let {chanel, keyBuilder} of subscriptions){
+    await(subscribeInvalidation(chanel, async(payload) => {
+      const keys = keyBuilder(payload);
+      for (const key of keys) {
+        const exist = await redis.del(key);
+      }
+    }))
+    console.log(`kết nối chanel: ${chanel} thành công`)
+  }
+};
 module.exports = {
   publishInvalidation,
   subscribeInvalidation,
