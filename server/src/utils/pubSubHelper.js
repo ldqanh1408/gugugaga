@@ -1,6 +1,6 @@
 const redis = require("../configs/redisClient");
 const constants = require("../constants");
-const redisHelper = require("../utils/redisHelper")
+const redisHelper = require("../utils/redisHelper");
 // Tạo 2 client: 1 để publish, 1 để subscribe
 const subscriber = redis.duplicate();
 const publisher = redis.duplicate();
@@ -8,6 +8,7 @@ const publisher = redis.duplicate();
 subscriber.connect();
 publisher.connect();
 const chanelExperts = constants.CHANEL_EXPERTS;
+const channelUsers = constants.CHANEL_USERS;
 // Hàm publish
 const publishInvalidation = async (channel, message) => {
   await publisher.publish(channel, JSON.stringify(message));
@@ -29,12 +30,17 @@ const startPubSub = async () => {
   subscribeInvalidation(chanelExperts, async ({ businessId }) => {
     const key = `experts:business:${businessId}`;
     console.log("💥 Invalidate cache for:", key);
-    await redis.del(key)// Xoá cache khi có cập nhật dữ liệu
+    await redis.del(key); // Xoá cache khi có cập nhật dữ liệu
+  });
+  subscribeInvalidation(channelUsers, async ({ userId }) => {
+    const key = `users:${userId}`;
+    console.log("💥 Invalidate cache for:", key);
+    await redis.del(key); // Xoá cache khi có cập nhật dữ liệu
   });
 };
 
 module.exports = {
   publishInvalidation,
   subscribeInvalidation,
-  startPubSub
+  startPubSub,
 };
