@@ -42,6 +42,10 @@
 
     "multer-storage-cloudinary": "^4.0.0",
 
+    "node-cron": "^3.0.3",
+
+    "nodemailer": "^6.10.1",
+
     "swagger-jsdoc": "^6.2.8",
 
     "swagger-ui-express": "^5.0.1",

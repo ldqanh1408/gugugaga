@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const { connectDB } = require("./src/configs/db");
 const cookieParser = require("cookie-parser");
 const limiter = require("./src/utils/limitHelper");
-const {swaggerSpec, swaggerUi} = require("./src/configs/swagger")
+const { swaggerSpec, swaggerUi } = require("./src/configs/swagger");
 
 // const authRoutes = require("./routes/auth"); // Import routes
 
@@ -13,7 +13,6 @@ const {swaggerSpec, swaggerUi} = require("./src/configs/swagger")
 connectDB();
 
 const app = express();
-
 
 // Middleware
 app.use((req, res, next) => {
