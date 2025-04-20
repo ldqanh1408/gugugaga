@@ -6,6 +6,8 @@ import  PublicRoutes  from "./PublicRoutes";
 import  routes  from "./ConfigRouter";
 import "../styles/common.css"
 import "../styles/AppRouter.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function AppRouter() {
   return (

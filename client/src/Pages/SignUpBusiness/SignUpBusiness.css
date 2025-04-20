@@ -1,0 +1,19 @@
+.form-1 {
+  min-width: 60vh;
+}
+
+.signup-box {
+  height: 42px !important; /* Giảm chiều cao */
+  font-size: 14px; /* Nhỏ text lại */
+  padding: 10px 10px;
+}
+
+.signup-custom-h2-label {
+  font-size: 15px; /* Hoặc nhỏ hơn nếu muốn */
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.notice {
+    font-size: 10px;
+}

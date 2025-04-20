@@ -1,6 +1,12 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const { createToken, verifyToken, createTokenForBusiness, createTokenForExpert, createRefreshToken } = require("../utils/jwtHelper");
+const {
+  createToken,
+  verifyToken,
+  createTokenForBusiness,
+  createTokenForExpert,
+  createRefreshToken,
+} = require("../utils/jwtHelper");
 const User = require("../models/user.model");
 const Business = require("../models/business.model");
 const Expert = require("../models/expert.model");
@@ -10,7 +16,7 @@ const router = express.Router();
 const dotenv = require("dotenv");
 const ROLE_MODELS = require("../utils/roleHelper");
 const redisHelper = require("../utils/redisHelper");
-const jwt = require("../middleware/authenticateJWT")
+const jwt = require("../middleware/authenticateJWT");
 const {
   validateRegister,
   validateLogin,
@@ -103,19 +109,50 @@ router.post("/v1/logout", async (req, res) => {
   }
 });
 
-router.get("/v1/get-token",jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]), async (req, res) => {
-  try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Token not found", token: null });
+router.get(
+  "/v1/get-token",
+  jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]),
+  async (req, res) => {
+    const accessToken = req.cookies.accessToken;
+    const refreshToken = req.cookies.refreshToken;
+    if (!accessToken) {
+      return res.status(404).json({
+        success: false,
+        message: "Access token not found",
+        accessToken: null,
+      });
     }
-    return res.status(200).json({ token });
-  } catch (error) {
-    return res.status(404).json({ success: false, message: error.message });
+    try {
+      const decoded = jwtHelper.verifyAccessToken(accessToken);
+      return res
+        .status(200)
+        .json({ success: true, token: accessToken, data: decoded });
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        // Token hết hạn → xử lý làm mới bằng refresh token
+        if (!refreshToken) {
+          return res
+            .status(403)
+            .json({ success: false, message: "Refresh token not found" });
+        }
+        try {
+          const decodedRefresh = jwtHelper.verifyRefreshToken(refreshToken);
+
+          // Tạo lại access token mới
+          const newAccessToken = jwtHelper.createAccessToken(decodedRefresh);
+          // Gửi lại access token mới qua cookie hoặc body
+          return res
+            .status(200)
+            .json({ success: true, accessToken: newAccessToken });
+        } catch (refreshErr) {
+          return res
+            .status(403)
+            .json({ success: false, message: "Invalid refresh token" });
+        }
+      }
+    }
   }
-});
+);
 
 router.get("/v1/check-auth", (req, res) => {
   const token = req.cookies.token;
@@ -135,13 +172,13 @@ router.get("/v1/check-auth", (req, res) => {
   }
 });
 
-router.get("/v1/me",jwt.authenticateAndAuthorize(["USER"]), (req, res) => {
-  const token = req.cookies.token; // Lấy token từ cookie
+router.get("/v1/me", jwt.authenticateAndAuthorize(["USER"]), (req, res) => {
+  const token = req.cookies.accessToken; // Lấy token từ cookie
   if (!token) {
     return res.status(401).json({ message: "Chưa đăng nhập" });
   }
   try {
-    const payload = verifyToken(token);
+    const payload = jwtHelper.verifyAccessToken(token);
     res.json({
       userId: payload._id,
       journalId: payload.journalId,
@@ -201,7 +238,7 @@ router.post("/v2/register", async (req, res) => {
         .json({ success: false, message: "Please provide role" });
     }
     if (role === "USER") {
-      const {
+      let {
         account,
         userName,
         password,
@@ -256,6 +293,7 @@ router.post("/v2/register", async (req, res) => {
       .status(200)
       .json({ success: true, message: "Register successfully" });
   } catch (error) {
+    console.error(error.message);
     return res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -303,7 +341,7 @@ router.post("/v2/login", async (req, res) => {
       });
       res.status(201).json({ message: "Đăng nhập thành công" });
     }
-  } catch (error) { 
+  } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -314,94 +352,116 @@ router.post("/v3/login", async (req, res) => {
     if (!ROLE_MODELS[role]) {
       return res.status(400).json({ message: "Vai trò không hợp lệ" });
     }
-  
+
     const { model } = ROLE_MODELS[role];
-  
-      const roleModel = await model.findOne({ account });
-      if (!roleModel) return res.status(400).json({ message: "Người dùng không tồn tại" });
-  
-      const isMatch = await bcrypt.compare(password, roleModel.password);
-      if (!isMatch) return res.status(400).json({ message: "Mật khẩu không hợp lệ" });
-  
-      const accessToken = jwtHelper.createAccessToken(roleModel);
-      const refreshToken = jwtHelper.createRefreshToken(roleModel);
 
-      res.clearCookie("refreshToken");
-      res.cookie("refreshToken", refreshToken, {
+    const roleModel = await model.findOne({ account });
+    if (!roleModel)
+      return res.status(400).json({ message: "Người dùng không tồn tại" });
+
+    const isMatch = await bcrypt.compare(password, roleModel.password);
+    if (!isMatch)
+      return res.status(400).json({ message: "Mật khẩu không hợp lệ" });
+
+    const accessToken = jwtHelper.createAccessToken(roleModel);
+    const refreshToken = jwtHelper.createRefreshToken(roleModel);
+    console.log("Loggin accessTOken",accessToken);
+    res.clearCookie("refreshToken");
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+    });
+    res.clearCookie("accessToken");
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+    });
+    console.log(accessToken);
+    await redisHelper.saveRefreshToken(roleModel._id, refreshToken);
+    await redisHelper.saveAccessToken(roleModel._id, accessToken);
+
+    res.status(201).json({ success: true, accessToken, data: roleModel });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post(
+  "/v1/refresh-token",
+  jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]),
+  async (req, res) => {
+    const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
+
+    // Kiểm tra xem refresh token có tồn tại không
+    if (!refreshToken) {
+      return res.status(401).json({ message: "No refresh token provided" });
+    }
+
+    // Kiểm tra xem refresh token có bị blacklist không
+    const isBlacklisted = await redisHelper.isBlacklisted(refreshToken);
+    if (isBlacklisted) {
+      return res.status(403).json({ message: "Refresh token is blacklisted" });
+    }
+
+    try {
+      // Xác minh refresh token
+      const decoded = await jwtHelper.verifyRefreshToken(refreshToken);
+
+      // Tạo Access Token mới
+      const newAccessToken = jwtHelper.createAccessToken(decoded.user);
+
+      // Tạo lại Refresh Token mới nếu cần (tùy thuộc vào yêu cầu bảo mật của bạn)
+      const newRefreshToken = jwtHelper.createRefreshToken(decoded.user);
+
+      // Lưu refresh token mới vào Redis hoặc cơ sở dữ liệu nếu cần
+      await redisHelper.saveRefreshToken(decoded._id, newRefreshToken);
+
+      // Gửi lại Access Token và Refresh Token mới trong cookie
+      res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
       });
-    
-      await redisHelper.saveRefreshToken(roleModel._id, refreshToken);
-      await redisHelper.saveAccessToken(roleModel._id, accessToken);
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+      });
 
-      
-      res.status(201).json({success: true, accessToken, data: roleModel});
-    
-  } catch (error) { 
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(200).json({ message: "Tokens refreshed successfully" });
+    } catch (error) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
   }
-});
+);
 
-router.post('/v1/refresh-token',jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]), async (req, res) => {
-  const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
+router.get(
+  "/v2/logout",
+  jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]),
+  async (req, res) => {
+    const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
 
-  // Kiểm tra xem refresh token có tồn tại không
-  if (!refreshToken) {
-    return res.status(401).json({ message: "No refresh token provided" });
+    if (!refreshToken) {
+      return res.status(400).json({ message: "No refresh token provided" });
+    }
+
+    // Đưa refresh token vào blacklist trong Redis
+    try {
+      // Kiểm tra xem refresh token có hợp lệ không trước khi đưa vào blacklist
+      const decoded = await jwtHelper.verifyRefreshToken(refreshToken); // Giả sử verifyRefreshToken sẽ trả về thông tin người dùng nếu token hợp lệ
+      const expiresInSeconds = decoded.exp - Math.floor(Date.now() / 1000);
+      // Lưu token vào blacklist (thời gian hết hạn giống với thời gian hết hạn của refresh token)
+      await redisHelper.blacklistToken(refreshToken, expiresInSeconds);
+
+      // Xóa refresh token khỏi cookie
+      res.clearCookie("refreshToken", { httpOnly: true, secure: true }); // Xóa cookie refresh token
+
+      return res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error during logout", error: error.message });
+    }
   }
-
-  // Kiểm tra xem refresh token có bị blacklist không
-  const isBlacklisted = await redisHelper.isBlacklisted(refreshToken);
-  if (isBlacklisted) {
-    return res.status(403).json({ message: "Refresh token is blacklisted" });
-  }
-
-  try {
-    // Xác minh refresh token
-    const decoded = await jwtHelper.verifyRefreshToken(refreshToken);
-
-    // Tạo Access Token mới
-    const newAccessToken = jwtHelper.createAccessToken(decoded.user);
-
-    // Tạo lại Refresh Token mới nếu cần (tùy thuộc vào yêu cầu bảo mật của bạn)
-    const newRefreshToken = jwtHelper.createRefreshToken(decoded.user);
-
-    // Lưu refresh token mới vào Redis hoặc cơ sở dữ liệu nếu cần
-    await redisHelper.saveRefreshToken(decoded._id, newRefreshToken);
-
-    // Gửi lại Access Token và Refresh Token mới trong cookie
-    res.cookie('access_token', newAccessToken, { httpOnly: true, secure: true });
-    res.cookie('refresh_token', newRefreshToken, { httpOnly: true, secure: true });
-
-    return res.status(200).json({ message: "Tokens refreshed successfully" });
-  } catch (error) {
-    return res.status(403).json({ message: "Invalid refresh token" });
-  }
-});
-
-router.get('/v2/logout',jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]), async (req, res) => {
-  const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
-
-  if (!refreshToken) {
-    return res.status(400).json({ message: "No refresh token provided" });
-  }
-
-  // Đưa refresh token vào blacklist trong Redis
-  try {
-    // Kiểm tra xem refresh token có hợp lệ không trước khi đưa vào blacklist
-    const decoded = await jwtHelper.verifyRefreshToken(refreshToken); // Giả sử verifyRefreshToken sẽ trả về thông tin người dùng nếu token hợp lệ
-    const expiresInSeconds =  decoded.exp - Math.floor(Date.now() / 1000)
-    // Lưu token vào blacklist (thời gian hết hạn giống với thời gian hết hạn của refresh token)
-    await redisHelper.blacklistToken(refreshToken, expiresInSeconds);
-
-    // Xóa refresh token khỏi cookie
-    res.clearCookie('refreshToken', { httpOnly: true, secure: true }); // Xóa cookie refresh token
-
-    return res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: "Error during logout", error: error.message });
-  }
-})
+);
 module.exports = router;

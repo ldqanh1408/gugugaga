@@ -1,47 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Form } from "react-bootstrap";
+import { Button, Col, Form, Row, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { logging, getToken } from "../../services/authService.js";
-import { handleBlur, handleFocus } from "../../services";
-import { ACCOUNT, PASSWORD } from "../../constants";
 import { ClipLoader } from "react-spinners";
-import './Login.css'
+import { setRole, setTempRole } from "../../redux/authSlice";
+import { useDispatch } from "react-redux";
+import "./Login.css";
 function Login() {
-  const [account, setAccount] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [accountError, setAccountError] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await getToken();
-      if (token) {
-        navigate("/", { replace: true });
-      }
-    };
-    checkAuth();
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await logging({ account, password });
-      console.log({ message: "Login successful...." });
-      navigate("/");
-      window.location.reload();
-    } catch (error) {
-      setError("Incorrect password or account.");
-    }
-    setLoading(false);
-  };
-
   return (
-    <div className="container form-1">
+    <div className="form-1 container w-100 flex-grow-1">
       {/* Overlay che toàn màn hình khi loading */}
       {loading && (
         <div className="loading-overlay">
@@ -49,79 +20,81 @@ function Login() {
         </div>
       )}
 
-      <div className="container login-container">
-        <h1 className="login-header">Login</h1>
-        <hr className="login-line"></hr>
+      <Row className="w-100 flex-grow-1">
+        {/* Companies */}
+        <Col className="d-flex flex-column justify-content-center align-items-center text-center p-5 border-end">
+          <h2 className="fw-bold">For Companies</h2>
+          <p className="text-muted">
+            Thousands of companies have embraced the new way to hire and upskill
+            developers across roles and throughout their careers.
+          </p>
+          <Button
+            variant="dark"
+            className="my-4 px-5"
+            onClick={() => {
+              dispatch(setTempRole("EXPERT"));
+              setTimeout(() => {
+                navigate("/login/enter");
+              }, 0);
+            }}
+          >
+            Login for expert
+          </Button>
+          <Button
+            variant="dark"
+            className="my-4 px-5"
+            onClick={() => {
+              dispatch(setTempRole("BUSINESS"));
+              setTimeout(() => {
+                navigate("/login/enter");
+              }, 0);
+            }}
+          >
+            Login for business
+          </Button>
+          <p>
+            Don't have an account? <br />
+            <span
+              onClick={() => navigate("/business/sign-up")}
+              className="text-success fw-bold"
+              style={{ cursor: "pointer" }}
+            >
+              Sign up
+            </span>
+          </p>
+        </Col>
 
-        <Form className="">
-          <div className="d-flex flex-column form-2">
-            <Form.Group>
-              <Form.Label className="login-custom-h2-label">User name:</Form.Label>
-              <Form.Control
-                placeholder="Enter your username..."
-                className="login-box"
-                onChange={(e) => setAccount(e.target.value)}
-                onBlur={() =>
-                  handleBlur({
-                    account,
-                    field: ACCOUNT,
-                    password,
-                    setAccountError,
-                    setPasswordError,
-                  })
-                }
-                onFocus={() =>
-                  handleFocus({
-                    account,
-                    field: ACCOUNT,
-                    password,
-                    setAccountError,
-                    setPasswordError,
-                  })
-                }
-              ></Form.Control>
-              <Form.Text className="text-danger">{accountError}</Form.Text>
-            </Form.Group>
-            <Form.Group className="mt-4">
-              <Form.Label className="login-custom-h2-label">Password:</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter your password..."
-                className="login-box"
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() =>
-                  handleBlur({
-                    account,
-                    field: PASSWORD,
-                    password,
-                    setAccountError,
-                    setPasswordError,
-                  })
-                }
-                onFocus={() =>
-                  handleFocus({
-                    account,
-                    field: PASSWORD,
-                    password,
-                    setAccountError,
-                    setPasswordError,
-                  })
-                }
-              ></Form.Control>
-              <Form.Text className="text-danger">{passwordError}</Form.Text>
-            </Form.Group>
-          </div>
-          <Form.Text className="text-danger d-block">{error}</Form.Text>
-          
-          {/* Nút login hiển thị loading khi đang xử lý */}
-          <div className="d-flex justify-content-end">  
-            <Button style={{ marginRight: '0' }} type="submit" onClick={handleSubmit} disabled={loading}>
-              {loading ? <ClipLoader color="white" size={20} /> : "Login"}
-            </Button>
-          </div>
-        </Form>
-      </div>
-     
+        {/* Lovers */}
+        <Col className="d-flex flex-column justify-content-center align-items-center text-center p-5">
+          <h2 className="fw-bold">For Lovers</h2>
+          <p className="text-muted">
+            Join over 26 million developers, practice coding skills, prepare for
+            interviews, and get hired.
+          </p>
+          <Button
+            variant="outline-dark"
+            className="my-4 px-5"
+            onClick={async () => {
+              dispatch(setTempRole("USER"));
+              setTimeout(() => {
+                navigate("/login/enter");
+              }, 0);
+            }}
+          >
+            login
+          </Button>
+          <p>
+            Don't have an account? <br />
+            <span
+              onClick={() => navigate("/sign-up")}
+              className="text-success fw-bold"
+              style={{ cursor: "pointer" }}
+            >
+              Sign up
+            </span>
+          </p>
+        </Col>
+      </Row>
     </div>
   );
 }

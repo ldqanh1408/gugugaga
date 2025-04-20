@@ -47,7 +47,6 @@
   border: none !important; 
   border-radius: 10px;
   background-color: #fff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Header (tháng, năm) */
@@ -189,8 +188,9 @@
 /* Đảm bảo DatePicker không bị vỡ layout khi zoom */
 .datepicker-wrapper {
   max-width: 100%;
-  overflow: hidden;
+  overflow: auto;
   display: block;
+  background-color: #fff;
 }
 
 /* Bạn có thể điều chỉnh kích thước này sao cho phù hợp */

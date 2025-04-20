@@ -6,10 +6,9 @@ const { findOne } = require("../models/user.model");
 
 exports.requestTreatment = async (req, res) => {
   try {
-    const user = req.user;
+    const user = req.payload;
     const user_id = user._id;
     const {expert_id} = req.body; 
-    
     let { start_time, end_time } = req.body;
     if (!user || !start_time || !end_time) {
       return res

@@ -7,6 +7,7 @@ import {
   getEntries,
   getConsecutiveDays
 } from "../services"; // API services
+import { getTreaments } from "../services/userService";
 
 // Thunk lấy user cơ bản (thông tin đăng nhập)
 export const fetchUser = createAsyncThunk(
@@ -89,6 +90,13 @@ export const fetchConsecutiveDays = createAsyncThunk(
   }
 );
 
+export const getTreatmentsThunk = createAsyncThunk(
+  "users/getTreaments",
+  async (payload) => {
+    const data = await getTreaments();
+    return data;
+  }
+);
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -101,6 +109,7 @@ const userSlice = createSlice({
     logoutError: null,
     entries: 0,
     consecutiveDays: 0,
+    treatments: []
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -189,6 +198,19 @@ const userSlice = createSlice({
       .addCase(uploadProfileAsync.rejected, (state, action) => {
         state.error = action.payload || "Failed to update profile"; // Xử lý lỗi khi thất bại
         state.loading = false;
+      })
+      .addCase(getTreatmentsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTreatmentsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.treatments = action.payload;
+        state.error = null;
+      })
+      .addCase(getTreatmentsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });

@@ -20,7 +20,7 @@ exports.getMessages = async (req, res) => {
     }
 
     // Lấy thông tin user từ request (giả định đã có middleware auth)
-    const user = req.user;
+    const user = req.payload;
     if (!user) {
       return res.status(401).json({
         success: false,
