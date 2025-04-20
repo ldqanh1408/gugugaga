@@ -17,7 +17,6 @@ function Home() {
       <Row className="mt-4">
         <h1 className="fw-bolder text">GUGUGAGA</h1>
         <p className="opacity-75 text">Write your life</p>
-        <Button className="btn" href="note">Write</Button>
       </Row>
 
       <Row className="mt-4">

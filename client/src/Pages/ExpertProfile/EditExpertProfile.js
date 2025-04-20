@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button } from 'react-bootstrap';
-import './EditProfile.css';
 import userAva from "../../assets/imgs/userAva.jpg"; 
 import { updateAvatar, updateProfile, uploadProfileAsync } from '../../redux/userSlice'; // Redux action
 import {Loading} from "../../components/Common/Loading"
@@ -57,7 +56,7 @@ function EditProfile({ setIsEditing }) {
             <h1 className="edit-profile-header">Edit Profile</h1>
             <hr className="edit-profile-line" />
 
-            <Form onSubmit={handleSubmit} className='wrapper'>
+            <Form onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Avatar</Form.Label>
                     <Form.Group className="edit-profile-box">
@@ -65,7 +64,7 @@ function EditProfile({ setIsEditing }) {
                             <div className="avatar-preview">
 
                                 <img
-                                    src={profile.avatarPreview || userAva}
+                                    src={profile?.avatarPreview || userAva}
                                     alt="Avatar"
 
                                     className="avatar-image"
@@ -97,7 +96,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="text"
                             name="nickName"
-                            value={profile.nickName}
+                            value={profile?.nickName}
                             onChange={handleChange}
                             placeholder="Enter your name"
                         />
@@ -108,10 +107,10 @@ function EditProfile({ setIsEditing }) {
                     <Form.Label className="custom-h2-label">Bio</Form.Label>
                     <Form.Group className="edit-profile-box">
                         <Form.Control
-                            className="no-border bio"
+                            className="no-border"
                             as="textarea"
                             name="bio"
-                            value={profile.bio}
+                            value={profile?.bio}
                             onChange={handleChange}
                             placeholder="Enter your bio"
                         />
@@ -125,7 +124,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="date"
                             name="dob"
-                            value={profile.dob ? profile.dob.split('T')[0] : ''}
+                            value={profile?.dob ? profile.dob.split('T')[0] : ''}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -137,7 +136,7 @@ function EditProfile({ setIsEditing }) {
                         <Form.Select
                             className="no-border"
                             name="gender"
-                            value={profile.gender}
+                            value={profile?.gender}
                             onChange={handleChange}
                         >
                             <option value="">-- Select Gender --</option>
@@ -155,7 +154,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="tel"
                             name="phone"
-                            value={profile.phone}
+                            value={profile?.phone}
                             onChange={handleChange}
                             placeholder="Enter your phone number"
                         />
@@ -169,7 +168,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="email"
                             name="email"
-                            value={profile.email}
+                            value={profile?.email}
                             onChange={handleChange}
                             placeholder="Enter your email"
                             required

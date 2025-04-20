@@ -47,5 +47,5 @@ export {
   loadProfile,
   uploadProfile,
   getEntries,
-  getConsecutiveDays
+  getConsecutiveDays,
 };

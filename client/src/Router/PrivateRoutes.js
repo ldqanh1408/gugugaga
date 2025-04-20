@@ -3,14 +3,14 @@ import { useState, useEffect } from "react";
 import { getToken } from "../services/authService";
 import {Loading} from "../components"
 function PrivateRoutes() {
-  const [isAuthenticated, setIsAuthenticated] = useState(null); // null: đang kiểm tra
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // null: đang kiểm tra
 
   useEffect(() => {
     let mounted = true;
 
     const checkAuth = async () => {
       try {
-        const token = await getToken();
+        const token = await getToken()
         console.log("Token nhận được:", token); // Debug giá trị token
         if (mounted) {
           setIsAuthenticated(!!token); // true nếu token tồn tại, false nếu null

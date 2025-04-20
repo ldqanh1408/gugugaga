@@ -174,13 +174,13 @@ exports.uploadProfile = async (req, res) => {
 
 exports.getTreatment = async (req, res) => {
   try {
-    let { _id } = req.user;
+    let {_id} = req.payload;
     const user = await User.findOne({ _id: _id });
     if (!user)
       return res
         .status(404)
         .json({ success: false, message: "Found not user" });
-    const treatments = await Treatment.find({ user_id: _id });
+    const treatments = await Treatment.find({ user_id: _id }).populate("expert_id", "expert_name").populate("schedule_id");
     return res.status(200).json({ success: true, treatments });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

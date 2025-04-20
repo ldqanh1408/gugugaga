@@ -1,0 +1,17 @@
+.schedule {
+    min-height: 100vh ;
+}
+
+.line {
+    height: 1px;
+    background-color: #333;
+    width: 20%;
+}
+
+.small-btn {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    margin-bottom: 0;
+}

@@ -1,19 +1,16 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form } from "react-bootstrap";
-import "./SignUp.css";
+import "./SignUpBusiness.css";
 import { useNavigate } from "react-router-dom";
-
+import {useDispatch, useSelector} from "react-redux"
 import { useState, useEffect } from "react";
-import { addUser } from "../../services";
 import { ACCOUNT, PASSWORD, USER_NAME } from "../../constants";
 import { handleBlur, handleFocus, handleConfirm } from "../../services";
-import { handleSignUp } from "../../services/validationService";
 import { register, getToken } from "../../services/authService";
 import Loading from "../../components/Common/Loading";
 import { ClipLoader } from "react-spinners";
-import { useDispatch } from "react-redux";
-import { registerThunk } from "../../redux/authSlice";
-function SignUp() {
+import { setRole, registerThunk  } from "../../redux/authSlice";
+function SignUpBusiness() {
   const [account, setAccount] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -29,32 +26,25 @@ function SignUp() {
   const [userNameError, setUserNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [businessNameError, setBusinessNameError] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("");
+  const [businessEmailError, setBusinessEmailError] = useState("");
+  const state = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await getToken(); // Chờ Promise giải quyết
-      if (token) {
-        // Kiểm tra token thực tế
-        navigate("/", { replace: true });
-      }
-    };
-    checkAuth();
-  }, []);
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const formData = {
-        email: email,
-        userName: account,
+        business_email: businessEmail,
+        business_name: businessName,
         account,
         password,
-        phone,
-        role: "USER",
-      };
+        role: "BUSINESS",
+      }
       dispatch(registerThunk(formData));
       console.log("You have successfully registered.");
       navigate("/login/enter");
@@ -70,9 +60,8 @@ function SignUp() {
     }
     setLoading(false);
   };
-
   return (
-    <div className="container form-1">
+    <div className="container">
       {loading && <Loading />}
       <div>
         <div>
@@ -81,10 +70,10 @@ function SignUp() {
         </div>
 
         <div className="">
-          <Form className="d-flex flex-column form-2 login">
+          <Form className="d-flex flex-column form-1 login">
             <Form.Group className="mt-4">
               <Form.Label className="signup-custom-h2-label">
-                Username:
+                Account:
               </Form.Label>
               <Form.Control
                 onChange={(e) => setAccount(e.target.value)}
@@ -131,24 +120,16 @@ function SignUp() {
                 className="signup-box"
                 onBlur={() =>
                   handleBlur({
-                    field: PASSWORD,
-                    account,
+                    field: "password",
                     password,
-                    userName,
-                    setAccountError,
                     setPasswordError,
-                    setUserNameError,
                   })
                 }
                 onFocus={() =>
                   handleFocus({
-                    field: PASSWORD,
-                    account,
+                    field: "password",
                     password,
-                    userName,
-                    setAccountError,
                     setPasswordError,
-                    setUserNameError,
                   })
                 }
               ></Form.Control>
@@ -162,96 +143,61 @@ function SignUp() {
             </Form.Group>
             <Form.Group className="mt-4">
               <Form.Label className="signup-custom-h2-label">
-                Confirm password:
+                Business email:
               </Form.Label>
               <Form.Control
-                type="password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onKeyUp={(e) => {
-                  handleConfirm({
-                    password,
-                    confirmPassword,
-                    confirmPasswordError,
-                    setConfirmPasswordError,
-                  });
-                }}
-                placeholder="Re-enter your password..."
+                type="text"
+                onChange={(e) => setBusinessEmail(e.target.value)}
+                onBlur={() => handleBlur({
+                  field: "businessEmail",
+                  businessEmail,
+                  setBusinessEmailError,
+                })}
+                onFocus={() => handleFocus({
+                  field: "businessEmail",
+                  businessEmail,
+                  setBusinessEmailError,
+                })}
+                placeholder="Enter your email..."
                 className="signup-box"
               ></Form.Control>
               <Form.Text className="text-danger">
-                {confirmPasswordError}
+                {businessEmailError}
               </Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
-              <Form.Label className="signup-custom-h2-label">Name:</Form.Label>
+              <Form.Label className="signup-custom-h2-label">
+                Business name:
+              </Form.Label>
               <Form.Control
-                onChange={(e) => setUserName(e.target.value)}
+                onChange={(e) => setBusinessName(e.target.value)}
                 placeholder="Enter your name..."
                 className="signup-box"
                 onBlur={() =>
                   handleBlur({
-                    field: USER_NAME,
-                    account,
-                    password,
-                    userName,
-                    setAccountError,
-                    setPasswordError,
-                    setUserNameError,
+                    field: "businessName",
+                    businessName,
+                    setBusinessNameError,
                   })
                 }
                 onFocus={() =>
                   handleFocus({
-                    field: USER_NAME,
-                    account,
-                    password,
-                    userName,
-                    setAccountError,
-                    setPasswordError,
-                    setUserNameError,
+                    field: "businessName",
+                    businessName,
+                    setBusinessNameError,
                   })
                 }
               ></Form.Control>
-              <Form.Text className="text-danger">{userNameError}</Form.Text>
+              <Form.Text className="text-danger">{businessNameError}</Form.Text>
             </Form.Group>
-          </Form>
-
-          <Form className="">
-            <div className="d-flex flex-column form-2 additional">
-              <Form.Group className="mt-4">
-                <Form.Label className="signup-custom-h2-label">
-                  Email:
-                </Form.Label>
-                <Form.Control
-                  type="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email..."
-                  className="signup-box"
-                ></Form.Control>
-                <Form.Text className="text-danger">{emailError}</Form.Text>
-              </Form.Group>
-              <Form.Group className="mt-4">
-                <Form.Label className="signup-custom-h2-label">
-                  Phone:
-                </Form.Label>
-                <Form.Control
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter your phone number..."
-                  className="signup-box"
-                ></Form.Control>
-                <Form.Text className="text-danger">{phoneError}</Form.Text>
-              </Form.Group>
-            </div>
-            {error && <p className="text-danger">{error}</p>}
-            <div className="d-flex justify-content-end">
-              <Button
-                style={{ marginRight: "0" }}
-                type="submit"
-                onClick={handleSubmit}
-                disabled={loading}
-              >
-                {loading ? <ClipLoader color="white" size={20} /> : "Sign Up"}
-              </Button>
-            </div>
+            <Button
+              style={{ marginRight: "0" }}
+              type="submit"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? <ClipLoader color="white" size={20} /> : "Sign Up"}
+            </Button>
           </Form>
         </div>
       </div>
@@ -259,4 +205,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default SignUpBusiness;

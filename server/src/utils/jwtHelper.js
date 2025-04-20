@@ -52,6 +52,8 @@ const createAccessToken = (payload) => {
     {
       _id: payload._id.toString(),
       role: payload.role,
+      journalId: payload.journalId,
+      chatId: payload.chatId
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRATION)  }
@@ -59,7 +61,13 @@ const createAccessToken = (payload) => {
 };
 
 const verifyAccessToken = (token) => {
-  return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  try{
+    const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    return payload;
+  }
+  catch(error){
+    return error
+  }
 };
 
 

@@ -7,6 +7,7 @@ import "./UserAvatar.css";
 import { useNavigate } from "react-router-dom";
 import { fetchProfile, fetchUser, logoutUserAsync } from "../../redux/userSlice"; // Import Redux Thunks
 import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../redux/authSlice";
 
 function UserAvatar() {
   const dispatch = useDispatch();
@@ -25,7 +26,8 @@ function UserAvatar() {
   // Hàm xử lý logout
   const handleLogout = async () => {
     await dispatch(logoutUserAsync()); // Gọi Thunk logoutUserAsyn
-    navigate("/login"); // Điều hướng về trang chính sau khi logout
+    await dispatch(logout())
+    await navigate("/login"); // Điều hướng về trang chính sau khi logout
   };
   return (
     <div className="container justify-content-end d-flex">

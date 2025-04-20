@@ -28,7 +28,6 @@ function NoteEditor({
   const [mood, setMood] = useState(currentNote.mood || "");
   const [media, setMedia] = useState(currentNote.media || []);
   const dispatch = useDispatch();
-  console.error(currentNote)
   function formatDateForInput(dateString) {
     if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
     const date = new Date(dateString);

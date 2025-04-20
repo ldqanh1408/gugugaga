@@ -99,12 +99,16 @@ const uploadProfile = async ({ profile, avatarFile }) => {
       const formData = new FormData();
       formData.append("avatar", avatarFile); // Thêm file avatar vào form data
 
-      const uploadResponse = await axios.post(`${API_URL}users/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // Gửi token trong header
-        },
-      });
+      const uploadResponse = await axios.post(
+        `${API_URL}users/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // Gửi token trong header
+          },
+        }
+      );
 
       // Lấy URL ảnh từ response nếu upload thành công
       if (uploadResponse.data && uploadResponse.data.success) {
@@ -136,7 +140,30 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     return { success: false, message: "Lỗi khi cập nhật profile." };
   }
 };
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
 
+export const getTreaments = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = "/v1/users/me/treatments";
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    console.log(response)
+    return response.data
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
 
 export {
   getUsers,

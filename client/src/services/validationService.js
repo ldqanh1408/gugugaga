@@ -40,41 +40,32 @@ export const handleLogin = async ({
 };
 
 //Dùng để xử lí blur của các input login
-export const handleBlur = ({
-  field,
-  account,
-  userName,
-  setAccountError,
-  password,
-  setPasswordError,
-  setUserNameError
-}) => {
-  if (field === "account" && !account) {
-    setAccountError("Account is required");
-  } else if (field === "password" && !password) {
-    setPasswordError("Password is required");
-  } else if (field === "userName" && !userName) {
-    setUserNameError("User name is required");
+export const handleBlur = (payload) => {
+  if (payload.field === "account" && !payload.account) {
+    payload.setAccountError("Account is required");
+  } else if (payload.field === "password" && !payload.password) {
+    payload.setPasswordError("Password is required");
+  } else if (payload.field === "userName" && !payload.userName) {
+    payload.setUserNameError("User name is required");
+  } else if (payload.field === "businessName" && !payload.businessName) {
+    payload.setBusinessNameError("Business name is required");
+  } else if (payload.field === "businessEmail" && !payload.businessEmail) {
+    payload.setBusinessEmailError("Business email is required");
   }
 };
 
 //Nếu field được focus thì bỏ cảnh báo
-export const handleFocus = ({
-  field,
-  account,
-  password,
-  userName,
-  setAccountError,
-  setPasswordError,
-  setUserNameError
-}) => {
-  if (field === "account") {
-    setAccountError("");
-  } else if (field === "password") {
-    setPasswordError("");
-  }
-  else if (field === "userName") {
-    setUserNameError("");
+export const handleFocus = (payload) => {
+  if (payload.field === "account") {
+    payload.setAccountError("");
+  } else if (payload.field === "password") {
+    payload.setPasswordError("");
+  } else if (payload.field === "userName") {
+    payload.setUserNameError("");
+  } else if (payload.field == "businessName") {
+    payload.setBusinessNameError("");
+  } else if (payload.field === "businessEmail") {
+    payload.setBusinessEmailError("");
   }
 };
 

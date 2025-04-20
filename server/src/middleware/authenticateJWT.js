@@ -102,19 +102,14 @@ const authenticateAndAuthorize = (roles = []) => {
           .status(401)  
           .json({ message: "Unauthorized - No token provided" });
       }
-      const token = authHeader.split(" ")[1]; // Lấy phần token sau "Bearer "
+      const token = authHeader.split(" ")[1]?.trim(); // Lấy phần token sau "Bearer "
       if (!token) {
         return res.status(401).json("Access Denied");
       }
-
-      // Kiểm tra xem token có bị blacklist không
-      const isBlacklisted = await redisHelper.isBlacklisted(token);
-      if (isBlacklisted) {
-        return res.status(403).send("Token is blacklisted");
-      }
+      console.log("get accessToken:", token);
 
       const decoded = await jwtHelper.verifyAccessToken(token);
-      
+      console.log(decoded);
       if (roles.length && !roles.includes(decoded.role)) {
         return res.status(403).json({ message: "Forbidden - Insufficient role" });
       }

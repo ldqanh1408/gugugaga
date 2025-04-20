@@ -97,12 +97,12 @@ exports.getAvailableExperts = async (req, res) => {
   try {
     const { start_time, end_time } = req.body;
     const schedules = await Schedule.find({
-      start_time: { $gte: start_time },
-      end_time: { $lte: end_time },
+      start_time: { $lte: end_time },
+      end_time: { $gte: start_time },
     });
     const expert_ids = schedules.map((s) => s.expert_id);
     const experts = await Expert.find({
-      _id: { $in: expert_ids },
+      _id: { $nin: expert_ids },
     });
     return res.status(200).json({ success: true, experts });
   } catch (error) {

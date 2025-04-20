@@ -54,8 +54,8 @@ function Calendar() {
   };
 
   useEffect(() => {
-    if(!notes){
-      dispatch(fetchNotes()); // Fetch notes khi component mount
+    if (!notes || notes.length === 0) {
+      dispatch(fetchNotes());
     }
   }, [dispatch]);
 
