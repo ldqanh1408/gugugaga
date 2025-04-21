@@ -27,7 +27,7 @@ exports.requestTreatment = async (req, res) => {
 
 exports.acceptTreatment = async (req, res) => {
     try {
-      const {_id} = req.expert;
+      const {_id} = req.payload;
       const {treatment_id} = req.params;
       const expert = await Expert.findOne({_id: _id});
       if(!expert) return res.status(404).json({success: false, message: "Found not expert"});
@@ -45,7 +45,7 @@ exports.acceptTreatment = async (req, res) => {
 
 exports.rejectTreatment = async (req, res) => {
   try {
-    const {_id} = req.expert;
+    const {_id} = req.payload;
     const {treatment_id} = req.params;
     const expert = await Expert.findOne({_id: _id});
     if(!expert) return res.status(404).json({success: false, message: "Found not expert"});

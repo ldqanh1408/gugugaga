@@ -97,6 +97,7 @@ const authenticateAndAuthorize = (roles = []) => {
   return async (req, res, next) => {
     try {
       const authHeader = req.header("Authorization");
+
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res
           .status(401)  
@@ -106,11 +107,9 @@ const authenticateAndAuthorize = (roles = []) => {
       if (!token) {
         return res.status(401).json("Access Denied");
       }
-      console.log("get accessToken:", token);
-
       const decoded = await jwtHelper.verifyAccessToken(token);
-      console.log(decoded);
-      if (roles.length && !roles.includes(decoded.role)) {
+
+      if (roles.length && !roles.includes(decoded?.role)) {
         return res.status(403).json({ message: "Forbidden - Insufficient role" });
       }
 

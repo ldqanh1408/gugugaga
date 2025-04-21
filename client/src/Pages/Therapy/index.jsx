@@ -15,12 +15,12 @@ function Therapy() {
   const { start_time, duration, experts, selected } = useSelector(
     (state) => state?.therapy
   );
-  console.log(selected);
   const dispatch = useDispatch();
-
+  
   useEffect(() => {
     const fetchExperts = async () => {
       if (start_time && duration) {
+        console.log(experts);
         const start = new Date(start_time);
         const end = new Date(start.getTime() + parseInt(duration) * 60000);
 

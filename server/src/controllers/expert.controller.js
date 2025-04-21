@@ -37,7 +37,7 @@ exports.addExpert = async (req, res) => {
 
     await newExpert.save();
     await pubSubHelper.publishInvalidation(constants.CHANEL_EXPERTS, {
-      businessId : business._id,
+      businessId: business._id,
     });
 
     return res.status(200).json({ success: true, expert: newExpert });
@@ -81,12 +81,11 @@ exports.getTreatment = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "Found not expert" });
-    const cacheData = await redisHelper.get(`treatments:experts:${expert._id}`);
-    if(cacheData){
-      return res.status(200).json({ success: true, treatments: cacheData });
-    }
-    const treatments = await Treatment.find({ expert_id: _id });
-    await redisHelper.set(`treatments:experts:${expert._id}`, treatments);
+
+    const treatments = await Treatment.find({ expert_id: _id })
+      .populate("user_id", "userName phone email")
+      .populate("expert_id", "expert_name");
+
     return res.status(200).json({ success: true, treatments });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

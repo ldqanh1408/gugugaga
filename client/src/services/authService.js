@@ -60,13 +60,13 @@ export const checkAuth = async () => {
 
 export const getToken = async () => {
   try {
-    let accessToken = JSON.parse(localStorage.getItem("accessToken")); // Hoặc chỗ bạn lưu token
+   let accessToken = JSON.parse(localStorage.getItem("accessToken")); // Hoặc chỗ bạn lưu token
     const response = await api.get("/get-token", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    accessToken = response.data.token;
+    accessToken = response.data.accessToken;
     localStorage.setItem("accessToken", JSON.stringify(accessToken));
     return accessToken;
   } catch (error) {

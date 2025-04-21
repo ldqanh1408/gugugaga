@@ -109,50 +109,48 @@ router.post("/v1/logout", async (req, res) => {
   }
 });
 
-router.get(
-  "/v1/get-token",
-  jwt.authenticateAndAuthorize(["USER", "BUSINESS", "EXPERT"]),
-  async (req, res) => {
-    const accessToken = req.cookies.accessToken;
-    const refreshToken = req.cookies.refreshToken;
-    if (!accessToken) {
-      return res.status(404).json({
-        success: false,
-        message: "Access token not found",
-        accessToken: null,
-      });
+router.get("/v1/get-token", async (req, res) => {
+  const accessToken = req.cookies.accessToken;
+  const refreshToken = req.cookies.refreshToken;
+  if (!accessToken) {
+    return res.status(404).json({
+      success: false,
+      message: "Access token not found",
+      accessToken: null,
+    });
+  }
+  let decoded;
+  try {
+    decoded = await jwtHelper.verifyAccessToken(accessToken);
+    if (!decoded._id) throw new Error({ name: "TokenExpiredError" });
+    return res.status(200).json({
+      success: true,
+      data: decoded,
+      accessToken: accessToken,
+    });
+  } catch (error) {
+    // Token hết hạn → xử lý làm mới bằng refresh token
+    if (!refreshToken) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Refresh token not found" });
     }
     try {
-      const decoded = jwtHelper.verifyAccessToken(accessToken);
+      const decodedRefresh = jwtHelper.verifyRefreshToken(refreshToken);
+
+      // Tạo lại access token mới
+      const newAccessToken = jwtHelper.createAccessToken(decodedRefresh);
+      // Gửi lại access token mới qua cookie hoặc body
       return res
         .status(200)
-        .json({ success: true, token: accessToken, data: decoded });
-    } catch (error) {
-      if (error.name === "TokenExpiredError") {
-        // Token hết hạn → xử lý làm mới bằng refresh token
-        if (!refreshToken) {
-          return res
-            .status(403)
-            .json({ success: false, message: "Refresh token not found" });
-        }
-        try {
-          const decodedRefresh = jwtHelper.verifyRefreshToken(refreshToken);
-
-          // Tạo lại access token mới
-          const newAccessToken = jwtHelper.createAccessToken(decodedRefresh);
-          // Gửi lại access token mới qua cookie hoặc body
-          return res
-            .status(200)
-            .json({ success: true, accessToken: newAccessToken });
-        } catch (refreshErr) {
-          return res
-            .status(403)
-            .json({ success: false, message: "Invalid refresh token" });
-        }
-      }
+        .json({ success: true, accessToken: newAccessToken });
+    } catch (refreshErr) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Invalid refresh token" });
     }
   }
-);
+});
 
 router.get("/v1/check-auth", (req, res) => {
   const token = req.cookies.token;
@@ -365,7 +363,7 @@ router.post("/v3/login", async (req, res) => {
 
     const accessToken = jwtHelper.createAccessToken(roleModel);
     const refreshToken = jwtHelper.createRefreshToken(roleModel);
-    console.log("Loggin accessTOken",accessToken);
+    console.log("Loggin accessTOken", accessToken);
     res.clearCookie("refreshToken");
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
