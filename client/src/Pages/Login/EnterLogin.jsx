@@ -33,7 +33,6 @@ function EnterLogin() {
   const {tempRole} = useSelector((state) => state?.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(tempRole)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
@@ -43,7 +42,8 @@ function EnterLogin() {
         role: tempRole
       }
       const response = await dispatch(loggingThunk(formData));
-      if(response.payload.data.data) {
+      console.log(response);
+      if(response.payload?.data?.data) {
         await dispatch(setIsAuthenticated(true))
         navigate("/");
       } ;
@@ -57,7 +57,7 @@ function EnterLogin() {
       {loading && <Loading />}
       <div>
         <div>
-          <h1 className="signup-header">Login</h1>
+          <h1 className="signup-header">Login for {tempRole}</h1>
           <hr className="signup-line"></hr>
         </div>
 

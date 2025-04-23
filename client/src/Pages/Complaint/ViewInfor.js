@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
-import "./HistoryExpert.css";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsViewing } from "../../redux/historySlice";
+import { setIsViewing } from "../../redux/complaintSlice";
 function ViewInfor() {
-  const {isViewing} = useSelector((state) => state?.history);
+  const {isViewing} = useSelector((state) => state?.complaint);
   const dispatch = useDispatch();
   return (
     <div className="history">

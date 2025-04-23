@@ -7,6 +7,9 @@ import fontReducer from './fontSlice';
 import historyReducer from './historySlice'
 import therapyReducer from "./therapySlice"
 import expertReducer from "./expertSlice"
+import scheduleReducer from "./scheduleSlice"
+import businessReducer from "./businessSlice"
+import complaintReducer from "./complaintSlice"
 export const store = configureStore({
   reducer: {
     user: userReducer, // Thêm reducer user vào store
@@ -15,6 +18,9 @@ export const store = configureStore({
     font: fontReducer,
     history: historyReducer,
     therapy: therapyReducer,
-    expert : expertReducer
+    expert : expertReducer,
+    schedule: scheduleReducer,
+    business: businessReducer,
+    complaint: complaintReducer,
   },
 });

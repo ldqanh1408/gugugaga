@@ -48,7 +48,7 @@ function NoteEditor({
   const handleAddAudio = () => {
     console.log("Add audio clicked");
   };
-  
+
   const handleSubmit = () => {
     if (!header.trim() || !date.trim() || !text.trim()) {
       alert("Please fill in all the required fields!!!");
@@ -74,6 +74,8 @@ function NoteEditor({
     }));
     setMedia([...media, ...newMedia]);
   };
+
+
 
   const autoResizeTextArea = (event) => {
     event.target.style.height = "auto"; // Reset height trước

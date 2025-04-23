@@ -209,8 +209,8 @@ const userSlice = createSlice({
       .addCase(getTreatmentsThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.treatments = action.payload;
-        state.currentTreatments = action.payload.filter((treatment, index) => treatment.treatmentStatus !== "pending");
-        state.pendingTreatments = action.payload.filter((treatment, index) => treatment.treatmentStatus === "pending");
+        state.currentTreatments = action.payload?.filter((treatment, index) => treatment.treatmentStatus !== "pending");
+        state.pendingTreatments = action.payload?.filter((treatment, index) => treatment.treatmentStatus === "pending");
         state.error = null;
       })
       .addCase(getTreatmentsThunk.rejected, (state, action) => {

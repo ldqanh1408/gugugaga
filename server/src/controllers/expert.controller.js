@@ -15,14 +15,32 @@ async function hashPassword(password) {
 
 exports.addExpert = async (req, res) => {
   try {
-    let { account, password, expert_name, gendar, diploma_url, avatar_url } =
-      req.body;
+    let {
+      account = "",
+      password = "",
+      expert_name = "",
+      gendar = "",
+      diploma_url = "",
+      avatar_url = "",
+    } = req.body;
+    // Kiểm tra các trường bắt buộc
+    if (!account || !password || !expert_name || !gendar) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Thiếu thông tin bắt buộc: account, password, expert_name, gendar, diploma_url",
+      });
+    }
+
     password = await hashPassword(password);
+
     const business = req.payload;
     let business_id = business._id;
     business_id = new mongoose.Types.ObjectId(business_id);
+
     const role = "EXPERT";
     const number_of_treatment = 0;
+
     const newExpert = new Expert({
       account,
       password,
@@ -36,6 +54,7 @@ exports.addExpert = async (req, res) => {
     });
 
     await newExpert.save();
+
     await pubSubHelper.publishInvalidation(constants.CHANEL_EXPERTS, {
       businessId: business._id,
     });
@@ -49,15 +68,7 @@ exports.addExpert = async (req, res) => {
 exports.getExperts = async (req, res) => {
   try {
     const temp_business = req.payload;
-    const cacheKey = `experts:business:${temp_business._id}`;
-    const cachedData = await redisHelper.get(cacheKey);
 
-    if (cachedData) {
-      // Nếu có cache, trả về luôn
-      return res
-        .status(200)
-        .json({ success: true, experts: cachedData, msg: "OF REDIS" });
-    }
     let business_id = new mongoose.Types.ObjectId(temp_business._id);
     const business = await Business.findOne({ _id: business_id });
     if (!business)
@@ -66,7 +77,6 @@ exports.getExperts = async (req, res) => {
         .json({ success: false, message: "Found not business" });
     const experts = await Expert.find({ business_id: business_id });
 
-    await redisHelper.set(cacheKey, experts);
     return res.status(200).json({ success: true, experts });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

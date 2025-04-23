@@ -16,7 +16,7 @@ function HistoryExpert() {
     };
     fetchTreatments();
   }, [dispatch]);
-  console.log(treatments)
+  console.log(treatments);
   return (
     <Container className="history">
       <h1>History</h1>
@@ -54,8 +54,6 @@ function HistoryExpert() {
                 </tr>
               ))
             )}
-
-           
           </tbody>
         </Table>
       )}

@@ -32,6 +32,7 @@ export const register = async (payload) => {
 export const logging = async (payload) => {
   try {
     const response = await api_3.post("/login", payload);
+    console.log(response)
     return response;
   } catch (error) {
     console.error("Error fetching notes:", error);

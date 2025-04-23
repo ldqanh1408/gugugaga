@@ -51,3 +51,25 @@ export const getTreaments = async (payload) => {
   }
 };
 
+export const getExperts = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error("Không tìm thấy token");
+    }
+    const url = `/v1/experts`;
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error experts:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
+

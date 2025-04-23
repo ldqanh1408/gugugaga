@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
-import "./HistoryExpert.css";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsViewing } from "../../redux/historySlice";
+import { setIsViewing } from "../../redux/scheduleSlice";
 function ViewInfor() {
-  const {isViewing} = useSelector((state) => state?.history);
+  const {isViewing} = useSelector((state) => state?.schedule);
   const dispatch = useDispatch();
   return (
     <div className="history">
-       <Row>
+      <Row>
         <Col className="left">
           <div>
             <div className="fw-bold">TREATMENT</div>

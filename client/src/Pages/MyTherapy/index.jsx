@@ -98,13 +98,13 @@ function MyTherapy() {
               </div>
             </Card>
 
-            {currentTreatments.length === 0 ? (
+            {currentTreatments?.length === 0 ? (
               <div className="no-treatments-message">
                 No {status === "current" ? "current" : "pending"} treatments
                 found.
               </div>
             ) : (
-              currentTreatments.map((treatment, index) => (
+              currentTreatments?.map((treatment, index) => (
                 <Card className="mb-3 custom-card">
                   <Card.Body className="custom-card-content">
                     <div className="card-header">
@@ -184,13 +184,13 @@ function MyTherapy() {
               </div>
             </Card>
 
-            {pendingTreatments.length === 0 ? (
+            {pendingTreatments?.length === 0 ? (
               <div className="no-treatments-message">
                 No {status === "current" ? "current" : "pending"} treatments
                 found.
               </div>
             ) : (
-              pendingTreatments.map((treatment, index) => (
+              pendingTreatments?.map((treatment, index) => (
                 <Card className="mb-3 custom-card">
                   <Card.Body className="custom-card-content">
                     <div className="card-header">

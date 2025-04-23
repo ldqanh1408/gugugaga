@@ -33,7 +33,7 @@ export const loggingThunk = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await logging(data);
-      console.warn(response);
+
       return response;
     } catch (err) {
       console.log(err.message);
@@ -53,7 +53,6 @@ const authSlice = createSlice({
     loading: false,
     role: entity?.role,
     tempRole: "USER",
-    accessToken: accessToken || null, 
   },
   reducers: {
     setTempRole: (state, action) => {
