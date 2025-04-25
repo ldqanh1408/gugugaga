@@ -1,5 +1,3 @@
-
-
 /**
  * @swagger
  * api/v1/backup/export/dump:
@@ -293,23 +291,31 @@
  *           schema:
  *             type: object
  *             properties:
- *               note:
- *                 type: object
- *                 required:
- *                   - mood
- *                   - header
- *                   - text
- *                 properties:
- *                   mood:
- *                     type: string
- *                     enum: ["happy", "sad", "neutral", "excited", "angry"]
- *                     example: "happy"
- *                   header:
- *                     type: string
- *                     example: "Một ngày đẹp trời"
- *                   text:
- *                     type: string
- *                     example: "Hôm nay tôi có một ngày tuyệt vời..."
+ *               header:
+ *                 type: string
+ *                 example: "Một ngày đẹp trời"
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2023-10-01"
+ *               text:
+ *                 type: string
+ *                 example: "Hôm nay tôi có một ngày tuyệt vời..."
+ *               mood:
+ *                 type: string
+ *                 enum: ["happy", "sad", "neutral", "excited", "angry"]
+ *                 example: "happy"
+ *               media:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     type:
+ *                       type: string
+ *                       example: "image"
+ *                     url:
+ *                       type: string
+ *                       example: "https://example.com/image.jpg"
  *     responses:
  *       201:
  *         description: Thêm note thành công

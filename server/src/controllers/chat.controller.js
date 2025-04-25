@@ -107,8 +107,11 @@ exports.addMessage = async (req, res) => {
       });
     }
 
+    // Ensure media array exists
+    if (!message.media) message.media = [];
+
     // Thêm message mới vào mảng messages
-    chat.messages = [...chat.messages, message];
+    chat.messages.push(message);
     await chat.save();
 
     // Trả về response thành công

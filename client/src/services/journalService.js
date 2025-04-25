@@ -1,6 +1,9 @@
 import axios from "axios";
 import { getPayLoad, getToken } from "./authService";
+
 const API_URL = "http://localhost:5000/api/v1/journals/";
+const CLOUD_NAME = process.env.CLOUD_NAME; // Load Cloudinary cloud name from .env
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`;
 
 export const getNotes = async () => {
   const token = await getToken();
@@ -68,23 +71,30 @@ export const saveNote = async (newNote) => {
     if (!journalId) {
       throw new Error("Journal ID không tồn tại");
     }
+
+    console.log("Payload being sent to backend:", newNote); // Log payload để kiểm tra
+
     const url = `${API_URL}${journalId}/notes`;
-    const response = await axios.post(url, newNote, {
+    const response = await axios.post(url, { ...newNote }, { // Flatten the payload
       headers: {
         Authorization: `Bearer ${token}`, // Gửi token trong header
+        "Content-Type": "application/json", // Đảm bảo định dạng JSON
       },
     });
+
+    console.log("Response from backend:", response.data); // Log phản hồi từ backend
     return response.data.note;
   } catch (error) {
     console.error(
-      "Error fetching notes:",
+      "Error saving note:",
       error.response ? error.response.data : error.message
     );
     throw error;
   }
 };
 
-export const updateNote = async ({ note: updatedNote }) => {
+
+export const updateNote = async (updatedNote) => {
   const token = await getToken();
   if (!token) {
     throw new Error("Không tìm thấy token");
@@ -98,17 +108,18 @@ export const updateNote = async ({ note: updatedNote }) => {
     const url = `${API_URL}${journalId}/notes/${updatedNote._id}`;
     const response = await axios.patch(
       url,
-      { note: updatedNote },
+      updatedNote, // Send flat payload
       {
         headers: {
           Authorization: `Bearer ${token}`, // Gửi token trong header
+          "Content-Type": "application/json", // Đảm bảo định dạng JSON
         },
       }
     );
     return response.data.note;
   } catch (error) {
     console.error(
-      "Error fetching notes:",
+      "Error updating note:",
       error.response ? error.response.data : error.message
     );
     throw error;

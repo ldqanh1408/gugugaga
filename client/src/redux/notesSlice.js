@@ -1,6 +1,7 @@
 // src/redux/notesSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getNotes, saveNote, updateNote } from "../services/journalService";
+import { addMessage, getMessages } from "../services";
 
 // Thunk để fetch danh sách notes từ API
 export const fetchNotes = createAsyncThunk("notes/fetchNotes", async () => {
@@ -12,7 +13,7 @@ export const fetchNotes = createAsyncThunk("notes/fetchNotes", async () => {
 export const saveNewNote = createAsyncThunk(
   "notes/saveNewNote",
   async (newNote) => {
-    const savedNote = await saveNote({ note: newNote });
+    const savedNote = await saveNote(newNote); // Send flat payload
     return savedNote;
   }
 );
@@ -21,7 +22,7 @@ export const saveNewNote = createAsyncThunk(
 export const updateExistingNote = createAsyncThunk(
   "notes/updateExistingNote",
   async (updatedNote) => {
-    const savedNote = await updateNote({ note: updatedNote });
+    const savedNote = await updateNote(updatedNote);
     return savedNote;
   }
 );
@@ -80,10 +81,12 @@ const notesSlice = createSlice({
       state.isEditing = true; // Tự động bật chế độ edit
     },
     addMediaToCurrentNote: (state, action) => {
-      const { type, url } = action.payload;
-      if (!state.currentNote.media) state.currentNote.media = [];
-      state.currentNote.media.push({ type, url });
-    },  
+      const { type, url, name } = action.payload;
+      if (!state.currentNote.media) {
+        state.currentNote.media = [];
+      }
+      state.currentNote.media = [...state.currentNote.media, { type, url, name }];
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -101,9 +104,13 @@ const notesSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      
       .addCase(saveNewNote.fulfilled, (state, action) => {
-        state.notes.push(action.payload);
-        state.currentIndex = state.notes.length - 1; // Đặt currentIndex vào ghi chú mới
+        state.notes.push(action.payload); // Add the new note to the notes array
+        state.currentIndex = state.notes.length - 1; // Set currentIndex to the new note
+        state.currentNote = action.payload; // Update currentNote to the new note
+        state.isEditing = false; // Exit editing mode
+        console.log("New note saved with ID:", action.payload._id); // Debugging log
       })
       .addCase(updateExistingNote.fulfilled, (state, action) => {
         state.notes = state.notes.map((note) =>

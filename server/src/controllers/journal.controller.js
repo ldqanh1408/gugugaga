@@ -40,68 +40,84 @@ exports.getNotes = async (req, res) => {
 exports.addNote = async (req, res) => {
   try {
     const { journalId } = req.params;
-    const { note } = req.body;
-    // Kiểm tra dữ liệu đầu vào
-    if (!journalId || !note) {
+    const { header, date, text, mood, media } = req.body;
+
+    console.log("Received payload:", req.body); // Log payload để kiểm tra
+
+    // Validate required fields
+    if (!header || !date || !text || !mood) {
       return res.status(400).json({
         success: false,
-        message: "Thiếu thông tin journalId hoặc note",
+        message: "Missing required fields: header, date, text, or mood",
       });
     }
 
-    // Tìm journal
-    const journal = await Journal.findOne({ _id: journalId });
+    // Find the journal by ID
+    const journal = await Journal.findById(journalId);
     if (!journal) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Không tìm thấy journal" });
+      return res.status(404).json({ success: false, message: "Journal not found" });
     }
 
-    // Tạo ID cho note nếu chưa có
+    // Create a new note
+    const newNote = { header, date, text, mood, media: media || [] };
+    journal.notes.push(newNote);
 
-    // Thêm note vào journal
+    // Save the journal
+    const savedJournal = await journal.save();
 
-    journal.notes = [...journal.notes, note];
-    const newJournal = await journal.save();
-    const notes = newJournal.notes;
-    const newNote = notes[notes.length - 1];
-    return res
-      .status(200)
-      .json({ success: true, message: "Thêm note thành công", note: newNote });
+    // Get the newly created note (last note in the ar  ray)
+    const createdNote = savedJournal.notes[savedJournal.notes.length - 1];
+
+    res.status(201).json({ success: true, note: createdNote });
   } catch (error) {
-    return res.status(404).json({ success: false, message: error.message });
+    console.error("Error adding note:", error);
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 };
 
 exports.updateNote = async (req, res) => {
   try {
     const { journalId, noteId } = req.params;
-    const { note } = req.body;
-    if (!journalId || !note || !noteId) {
+    const updateData = req.body; // Nhận payload phẳng
+
+    if (!journalId || !noteId) {
       return res
         .status(400)
         .json({ success: false, message: "Thiếu thông tin cần thiết" });
     }
+
+    // Validate required fields
+    if (!updateData.header || !updateData.date || !updateData.text || !updateData.mood) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: header, date, text, or mood",
+      });
+    }
+
     const journal = await Journal.findOneAndUpdate(
       { _id: journalId, "notes._id": noteId },
       {
-        $set: Object.keys(note).reduce((acc, key) => {
-          acc[`notes.$.${key}`] = note[key];
-          return acc;
-        }, {}),
+        $set: {
+          "notes.$.header": updateData.header,
+          "notes.$.date": updateData.date,
+          "notes.$.text": updateData.text,
+          "notes.$.mood": updateData.mood,
+          "notes.$.media": updateData.media || [],
+        }
       },
       { new: true }
     );
+
     if (!journal) {
       return res
         .status(404)
         .json({ success: false, message: "Không tìm thấy journal" });
     }
-    const newNote = journal.notes.find(n => n._id.toString() === noteId)
+    const updatedNote = journal.notes.find(n => n._id.toString() === noteId);
 
     return res
       .status(200)
-      .json({ success: true, message: "Sửa note thành công", note: newNote });
+      .json({ success: true, message: "Sửa note thành công", note: updatedNote });
   } catch (error) {
     console.error("Lỗi khi cập nhật note:", error);
     return res
