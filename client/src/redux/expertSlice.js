@@ -40,6 +40,21 @@ export const updateTreatmentThunk = createAsyncThunk(
     }
   }
 );
+
+export const getBookingsThunk = createAsyncThunk(
+  "expert/getBookings",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await updateTreatment(payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
 const expertSlice = createSlice({
   name: "expert",
   initialState: {
@@ -55,6 +70,8 @@ const expertSlice = createSlice({
     pendingTreatments: [],
     seletedTreatment: null,
     isViewing: false,
+    bookings: [],
+    status: "pending"
   },
   reducers: {
     setSelectedTreatment: (state, action) => {
@@ -63,6 +80,9 @@ const expertSlice = createSlice({
     setIsViewing: (state, action) => {
       state.isViewing = action.payload;
     },
+    setStatus: (state, action) => {
+      state.status = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -182,9 +202,21 @@ const expertSlice = createSlice({
       .addCase(updateTreatmentThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to update treatment";
-      });
+      })
+      .addCase(getBookingsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBookingsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bookings = action.payload
+      })
+      .addCase(getBookingsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
   },
 });
 
-export const { setSelectedTreatment, setIsViewing } = expertSlice.actions;
+export const { setSelectedTreatment, setIsViewing, setStatus } = expertSlice.actions;
 export default expertSlice.reducer;

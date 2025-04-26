@@ -236,7 +236,7 @@ exports.getBookings = async (req, res) => {
       }
     }
 
-    return res.status(200).json({ bookings: availableBookings });
+    return res.status(200).json({ data: availableBookings });
   } catch (error) {
     console.error("getBookings error:", error);
     return res.status(500).json({ message: "Internal server error" });

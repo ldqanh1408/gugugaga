@@ -170,7 +170,7 @@ function Therapy() {
                 booking_id: booking?._id,
                 description,
                 duration,
-                expert_id: selected?._id
+                expert_id: selected
               }
               dispatch(acceptBookingThunk(data));
         

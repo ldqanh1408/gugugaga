@@ -93,3 +93,24 @@ export const updateTreatment = async (payload) => {
     return { success: false, message: error.message };
   }
 };
+
+export const getBookings = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/experts/bookings`;
+    const response = await api.get(url,{
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+

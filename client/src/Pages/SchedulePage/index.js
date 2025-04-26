@@ -11,17 +11,23 @@ import {
   rejectTreatmentThunk,
   setSelectedTreatment,
 } from "../../redux/expertSlice";
-import { setIsViewing } from "../../redux/expertSlice";
+import { setIsViewing, setStatus } from "../../redux/expertSlice";
 import { rejectTreatment } from "../../services/treatmentService";
 import ViewInfor from "./ViewInfor";
+import Current from "./Current";
+import Booking from "./Booking";
+import Pending from "./Pending";
 function SchedulePage() {
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
-  const [status, setStatus] = useState("pending");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { treatments, currentTreatments, pendingTreatments, selectedTreatment } = useSelector(
-    (state) => state?.expert
-  );
-  console.log(currentTreatments)
+  const {
+    treatments,
+    currentTreatments,
+    pendingTreatments,
+    selectedTreatment,
+    status,
+  } = useSelector((state) => state?.expert);
+  console.log(currentTreatments);
   const { isViewing } = useSelector((state) => state?.expert);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -30,237 +36,54 @@ function SchedulePage() {
     };
     fetchTreatments();
   }, [dispatch]);
+
+  const renderPage = () => {
+    if (status === "pending") {
+      return <Pending></Pending>;
+    } else if (status === "booking") {
+      return <Booking></Booking>;
+    } else if (status === "current") {
+      return <Current></Current>;
+    }
+  };
+
   return (
     <div className="schedule container">
       <h1>Schedule</h1>
       <hr className=""></hr>
-      {isViewing === true ? (
-        <ViewInfor></ViewInfor>
-      ) : (
-        <>
-          <Row className="d-flex flex-row justify-content-start">
-            <Col xs="auto" onClick={() => setStatus("pending")}>
-              <Button>Pending</Button>
-            </Col>
-            <Col xs="auto" onClick={() => setStatus("current")}>
-              <Button>Current</Button>
-            </Col>
-          </Row>
-          {status === "current" ? (
-            <Row>
-              <Col sm={12} md={5} className="custom-left">
-                <h1 className="heading">Calendar</h1>
-                <p className="paragraph">Check your day. Check your life.</p>
 
-                <div className="custom-datepicker-container">
-                  <div className="datepicker-wrapper">
-                    <DatePicker
-                      selected={selectedDate}
-                      onChange={(date) => setSelectedDate(date)}
-                      inline
-                      className="custom-datepicker"
-                      showYearDropdown
-                      showFullMonthYearPicker
-                      scrollableYearDropdown
-                      yearDropdownItemNumber={2000}
-                      showMonthDropdown
-                      maxDate={new Date()}
-                    />
-                  </div>
-                </div>
-              </Col>
-              <Col sm={12} md={5} className="custom-right">
-                <Card className="mb-3 custom-card-title">
-                  <Card.Body className="fw-bold">
-                    {" "}
-                    View Expert's upcoming list
-                  </Card.Body>
-
-                  {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
-                  <div className="filter-dropdown-container">
-                    <Dropdown as={ButtonGroup}>
-                      <Dropdown.Toggle variant="light" className="filter-btn">
-                        <img src={FilterButton} alt="Filter" />
-                      </Dropdown.Toggle>
-
-                      <Dropdown.Menu align="end">
-                        <Dropdown.Item
-                          active={filterMode === "day"}
-                          onClick={() => setFilterMode("day")}
-                        >
-                          View by day
-                        </Dropdown.Item>
-
-                        <Dropdown.Item
-                          active={filterMode === "all"}
-                          onClick={() => setFilterMode("all")}
-                        >
-                          View all
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                </Card>
-                <div className="treatment-scroll-container">
-                  {currentTreatments.length === 0 ? (
-                    <div className="no-treatments-message">
-                      No {status === "current" ? "current" : "pending"}{" "}
-                      treatments found.
-                    </div>
-                  ) : (
-                    currentTreatments
-                      .filter((t) => t.treatmentStatus === "approved")
-                      .map((treatment, index) => (
-                        <Card className="mb-3 custom-card">
-                          <Card.Body className="custom-card-content">
-                            <div className="card-header">
-                              <span className="time-text"></span>
-                            </div>
-                            <div className="card-body">
-                              <div>
-                                <span className="date-text"></span>
-                                <span className="header-text fw-bold">
-                                  Name: {treatment.user_id.userName}
-                                </span>
-                                <div className="header-text">
-                                  Status: {treatment.treatmentStatus}
-                                </div>
-                                <div className="d-flex justify-content-end">
-                                  <Button
-                                    className="small-btn"
-                                    onClick={() => {
-                                      console.log("treatment", treatment)
-                                      dispatch(setSelectedTreatment(treatment));
-                                      dispatch(setIsViewing(true));
-                                    }}
-                                  >
-                                    View
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </Card.Body>
-                        </Card>
-                      ))
-                  )}
-                </div>
-              </Col>
-            </Row>
-          ) : (
-            <Row>
-              <Col sm={12} md={5} className="custom-left">
-                <h1 className="heading">Calendar</h1>
-                <p className="paragraph">Check your day. Check your life.</p>
-
-                <div className="custom-datepicker-container">
-                  <div className="datepicker-wrapper">
-                    <DatePicker
-                      selected={selectedDate}
-                      onChange={(date) => setSelectedDate(date)}
-                      inline
-                      className="custom-datepicker"
-                      showYearDropdown
-                      showFullMonthYearPicker
-                      scrollableYearDropdown
-                      yearDropdownItemNumber={2000}
-                      showMonthDropdown
-                      maxDate={new Date()}
-                    />
-                  </div>
-                </div>
-              </Col>
-              <Col sm={12} md={5} className="custom-right">
-                <Card className="mb-3 custom-card-title">
-                  <Card.Body className="fw-bold">
-                    {" "}
-                    View list of users booking requests
-                  </Card.Body>
-
-                  {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
-                  <div className="filter-dropdown-container">
-                    <Dropdown as={ButtonGroup}>
-                      <Dropdown.Toggle variant="light" className="filter-btn">
-                        <img src={FilterButton} alt="Filter" />
-                      </Dropdown.Toggle>
-
-                      <Dropdown.Menu align="end">
-                        <Dropdown.Item
-                          active={filterMode === "day"}
-                          onClick={() => setFilterMode("day")}
-                        >
-                          View by day
-                        </Dropdown.Item>
-
-                        <Dropdown.Item
-                          active={filterMode === "all"}
-                          onClick={() => setFilterMode("all")}
-                        >
-                          View all
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                </Card>
-                <div className="treatment-scroll-container">
-                  {pendingTreatments.length === 0 ? (
-                    <div className="no-treatments-message">
-                      No {status === "current" ? "current" : "pending"}{" "}
-                      treatments found.
-                    </div>
-                  ) : (
-                    pendingTreatments.map((treatment, index) => (
-                      <Card className="mb-3 custom-card">
-                        <Card.Body className="custom-card-content">
-                          <div className="card-header">
-                            <span className="time-text"></span>
-                          </div>
-                          <div className="card-body">
-                            <div>
-                              <span className="date-text"></span>
-                              <span className="header-text fw-bold">
-                                Name: {treatment.expert_id.expert_name}
-                              </span>
-                              <div className="header-text">
-                                Status: pending...
-                              </div>
-                              <div className="d-flex justify-content-end">
-                                <Button
-                                  className="small-btn"
-                                  onClick={() =>
-                                    dispatch(
-                                      acceptTreatmentThunk({
-                                        treatment_id: treatment._id,
-                                      })
-                                    )
-                                  }
-                                >
-                                  Accept
-                                </Button>
-                                <Button
-                                  className="small-btn"
-                                  onClick={() =>
-                                    dispatch(
-                                      rejectTreatmentThunk({
-                                        treatment_id: treatment._id,
-                                      })
-                                    )
-                                  }
-                                >
-                                  Reject
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </Card.Body>
-                      </Card>
-                    ))
-                  )}
-                </div>
-              </Col>
-            </Row>
-          )}
-        </>
-      )}
+      <Row className="d-flex flex-row justify-content-start">
+        <Col xs="auto" onClick={() => dispatch(setStatus("booking"))}>
+          <Button>Booking</Button>
+        </Col>
+        <Col xs="auto" onClick={() => dispatch(setStatus("pending"))}>
+          <Button>Pending</Button>
+        </Col>
+        <Col xs="auto" onClick={() => dispatch(setStatus("current"))}>
+          <Button>Current</Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} md={5} className="custom-left">
+          <div className="custom-datepicker-container">
+            <div className="datepicker-wrapper">
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                inline
+                className="custom-datepicker"
+                showYearDropdown
+                showFullMonthYearPicker
+                scrollableYearDropdown
+                yearDropdownItemNumber={2000}
+                showMonthDropdown
+                maxDate={new Date()}
+              />
+            </div>
+          </div>
+        </Col>
+        {renderPage()}
+      </Row>
     </div>
   );
 }
