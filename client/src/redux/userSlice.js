@@ -5,9 +5,9 @@ import {
   loadProfile,
   uploadProfile,
   getEntries,
-  getConsecutiveDays
+  getConsecutiveDays,
 } from "../services"; // API services
-import { getTreaments } from "../services/userService";
+import { getTreaments, updateTreatment } from "../services/userService";
 
 // Thunk lấy user cơ bản (thông tin đăng nhập)
 export const fetchUser = createAsyncThunk(
@@ -90,6 +90,20 @@ export const fetchConsecutiveDays = createAsyncThunk(
   }
 );
 
+export const updateTreatmentThunk = createAsyncThunk(
+  "user/updateTreatment",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await updateTreatment(payload);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
 export const getTreatmentsThunk = createAsyncThunk(
   "users/getTreaments",
   async (payload) => {
@@ -112,6 +126,8 @@ const userSlice = createSlice({
     treatments: [],
     currentTreatments: [],
     pendingTreatments: [],
+    selectedTreatment: null,
+    isViewing: false,
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -121,6 +137,12 @@ const userSlice = createSlice({
       if (state.profile) {
         state.profile.avatar = action.payload;
       }
+    },
+    setIsViewing: (state, action) => {
+      state.isViewing = action.payload;
+    },
+    setSelectedTreatment: (state, action) => {
+      state.selectedTreatment = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -209,17 +231,65 @@ const userSlice = createSlice({
       .addCase(getTreatmentsThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.treatments = action.payload;
-        state.currentTreatments = action.payload?.filter((treatment, index) => treatment.treatmentStatus !== "pending");
-        state.pendingTreatments = action.payload?.filter((treatment, index) => treatment.treatmentStatus === "pending");
+        state.currentTreatments = action.payload?.filter(
+          (treatment, index) => treatment.treatmentStatus !== "pending"
+        );
+        state.pendingTreatments = action.payload?.filter(
+          (treatment, index) => treatment.treatmentStatus === "pending"
+        );
         state.error = null;
       })
       .addCase(getTreatmentsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(updateTreatmentThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTreatmentThunk.fulfilled, (state, action) => {
+        const { treatment_id, data } = action.meta.arg; // lấy từ payload truyền vào thunk
+        state.loading = false;
+
+        // Cập nhật treatment đang xem
+        if (
+          state.selectedTreatment &&
+          state.selectedTreatment._id === treatment_id
+        ) {
+          state.selectedTreatment.rating = data.rating;
+          state.selectedTreatment.feedback = data.feedback;
+          state.selectedTreatment.complaint = data.complaint;
+        }
+
+        // Cập nhật trong danh sách treatment
+        state.treatments = state.treatments.map((t) =>
+          t._id === treatment_id
+            ? {
+                ...t,
+                rating: data.rating,
+                feedback: data.feedback,
+                complaint: data.complaint,
+              }
+            : t
+        );
+
+        state.currentTreatments = state.treatments.filter(
+          (t) => t.treatmentStatus !== "pending"
+        );
+
+        state.pendingTreatments = state.treatments.filter(
+          (t) => t.treatmentStatus === "pending"
+        );
+      })
+
+      .addCase(updateTreatmentThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to update treatment";
       });
   },
 });
 
-export const { updateAvatar } = userSlice.actions; // Action để đồng bộ avatar
+export const { updateAvatar, setIsViewing, setSelectedTreatment } =
+  userSlice.actions; // Action để đồng bộ avatar
 
 export default userSlice.reducer;

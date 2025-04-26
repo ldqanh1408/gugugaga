@@ -4,7 +4,6 @@ const treatmentSchema = new mongoose.Schema(
   {
     expert_id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: false,
       ref: "Expert",
     },
     user_id: {
@@ -35,11 +34,27 @@ const treatmentSchema = new mongoose.Schema(
       required: true,
     },
     schedule_id: {
-      type: String,
+      type:  mongoose.Schema.Types.ObjectId,
       required: true,
       unique: true,
       ref: "Schedule",
     },
+    reason_reject: {
+      type: String,
+      trim: true,
+    },
+    business_id: {
+      type:  mongoose.Schema.Types.ObjectId,
+      ref: "Business",
+    },
+    duration: {
+      type: String,
+      trim: true,
+    },
+    description : {
+      type: String,
+      trim: true
+    }
   },
   { timestamp: true }
 );

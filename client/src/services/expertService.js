@@ -29,7 +29,7 @@ export const getAvailableExpert = async (payload) => {
   }
 };
 
-export const getTreaments = async (payload) => {
+export const getTreaments = async (payload) => {  
   try {
     const token = await getToken();
     if (!token) {
@@ -41,6 +41,7 @@ export const getTreaments = async (payload) => {
         Authorization: `Bearer ${token}`, // Gửi token trong header
       },
     });
+    response.data.data.map((t) => console.log(t.business_id))
     return response.data;
   } catch (error) {
     console.error(
@@ -63,6 +64,7 @@ export const getExperts = async (payload) => {
         Authorization: `Bearer ${token}`, // Gửi token trong header
       },
     });
+
     return response.data;
   } catch (error) {
     console.error(
@@ -73,3 +75,21 @@ export const getExperts = async (payload) => {
   }
 };
 
+export const updateTreatment = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/experts/me/treatments/${payload.treatment_id}`;
+    const response = await api.patch(url, payload.data, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};

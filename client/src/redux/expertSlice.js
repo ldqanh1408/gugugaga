@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getTreaments } from "../services/expertService";
 import { acceptTreatment, rejectTreatment } from "../services/treatmentService";
+import { updateTreatment } from "../services/expertService";
 
 export const getTreatmentsThunk = createAsyncThunk(
   "experts/getTreaments",
   async (payload) => {
-    const data = await getTreaments();
-    return data?.treatments;
+    const data = await getTreaments(payload);
+    return data?.data;
   }
 );
 
@@ -25,6 +26,20 @@ export const rejectTreatmentThunk = createAsyncThunk(
     return data.treatment;
   }
 );
+
+export const updateTreatmentThunk = createAsyncThunk(
+  "expert/updateTreatment",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await updateTreatment(payload);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
 const expertSlice = createSlice({
   name: "expert",
   initialState: {
@@ -38,8 +53,17 @@ const expertSlice = createSlice({
     treatments: [],
     currentTreatments: [],
     pendingTreatments: [],
+    seletedTreatment: null,
+    isViewing: false,
   },
-  reducers: {},
+  reducers: {
+    setSelectedTreatment: (state, action) => {
+      state.selectedTreatment = action.payload;
+    },
+    setIsViewing: (state, action) => {
+      state.isViewing = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getTreatmentsThunk.pending, (state) => {
@@ -119,8 +143,48 @@ const expertSlice = createSlice({
       .addCase(rejectTreatmentThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(updateTreatmentThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTreatmentThunk.fulfilled, (state, action) => {
+        const { treatment_id, data } = action.meta.arg; // lấy từ payload truyền vào thunk
+        state.loading = false;
+
+        // Cập nhật treatment đang xem
+        if (
+          state.selectedTreatment &&
+          state.selectedTreatment._id === treatment_id
+        ) {
+          state.selectedTreatment.summary = data.rating;
+        }
+
+        // Cập nhật trong danh sách treatment
+        state.treatments = state.treatments.map((t) =>
+          t._id === treatment_id
+            ? {
+                ...t,
+                summary: data.summary,
+              }
+            : t
+        );
+
+        state.currentTreatments = state.treatments.filter(
+          (t) => t.treatmentStatus !== "pending"
+        );
+
+        state.pendingTreatments = state.treatments.filter(
+          (t) => t.treatmentStatus === "pending"
+        );
+      })
+
+      .addCase(updateTreatmentThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to update treatment";
       });
   },
 });
 
+export const { setSelectedTreatment, setIsViewing } = expertSlice.actions;
 export default expertSlice.reducer;

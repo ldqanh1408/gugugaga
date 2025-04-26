@@ -9,18 +9,20 @@ import {
   acceptTreatmentThunk,
   getTreatmentsThunk,
   rejectTreatmentThunk,
+  setSelectedTreatment,
 } from "../../redux/expertSlice";
-import { setIsViewing } from "../../redux/scheduleSlice";
+import { setIsViewing } from "../../redux/expertSlice";
 import { rejectTreatment } from "../../services/treatmentService";
 import ViewInfor from "./ViewInfor";
 function SchedulePage() {
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
   const [status, setStatus] = useState("pending");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { treatments, currentTreatments, pendingTreatments } = useSelector(
+  const { treatments, currentTreatments, pendingTreatments, selectedTreatment } = useSelector(
     (state) => state?.expert
   );
-  const { isViewing } = useSelector((state) => state?.schedule);
+  console.log(currentTreatments)
+  const { isViewing } = useSelector((state) => state?.expert);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchTreatments = async () => {
@@ -99,39 +101,49 @@ function SchedulePage() {
                     </Dropdown>
                   </div>
                 </Card>
-
-                {currentTreatments.length === 0 ? (
-                  <div className="no-treatments-message">
-                    No {status === "current" ? "current" : "pending"} treatments
-                    found.
-                  </div>
-                ) : (
-                  currentTreatments
-                    .filter((t) => t.treatmentStatus === "approved")
-                    .map((treatment, index) => (
-                      <Card className="mb-3 custom-card">
-                        <Card.Body className="custom-card-content">
-                          <div className="card-header">
-                            <span className="time-text"></span>
-                          </div>
-                          <div className="card-body">
-                            <div>
-                              <span className="date-text"></span>
-                              <span className="header-text fw-bold">
-                                Name: {treatment.user_id.userName}
-                              </span>
-                              <div className="header-text">
-                                Status: {treatment.treatmentStatus}
-                              </div>
-                              <div className="d-flex justify-content-end">
-                                <Button className="small-btn" onClick={() => dispatch(setIsViewing(true))}>View</Button>
+                <div className="treatment-scroll-container">
+                  {currentTreatments.length === 0 ? (
+                    <div className="no-treatments-message">
+                      No {status === "current" ? "current" : "pending"}{" "}
+                      treatments found.
+                    </div>
+                  ) : (
+                    currentTreatments
+                      .filter((t) => t.treatmentStatus === "approved")
+                      .map((treatment, index) => (
+                        <Card className="mb-3 custom-card">
+                          <Card.Body className="custom-card-content">
+                            <div className="card-header">
+                              <span className="time-text"></span>
+                            </div>
+                            <div className="card-body">
+                              <div>
+                                <span className="date-text"></span>
+                                <span className="header-text fw-bold">
+                                  Name: {treatment.user_id.userName}
+                                </span>
+                                <div className="header-text">
+                                  Status: {treatment.treatmentStatus}
+                                </div>
+                                <div className="d-flex justify-content-end">
+                                  <Button
+                                    className="small-btn"
+                                    onClick={() => {
+                                      console.log("treatment", treatment)
+                                      dispatch(setSelectedTreatment(treatment));
+                                      dispatch(setIsViewing(true));
+                                    }}
+                                  >
+                                    View
+                                  </Button>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Card.Body>
-                      </Card>
-                    ))
-                )}
+                          </Card.Body>
+                        </Card>
+                      ))
+                  )}
+                </div>
               </Col>
             </Row>
           ) : (
@@ -189,60 +201,61 @@ function SchedulePage() {
                     </Dropdown>
                   </div>
                 </Card>
-
-                {pendingTreatments.length === 0 ? (
-                  <div className="no-treatments-message">
-                    No {status === "current" ? "current" : "pending"} treatments
-                    found.
-                  </div>
-                ) : (
-                  pendingTreatments.map((treatment, index) => (
-                    <Card className="mb-3 custom-card">
-                      <Card.Body className="custom-card-content">
-                        <div className="card-header">
-                          <span className="time-text"></span>
-                        </div>
-                        <div className="card-body">
-                          <div>
-                            <span className="date-text"></span>
-                            <span className="header-text fw-bold">
-                              Name: {treatment.expert_id.expert_name}
-                            </span>
-                            <div className="header-text">
-                              Status: pending...
-                            </div>
-                            <div className="d-flex justify-content-end">
-                              <Button
-                                className="small-btn"
-                                onClick={() =>
-                                  dispatch(
-                                    acceptTreatmentThunk({
-                                      treatment_id: treatment._id,
-                                    })
-                                  )
-                                }
-                              >
-                                Accept
-                              </Button>
-                              <Button
-                                className="small-btn"
-                                onClick={() =>
-                                  dispatch(
-                                    rejectTreatmentThunk({
-                                      treatment_id: treatment._id,
-                                    })
-                                  )
-                                }
-                              >
-                                Reject
-                              </Button>
+                <div className="treatment-scroll-container">
+                  {pendingTreatments.length === 0 ? (
+                    <div className="no-treatments-message">
+                      No {status === "current" ? "current" : "pending"}{" "}
+                      treatments found.
+                    </div>
+                  ) : (
+                    pendingTreatments.map((treatment, index) => (
+                      <Card className="mb-3 custom-card">
+                        <Card.Body className="custom-card-content">
+                          <div className="card-header">
+                            <span className="time-text"></span>
+                          </div>
+                          <div className="card-body">
+                            <div>
+                              <span className="date-text"></span>
+                              <span className="header-text fw-bold">
+                                Name: {treatment.expert_id.expert_name}
+                              </span>
+                              <div className="header-text">
+                                Status: pending...
+                              </div>
+                              <div className="d-flex justify-content-end">
+                                <Button
+                                  className="small-btn"
+                                  onClick={() =>
+                                    dispatch(
+                                      acceptTreatmentThunk({
+                                        treatment_id: treatment._id,
+                                      })
+                                    )
+                                  }
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  className="small-btn"
+                                  onClick={() =>
+                                    dispatch(
+                                      rejectTreatmentThunk({
+                                        treatment_id: treatment._id,
+                                      })
+                                    )
+                                  }
+                                >
+                                  Reject
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  ))
-                )}
+                        </Card.Body>
+                      </Card>
+                    ))
+                  )}
+                </div>
               </Col>
             </Row>
           )}

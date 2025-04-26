@@ -14,7 +14,7 @@ const expertSchema = new mongoose.Schema(
     expert_name: {
       type: String,
     },
-    gendar: {
+    gender: {
       type: String,
       enum: ["male", "female", "other"], // giả sử enum Gender có 3 giá trị
     },
@@ -23,6 +23,15 @@ const expertSchema = new mongoose.Schema(
       default: 0,
     },
     diploma_url: {
+      type: String,
+    },
+    expert_phone: {
+      type: String,
+    },
+    expert_email: {
+      type: String,
+    },
+    description: {
       type: String,
     },
     business_id: {
@@ -34,6 +43,7 @@ const expertSchema = new mongoose.Schema(
       type: String,
     },
     role: { type: String, required: true, default: "EXPERT" },
+    average_rating: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

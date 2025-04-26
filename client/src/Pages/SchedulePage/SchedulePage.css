@@ -15,3 +15,10 @@
     margin-top: 8px;
     margin-bottom: 0;
 }
+
+.treatment-scroll-container {
+    max-height: 500px; /* hoặc 60vh tuỳ ý bạn */
+    overflow-y: auto;
+    padding-right: 10px; /* tránh che mất scrollbar */
+  }
+  

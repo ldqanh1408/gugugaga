@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Button, Col, Row, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsViewing, updateTreatmentThunk } from "../../redux/expertSlice";
+import { setIsViewing, updateTreatmentThunk } from "../../redux/userSlice";
 
 function ViewInfor() {
-  const { selectedTreatment } = useSelector((state) => state?.expert);
+  const { selectedTreatment } = useSelector((state) => state?.user);
   const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
-  console.log(selectedTreatment)
   const [feedbackData, setFeedbackData] = useState({
-    summary: selectedTreatment?.summary || "",
+    rating: selectedTreatment?.rating || "",
+    feedback: selectedTreatment?.feedback || "",
+    complaint: selectedTreatment?.complaint || "",
   });
   const getValueByPath = (obj, path) => {
     return path.split(".").reduce((acc, part) => acc?.[part], obj);
@@ -18,17 +19,9 @@ function ViewInfor() {
   const handleFeedbackChange = (key, value) => {
     setFeedbackData((prev) => ({ ...prev, [key]: value }));
   };
-  const renderField = (
-    label,
-    isSelect = false,
-    customOptions = [],
-    key,
-    readOnly = true
-  ) => {
-    const isFeedbackField = ["summary"].includes(key);
-    const value = isFeedbackField
-      ? (feedbackData[key] ?? "")
-      : (getValueByPath(selectedTreatment, key) ?? "");
+  const renderField = (label, isSelect = false, customOptions = [], key, readOnly = true) => {
+    const isFeedbackField = ["rating", "feedback", "complaint"].includes(key);
+    const value = isFeedbackField ? feedbackData[key] ?? "" : getValueByPath(selectedTreatment, key) ?? "";
     return (
       <Form.Group as={Row} className="mb-2">
         <Form.Label column sm="4" className="text-end">
@@ -39,9 +32,7 @@ function ViewInfor() {
             <Form.Select
               value={value.toString()}
               disabled={readOnly}
-              onChange={(e) =>
-                isFeedbackField && handleFeedbackChange(key, e.target.value)
-              }
+              onChange={(e) => isFeedbackField && handleFeedbackChange(key, e.target.value)}
             >
               <option value="">Select</option>
               {customOptions.length > 0
@@ -51,15 +42,9 @@ function ViewInfor() {
                     </option>
                   ))
                 : [
-                    <option key="male" value="male">
-                      Male
-                    </option>,
-                    <option key="female" value="female">
-                      Female
-                    </option>,
-                    <option key="other" value="other">
-                      Other
-                    </option>,
+                    <option key="male" value="male">Male</option>,
+                    <option key="female" value="female">Female</option>,
+                    <option key="other" value="other">Other</option>,
                   ]}
             </Form.Select>
           ) : (
@@ -67,9 +52,7 @@ function ViewInfor() {
               type="text"
               value={value}
               disabled={readOnly}
-              onChange={(e) =>
-                isFeedbackField && handleFeedbackChange(key, e.target.value)
-              }
+              onChange={(e) => isFeedbackField && handleFeedbackChange(key, e.target.value)}
             />
           )}
         </Col>
@@ -78,7 +61,8 @@ function ViewInfor() {
   };
 
   const handleSave = async () => {
-    dispatch(updateTreatmentThunk({treatment_id: selectedTreatment._id, data: feedbackData}));
+    dispatch(updateTreatmentThunk({treatment_id: selectedTreatment._id, data:feedbackData}));
+    
     setIsEditing(false);
     // dispatch an update action here if needed
   };
@@ -93,8 +77,6 @@ function ViewInfor() {
           {renderField("Status", false, [], "treatmentStatus")}
           {renderField("Description", false, [], "description")}
           {renderField("Address", false, [], "address")}
-          {renderField("Summary", false, [], "summary", !isEditing)}
-
 
           <div className="fw-bold mt-4 mb-2">EXPERT</div>
           {renderField("Expert code:", false, [], "expert_id._id")}
@@ -113,57 +95,42 @@ function ViewInfor() {
 
         <Col md={6}>
           <div className="fw-bold mb-2">FEEDBACK</div>
-          {renderField(
-            "Star:",
-            true,
-            [
-              { value: "1", label: "Bad" },
-              { value: "2", label: "Not oke" },
-              { value: "3", label: "Neutral" },
-              { value: "4", label: "So good" },
-              { value: "5", label: "Very good" },
-            ],
-            "rating",
-          )}
-          {renderField("Comment:", false, [], "feedback")}
-          {renderField("Complaint:", false, [], "complaint")}
+          {renderField("Star:", true, [
+            { value: "1", label: "Bad" },
+            { value: "2", label: "Not oke" },
+            { value: "3", label: "Neutral" },
+            { value: "4", label: "So good" },
+            { value: "5", label: "Very good" },
+          ], "rating", !isEditing)}
+          {renderField("Comment:", false, [], "feedback", !isEditing)}
+          {renderField("Complaint:", false, [], "complaint", !isEditing)}
 
           <div className="fw-bold mt-4 mb-2">INFORMATION OF BUSINESS</div>
           {renderField("Business code:", false, [], "business_id._id")}
-          {renderField(
-            "Business name:",
-            false,
-            [],
-            "business_id.business_name"
-          )}
-          {renderField(
-            "Business email:",
-            false,
-            [],
-            "business_id.business_email"
-          )}
+          {renderField("Business name:", false, [], "business_id.business_name")}
+          {renderField("Business email:", false, [], "business_id.business_email")}
           <div className="mt-4 text-end">
-            {isEditing ? (
-              <Button variant="success" onClick={handleSave}>
-                Save
-              </Button>
-            ) : (
-              <Button variant="primary" onClick={() => setIsEditing(true)}>
-                Edit
-              </Button>
-            )}
-            <Button
-              variant="secondary"
-              className="ms-2"
-              onClick={() => {
-                dispatch(setIsViewing(false));
-              }}
-            >
-              Close
-            </Button>
-          </div>
+        {isEditing ? (
+          <Button variant="success" onClick={handleSave}>
+            Save
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={() => setIsEditing(true)}>
+            Edit
+          </Button>
+        )}
+        <Button
+          variant="secondary"
+          className="ms-2"
+          onClick={() => dispatch(setIsViewing(false))}
+        >
+          Close
+        </Button>
+      </div>
         </Col>
       </Row>
+
+     
     </div>
   );
 }

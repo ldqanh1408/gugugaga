@@ -2,11 +2,13 @@ const User = require("../models/user.model");
 const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
 const Treatment = require("../models/treatment.model");
+const Expert = require("../models/expert.model")
 const bcrypt = require("bcrypt");
 const redis = require("../utils/redisHelper");
 const pubSub = require("../utils/pubSubHelper");
 const constants = require("../constants");
-
+const Booking = require("../models/booking.model");
+const Schedule = require("../models/schedule.model");
 async function hashPassword(password) {
   const saltRounds = 10; // Số lần hash (càng cao càng an toàn nhưng chậm)
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -138,7 +140,7 @@ exports.uploadProfile = async (req, res) => {
     // Kiểm tra và upload ảnh lên Cloudinary nếu có file được tải lên
 
     // Cập nhật thông tin khác của user (và avatar mới nếu có)
-    user.avatar = avatar || user.avatar; 
+    user.avatar = avatar || user.avatar;
     user.userName = nickName || user.userName;
     user.bio = bio || user.bio;
     user.dob = dob || user.dob;
@@ -148,7 +150,7 @@ exports.uploadProfile = async (req, res) => {
 
     await user.save();
     const chanel = constants.CHANEL_USERS;
-    await pubSub.publishInvalidation(chanel, {userId});
+    await pubSub.publishInvalidation(chanel, { userId });
     console.log("User sau khi cập nhật trong MongoDB:", user);
 
     return res.status(200).json({
@@ -174,15 +176,117 @@ exports.uploadProfile = async (req, res) => {
 
 exports.getTreatment = async (req, res) => {
   try {
-    let {_id} = req.payload;
+    let { _id } = req.payload;
     const user = await User.findOne({ _id: _id });
     if (!user)
       return res
         .status(404)
         .json({ success: false, message: "Found not user" });
-    const treatments = await Treatment.find({ user_id: _id }).populate("expert_id", "expert_name").populate("schedule_id");
+    const treatments = await Treatment.find({ user_id: _id })
+      .populate("expert_id")
+      .populate("schedule_id")
+      .populate("user_id")
+      .populate("business_id");
     return res.status(200).json({ success: true, treatments });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.updateTreatment = async (req, res) => {
+  try {
+    const { treatment_id } = req.params;
+    const updateFields = req.body;
+
+    // Bỏ undefined/null ra khỏi updateFields để tránh ghi đè rỗng
+    Object.keys(updateFields).forEach((key) => {
+      if (updateFields[key] === undefined || updateFields[key] === null) {
+        delete updateFields[key];
+      }
+    });
+
+    const updatedTreatment = await Treatment.findByIdAndUpdate(
+      treatment_id,
+      { $set: updateFields },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedTreatment) {
+      return res.status(404).json({ message: "Treatment not found" });
+    }
+
+    return res.status(200).json({
+      message: "Treatment updated successfully",
+      data: updatedTreatment,
+    });
+  } catch (error) {
+    console.error("Error updating treatment:", error);
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+exports.getBooking = async (req, res) => {
+  try {
+    const { _id } = req.payload; // Lấy user_id từ payload (token)
+    // Truy vấn booking của người dùng
+    const booking = await Booking.findOne({ user_id: _id });
+
+    // Kiểm tra nếu không tìm thấy booking
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+
+    // Trả về booking tìm được
+    return res.status(200).json({ success: true, data: booking });
+  } catch (error) {
+    // Nếu có lỗi, trả về lỗi với thông tin chi tiết
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getReceivers = async (req, res) => {
+  try {
+    const { _id } = req.payload;
+
+    // Lấy booking của user
+    const booking = await Booking.findOne({ user_id: _id });
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    const availableExperts = [];
+
+    // Duyệt qua từng expert
+    for (const expertId of booking.expert_ids) {
+      // Lấy schedule của expert đó
+      const schedules = await Schedule.find({ expert_id: expertId });
+
+      // Kiểm tra xem có lịch nào trùng không
+      const isConflict = schedules.some((schedule) => {
+        return (
+          booking.start_time < schedule.end_time &&
+          schedule.start_time < booking.end_time
+        );
+      });
+
+      if (!isConflict) {
+        const expert = await Expert.findOne({ _id: expertId }).populate("business_id");
+        availableExperts.push(expert); // Không bị trùng thì cho vào danh sách
+      }
+    }
+
+    return res.status(200).json({ success: true, data: availableExperts });
+  } catch (error) {
+    console.error("getReceivers error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

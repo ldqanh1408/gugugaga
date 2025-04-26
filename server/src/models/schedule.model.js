@@ -4,7 +4,6 @@ const scheduleSchema = new mongoose.Schema(
   {
     expert_id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "Expert",
     },
     user_id: {
@@ -20,6 +19,10 @@ const scheduleSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    status: {
+      type: Boolean,
+      required: true,
+    }
   },
   {
     timestamps: true, // adds createdAt and updatedAt

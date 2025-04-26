@@ -78,6 +78,7 @@ export const getToken = async () => {
 
 export const logout = async () => {
   try {
+    localStorage.removeItem("accessToken");
     await api.post("/logout");
   } catch (error) {
     console.error({ message: error.message });

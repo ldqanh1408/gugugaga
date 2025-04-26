@@ -24,6 +24,8 @@ function HistoryExpert() {
       {isViewing === true ? (
         <ViewInfor></ViewInfor>
       ) : (
+        <div className="treatment-scroll-container">
+        
         <Table striped bordered hover responsive className="mt-4">
           <thead>
             <tr>
@@ -56,6 +58,7 @@ function HistoryExpert() {
             )}
           </tbody>
         </Table>
+        </div>
       )}
     </Container>
   );

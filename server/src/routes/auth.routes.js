@@ -102,7 +102,8 @@ router.post("/v1/login", validateLogin, async (req, res) => {
 
 router.post("/v1/logout", async (req, res) => {
   try {
-    res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+    res.cookie("accessToken", "", { httpOnly: true, expires: new Date(0) });
+    res.cookie("refreshToken", "", { httpOnly: true, expires: new Date(0) });
     res.status(200).json({ success: true, message: "Logged out" });
   } catch (error) {
     res.status(400).json({ success: false, messages: error.message });

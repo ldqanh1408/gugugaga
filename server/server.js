@@ -52,6 +52,7 @@ const {
   expertRoutes,
   businessRoutes,
   treatmentRoutes,
+  bookingRoutes
 } = require("./src/routes");
 
 app.use("/api", userRoutes);
@@ -62,6 +63,7 @@ app.use("/api", authRoutes);
 app.use("/api", expertRoutes);
 app.use("/api", businessRoutes);
 app.use("/api", treatmentRoutes);
+app.use("/api", bookingRoutes)
 // Middleware xử lý lỗi
 app.use(require("./src/middleware/errorHandler"));
 const subscriptions = require("./src/utils/subscriptions")

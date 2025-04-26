@@ -97,11 +97,10 @@ const authenticateAndAuthorize = (roles = []) => {
   return async (req, res, next) => {
     try {
       const authHeader = req.header("Authorization");
-
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res
-          .status(401)  
-          .json({ message: "Unauthorized - No token provided" });
+        .status(401)  
+        .json({ message: "Unauthorized - No token provided" });
       }
       const token = authHeader.split(" ")[1]?.trim(); // Lấy phần token sau "Bearer "
       if (!token) {
@@ -112,9 +111,8 @@ const authenticateAndAuthorize = (roles = []) => {
       if (roles.length && !roles.includes(decoded?.role)) {
         return res.status(403).json({ message: "Forbidden - Insufficient role" });
       }
-
       req.payload = decoded;
-
+      console.log(req.path)
       next();
     } catch (error) {
       return res
