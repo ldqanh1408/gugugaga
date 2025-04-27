@@ -7,10 +7,15 @@ import {
   setSelectedTreatment,
   setIsViewing,
   setStatus,
+  receiveBookingThunk,
 } from "../../redux/expertSlice";
+import dateHelper from "../../utils/dateHelper";
 function Booking() {
   const [filterMode, setFilterMode] = useState("day");
-  const { currentTreatments, status } = useSelector((state) => state?.expert);
+  const { currentTreatments, status, bookings } = useSelector(
+    (state) => state?.expert
+  );
+  const { entity } = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
   return (
     <Col sm={12} md={5} className="custom-right">
@@ -43,14 +48,17 @@ function Booking() {
         </div>
       </Card>
       <div className="treatment-scroll-container">
-        {currentTreatments.length === 0 ? (
+        {bookings.length === 0 ? (
           <div className="no-treatments-message">
             No {status === "current" ? "current" : "pending"} treatments found.
           </div>
         ) : (
-          currentTreatments
-            .filter((t) => t.treatmentStatus === "approved")
-            .map((treatment, index) => (
+          bookings
+            .filter(
+              (booking) =>
+                !booking?.expert_ids?.some((_id) => _id === entity._id)
+            )
+            .map((booking, index) => (
               <Card className="mb-3 custom-card">
                 <Card.Body className="custom-card-content">
                   <div className="card-header">
@@ -59,22 +67,36 @@ function Booking() {
                   <div className="card-body">
                     <div>
                       <span className="date-text"></span>
-                      <span className="header-text fw-bold">
-                        Name: {treatment.user_id.userName}
-                      </span>
+                      <div className="header-text fw-bold">
+                        Name: {booking.user_id.userName}
+                      </div>
                       <div className="header-text">
-                        Status: {treatment.treatmentStatus}
+                        <span className="fw-bold">Date: </span>
+                        {dateHelper.getVietnamDate(booking.start_time)}
+                      </div>
+                      <div className="header-text">
+                        <span className="fw-bold">Time: </span>{" "}
+                        {dateHelper.getVietnamTime(booking.start_time)} -{" "}
+                        {dateHelper.getVietnamTime(booking.end_time)}
+                      </div>
+                      <div className="header-text">
+                        <span className="fw-bold">Duration: </span>{" "}
+                        {booking.duration}
+                      </div>
+                      <div className="header-text">
+                        <span className="fw-bold">Description: </span>{" "}
+                        {booking.description}
                       </div>
                       <div className="d-flex justify-content-end">
                         <Button
                           className="small-btn"
-                          onClick={() => {
-                            console.log("treatment", treatment);
-                            dispatch(setSelectedTreatment(treatment));
-                            dispatch(setIsViewing(true));
-                          }}
+                          onClick={() =>
+                            dispatch(
+                              receiveBookingThunk({ booking_id: booking._id })
+                            )
+                          }
                         >
-                          View
+                          Receive
                         </Button>
                       </div>
                     </div>

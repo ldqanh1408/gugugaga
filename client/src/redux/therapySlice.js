@@ -33,7 +33,7 @@ export const getReceiversThunk = createAsyncThunk(
   "therapy/receivers",
   async (payload, thunkAPI) => {
     const data = await getReceivers(payload);
-    return data.data;
+    return data?.data;
   }
 );
 
@@ -65,6 +65,7 @@ export const acceptBookingThunk = createAsyncThunk(
   "therapy/acceptBooking",
   async (payload, thunkAPI) => {
     const data = await acceptBooking(payload);
+    console.log(data);
     return data.data;
   }
 );

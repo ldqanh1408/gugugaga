@@ -10,6 +10,7 @@ import expertReducer from "./expertSlice"
 import scheduleReducer from "./scheduleSlice"
 import businessReducer from "./businessSlice"
 import complaintReducer from "./complaintSlice"
+import myTherapyReducer from './myTherapySlice';
 export const store = configureStore({
   reducer: {
     user: userReducer, // Thêm reducer user vào store
@@ -22,5 +23,6 @@ export const store = configureStore({
     schedule: scheduleReducer,
     business: businessReducer,
     complaint: complaintReducer,
+    MyTherapy: myTherapyReducer
   },
 });

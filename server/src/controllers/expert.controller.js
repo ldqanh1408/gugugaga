@@ -97,8 +97,9 @@ exports.getTreatment = async (req, res) => {
       .populate("user_id")
       .populate("expert_id")
       .populate("business_id")
-    treatments.map((t) => console.log(t.business_id))
-      return res.status(200).json({ success: true, data: treatments });
+      .populate("schedule_id");
+    treatments.map((t) => console.log(t.business_id));
+    return res.status(200).json({ success: true, data: treatments });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -113,12 +114,12 @@ exports.getAvailableExperts = async (req, res) => {
       status: true,
       $or: [
         {
-          start_time: { $lt: end_time, $gte: start_time }
+          start_time: { $lt: end_time, $gte: start_time },
         },
         {
-          end_time: { $gt: start_time, $lte: end_time }
-        }
-      ]
+          end_time: { $gt: start_time, $lte: end_time },
+        },
+      ],
     });
 
     const expert_ids = schedules.map((s) => s.expert_id);
@@ -177,14 +178,16 @@ exports.receiveBooking = async (req, res) => {
 
     // Tìm booking với booking_id
     const booking = await Booking.findOne({ _id: booking_id });
-    
+
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
 
     // Kiểm tra nếu expert đã có trong mảng expert_ids rồi không
     if (booking.expert_ids.includes(_id)) {
-      return res.status(400).json({ message: "You have already received this booking" });
+      return res
+        .status(400)
+        .json({ message: "You have already received this booking" });
     }
 
     // Thêm expert_id vào mảng expert_ids
@@ -193,18 +196,19 @@ exports.receiveBooking = async (req, res) => {
     // Lưu lại booking sau khi cập nhật
     await booking.save();
 
-    return res.status(200).json({ message: "Booking received successfully", booking });
+    return res
+      .status(200)
+      .json({ message: "Booking received successfully", data: booking });
   } catch (error) {
     console.error("receiveBooking error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-
 exports.getBookings = async (req, res) => {
   try {
     const { _id } = req.payload; // Lấy _id từ payload (người dùng đang đăng nhập)
-    
+
     // Lấy tất cả các schedule của expert với _id
     const schedules = await Schedule.find({ expert_id: _id });
 
@@ -212,7 +216,7 @@ exports.getBookings = async (req, res) => {
     const availableBookings = [];
 
     // Lấy tất cả các booking mà expert có thể nhận
-    const bookings = await Booking.find();
+    const bookings = await Booking.find().populate("user_id");
 
     // Kiểm tra từng booking để xem lịch của booking có trùng với schedule nào không
     for (const booking of bookings) {
@@ -221,8 +225,8 @@ exports.getBookings = async (req, res) => {
       // Kiểm tra xem lịch của booking có bị trùng với schedule của expert không
       for (const schedule of schedules) {
         if (
-          (booking.start_time < schedule.end_time) &&
-          (schedule.start_time < booking.end_time)
+          booking.start_time < schedule.end_time &&
+          schedule.start_time < booking.end_time
         ) {
           // Nếu bị trùng, đánh dấu và không thêm vào mảng availableBookings
           isConflict = true;

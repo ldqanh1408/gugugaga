@@ -3,11 +3,24 @@ import EditButton from "../../assets/imgs/EditButton.svg";
 import FilterButton from "../../assets/imgs/FilterButton.svg";
 import { Row, Col, Card, Dropdown, ButtonGroup, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedTreatment, setIsViewing, setStatus } from "../../redux/expertSlice";
+import {
+  setSelectedTreatment,
+  setIsViewing,
+  setStatus,
+} from "../../redux/expertSlice";
+import dateHelper from "../../utils/dateHelper";
+import ViewInfor from "./ViewInfor";
+
 function Current() {
   const [filterMode, setFilterMode] = useState("day");
-  const {currentTreatments, status} = useSelector((state) => state?.expert);
+  const { treatments, status, isViewing } = useSelector(
+    (state) => state?.expert
+  );
   const dispatch = useDispatch();
+  console.log(treatments);
+
+  if (isViewing) return <ViewInfor></ViewInfor>;
+
   return (
     <Col sm={12} md={5} className="custom-right">
       <Card className="mb-3 custom-card-title">
@@ -39,14 +52,18 @@ function Current() {
         </div>
       </Card>
       <div className="treatment-scroll-container">
-        {currentTreatments.length === 0 ? (
+        {treatments.length === 0 ? (
           <div className="no-treatments-message">
             No {status === "current" ? "current" : "pending"} treatments found.
           </div>
         ) : (
-          currentTreatments
-            .filter((t) => t.treatmentStatus === "approved")
-            .map((treatment, index) => (
+          treatments
+            .filter((t) => {
+              const startTime = new Date(t.schedule_id.start_time).getTime();
+              const nowMinus2Hours = Date.now() - 2 * 60 * 60 * 1000; // current time - 2 hours
+              return startTime >= nowMinus2Hours;
+            })
+            .map((t, index) => (
               <Card className="mb-3 custom-card">
                 <Card.Body className="custom-card-content">
                   <div className="card-header">
@@ -55,18 +72,31 @@ function Current() {
                   <div className="card-body">
                     <div>
                       <span className="date-text"></span>
-                      <span className="header-text fw-bold">
-                        Name: {treatment.user_id.userName}
-                      </span>
-                      <div className="header-text">
-                        Status: {treatment.treatmentStatus}
+                      <div className="header-text ">
+                        <span className="fw-bold">Name: </span>{" "}
+                        {t.user_id.userName}
+                      </div>
+                      <div className="header-text ">
+                        <span className="fw-bold">Date: </span>{" "}
+                        {dateHelper.getVietnamDate(t.schedule_id.start_time)}
+                      </div>
+                      <div className="header-text ">
+                        <span className="fw-bold">Time: </span>{" "}
+                        {dateHelper.getVietnamTime(t.schedule_id.start_time)} -{" "}
+                        {dateHelper.getVietnamTime(t.schedule_id.end_time)}
+                      </div>
+                      <div className="header-text ">
+                        <span className="fw-bold">Duration: </span> {t.duration}
+                      </div>
+                      <div className="header-text ">
+                        <span className="fw-bold">Description: </span>{" "}
+                        {t.description}
                       </div>
                       <div className="d-flex justify-content-end">
                         <Button
                           className="small-btn"
                           onClick={() => {
-                            console.log("treatment", treatment);
-                            dispatch(setSelectedTreatment(treatment));
+                            dispatch(setSelectedTreatment(t));
                             dispatch(setIsViewing(true));
                           }}
                         >

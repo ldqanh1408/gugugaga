@@ -1,9 +1,3 @@
-export const getVietnamDate = () => {
-  const now = new Date();
-  now.setHours(now.getHours() + 7); // Thêm 7 giờ để chuyển từ UTC sang GMT+7
-  return now.toISOString().split("T")[0]; // Lấy phần ngày (YYYY-MM-DD)
-};
-
 const dateHelper = {
   formatDateToVN: (dateString) => {
     const date = new Date(dateString);
@@ -41,6 +35,24 @@ const dateHelper = {
     }
 
     return null;
+  },
+  getVietnamDate: (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("vi-VN", {
+      weekday: "long",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  },
+  getVietnamTime: (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // dùng 24h format
+    });
   },
 };
 

@@ -258,7 +258,6 @@ exports.getReceivers = async (req, res) => {
 
     // Lấy booking của user
     const booking = await Booking.findOne({ user_id: _id });
-
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
@@ -269,9 +268,8 @@ exports.getReceivers = async (req, res) => {
     for (const expertId of booking.expert_ids) {
       // Lấy schedule của expert đó
       const schedules = await Schedule.find({ expert_id: expertId });
-
       // Kiểm tra xem có lịch nào trùng không
-      const isConflict = schedules.some((schedule) => {
+      const isConflict = schedules?.some((schedule) => {
         return (
           booking.start_time < schedule.end_time &&
           schedule.start_time < booking.end_time
@@ -283,7 +281,6 @@ exports.getReceivers = async (req, res) => {
         availableExperts.push(expert); // Không bị trùng thì cho vào danh sách
       }
     }
-
     return res.status(200).json({ success: true, data: availableExperts });
   } catch (error) {
     console.error("getReceivers error:", error);

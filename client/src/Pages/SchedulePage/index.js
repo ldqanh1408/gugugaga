@@ -7,6 +7,7 @@ import EditButton from "../../assets/imgs/EditButton.svg";
 import FilterButton from "../../assets/imgs/FilterButton.svg";
 import {
   acceptTreatmentThunk,
+  getBookingsThunk,
   getTreatmentsThunk,
   rejectTreatmentThunk,
   setSelectedTreatment,
@@ -17,25 +18,26 @@ import ViewInfor from "./ViewInfor";
 import Current from "./Current";
 import Booking from "./Booking";
 import Pending from "./Pending";
+import { getBookings } from "../../services/expertService";
 function SchedulePage() {
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
   const [selectedDate, setSelectedDate] = useState(new Date());
   const {
     treatments,
-    currentTreatments,
-    pendingTreatments,
     selectedTreatment,
     status,
+    bookings
   } = useSelector((state) => state?.expert);
-  console.log(currentTreatments);
   const { isViewing } = useSelector((state) => state?.expert);
   const dispatch = useDispatch();
   useEffect(() => {
-    const fetchTreatments = async () => {
+    const fetchData = async () => {
       dispatch(getTreatmentsThunk());
+      dispatch(getBookingsThunk());
     };
-    fetchTreatments();
+    fetchData();
   }, [dispatch]);
+
 
   const renderPage = () => {
     if (status === "pending") {
@@ -48,7 +50,7 @@ function SchedulePage() {
   };
 
   return (
-    <div className="schedule container">
+    <div className="schedule container mt-4">
       <h1>Schedule</h1>
       <hr className=""></hr>
 

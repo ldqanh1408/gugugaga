@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getTreaments } from "../services/expertService";
+import {
+  getBookings,
+  getTreaments,
+  receiveBooking,
+} from "../services/expertService";
 import { acceptTreatment, rejectTreatment } from "../services/treatmentService";
 import { updateTreatment } from "../services/expertService";
 
@@ -7,6 +11,7 @@ export const getTreatmentsThunk = createAsyncThunk(
   "experts/getTreaments",
   async (payload) => {
     const data = await getTreaments(payload);
+    console.log(data.data)
     return data?.data;
   }
 );
@@ -45,7 +50,22 @@ export const getBookingsThunk = createAsyncThunk(
   "expert/getBookings",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await updateTreatment(payload);
+      const response = await getBookings(payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
+export const receiveBookingThunk = createAsyncThunk(
+  "expert/receiveBooking",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await receiveBooking(payload);
+      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -58,7 +78,7 @@ export const getBookingsThunk = createAsyncThunk(
 const expertSlice = createSlice({
   name: "expert",
   initialState: {
-    user: null, // Dữ liệu user cơ bản
+    expert: null, // Dữ liệu user cơ bản
     profile: null, // Dữ liệu profile chi tiết
     loading: false,
     profileLoading: false, // Loading riêng cho profile
@@ -71,7 +91,7 @@ const expertSlice = createSlice({
     seletedTreatment: null,
     isViewing: false,
     bookings: [],
-    status: "pending"
+    status: "pending",
   },
   reducers: {
     setSelectedTreatment: (state, action) => {
@@ -81,8 +101,8 @@ const expertSlice = createSlice({
       state.isViewing = action.payload;
     },
     setStatus: (state, action) => {
-      state.status = action.payload
-    }
+      state.status = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -93,14 +113,6 @@ const expertSlice = createSlice({
       .addCase(getTreatmentsThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.treatments = action.payload || [];
-
-        // Phân loại treatments
-        state.currentTreatments = state.treatments.filter(
-          (t) => t.treatmentStatus !== "pending"
-        );
-        state.pendingTreatments = state.treatments.filter(
-          (t) => t.treatmentStatus === "pending"
-        );
       })
       .addCase(getTreatmentsThunk.rejected, (state, action) => {
         state.loading = false;
@@ -209,14 +221,35 @@ const expertSlice = createSlice({
       })
       .addCase(getBookingsThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.bookings = action.payload
+        state.bookings = action.payload;
       })
       .addCase(getBookingsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
+      .addCase(receiveBookingThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(receiveBookingThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedBooking = action.payload;
+        // Cập nhật booking tương ứng trong danh sách bookings
+        const index = state.bookings.findIndex(
+          (b) => b?._id === updatedBooking?._id
+        );
+
+        if (index !== -1) {
+          state.bookings[index] = updatedBooking;
+        }
+      })
+      .addCase(receiveBookingThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
-export const { setSelectedTreatment, setIsViewing, setStatus } = expertSlice.actions;
+export const { setSelectedTreatment, setIsViewing, setStatus } =
+  expertSlice.actions;
 export default expertSlice.reducer;

@@ -15,6 +15,9 @@ import DatePicker from "react-datepicker";
 import EditButton from "../../assets/imgs/EditButton.svg";
 import FilterButton from "../../assets/imgs/FilterButton.svg";
 import { getTreaments } from "../../services/userService";
+import Current from "./Current.jsx"
+import History from "./History.jsx"
+import WaitingFeedback from "./WaitingFeedback.jsx"
 import {
   getTreatmentsThunk,
   setIsViewing,
@@ -24,7 +27,7 @@ import dateHelper from "../../utils/dateHelper.js";
 function MyTherapy() {
   console.log(dateHelper);
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
-  const [status, setStatus] = useState("pending");
+  const [status, setStatus] = useState("current");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { treatments, currentTreatments, pendingTreatments, isViewing } =
     useSelector((state) => state?.user);
@@ -35,223 +38,53 @@ function MyTherapy() {
     };
     fetchTreaments();
   }, [dispatch]);
+
+  const renderPage = () => {
+    if(status === "current"){return <Current></Current>}
+    if(status === "feedback"){return <WaitingFeedback></WaitingFeedback>}
+    if(status === "history"){return <History></History>}
+  }
+
   return (
-    <div className="schedule container">
+    <div className="schedule container mt-4">
       <h1>My Therapy</h1>
       <hr className=""></hr>
       <Row className="d-flex flex-row justify-content-start">
-        <Col xs="auto" onClick={() => setStatus("pending")}>
-          <Button>Pending</Button>
-        </Col>
         <Col xs="auto" onClick={() => setStatus("current")}>
           <Button>Current</Button>
         </Col>
+        <Col xs="auto" onClick={() => setStatus("feedback")}>
+          <Button>Waiting feedback</Button>
+        </Col>
+        <Col xs="auto" onClick={() => setStatus("history")}>
+          <Button>History</Button>
+        </Col>
       </Row>
-      {status === "current" ? (
-        isViewing === true ? (
-          <ViewInfor></ViewInfor>
-        ) : (
-          <Row>
-            <Col sm={12} md={5} className="custom-left">
-              <div className="custom-datepicker-container">
-                <div className="datepicker-wrapper">
-                  <DatePicker
-                    selected={selectedDate}
-                    onChange={(date) => setSelectedDate(date)}
-                    inline
-                    className="custom-datepicker"
-                    showYearDropdown
-                    showFullMonthYearPicker
-                    scrollableYearDropdown
-                    yearDropdownItemNumber={2000}
-                    showMonthDropdown
-                    minDate={new Date()}
-                    dayClassName={(date) =>
-                      dateHelper.getDayClassName(date, treatments)
-                    }
-                  />
-                </div>
-              </div>
-            </Col>
-            <Col sm={12} md={5} className="custom-right">
-              <Card className="mb-3 custom-card-title">
-                <Card.Body className="fw-bold">
-                  {" "}
-                  View Expert's upcoming list
-                </Card.Body>
 
-                {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
-                <div className="filter-dropdown-container">
-                  <Dropdown as={ButtonGroup}>
-                    <Dropdown.Toggle variant="light" className="filter-btn">
-                      <img src={FilterButton} alt="Filter" />
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu align="end">
-                      <Dropdown.Item
-                        active={filterMode === "day"}
-                        onClick={() => setFilterMode("day")}
-                      >
-                        View by day
-                      </Dropdown.Item>
-
-                      <Dropdown.Item
-                        active={filterMode === "all"}
-                        onClick={() => setFilterMode("all")}
-                      >
-                        View all
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
-              </Card>
-              <div className="treatment-scroll-container">
-                {currentTreatments?.length === 0 ? (
-                  <div className="no-treatments-message">
-                    No {status === "current" ? "current" : "pending"} treatments
-                    found.
-                  </div>
-                ) : (
-                  currentTreatments?.map((treatment, index) => (
-                    <Card className="mb-3 custom-card">
-                      <Card.Body className="custom-card-content">
-                        <div className="card-header">
-                          <span className="time-text"></span>
-                        </div>
-                        <div className="card-body">
-                          <div>
-                            <span className="date-text"></span>
-                            <span className="header-text fw-bold">
-                              Name: {treatment.expert_id.expert_name}
-                            </span>
-                            <div className="header-text">
-                              Status: {treatment.treatmentStatus}
-                            </div>
-                            <div className="header-text">
-                              Description: {treatment.description}
-                            </div>
-                            <div>
-                              Start at:{" "}
-                              {dateHelper.formatDateToVN(
-                                treatment.schedule_id.start_time
-                              )}
-                            </div>
-                            <div>Duration: {treatment.duration} minutes</div>
-                            <div className="d-flex justify-content-end">
-                              <Button
-                                className="small-btn"
-                                onClick={() => {
-                                  dispatch(setSelectedTreatment(treatment));
-                                  dispatch(setIsViewing(true));
-                                }}
-                              >
-                                View
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </Col>
-          </Row>
-        )
-      ) : (
-        <Row>
-          <Col sm={12} md={5} className="custom-left">
-            <div className="custom-datepicker-container">
-              <div className="datepicker-wrapper">
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={(date) => setSelectedDate(date)}
-                  inline
-                  className="custom-datepicker"
-                  showYearDropdown
-                  showFullMonthYearPicker
-                  scrollableYearDropdown
-                  yearDropdownItemNumber={2000}
-                  showMonthDropdown
-                  minDate={new Date()}
-                />
-              </div>
+      <Row>
+        <Col sm={12} md={5} className="custom-left">
+          <div className="custom-datepicker-container">
+            <div className="datepicker-wrapper">
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                inline
+                className="custom-datepicker"
+                showYearDropdown
+                showFullMonthYearPicker
+                scrollableYearDropdown
+                yearDropdownItemNumber={2000}
+                showMonthDropdown
+                minDate={new Date()}
+                dayClassName={(date) =>
+                  dateHelper.getDayClassName(date, treatments)
+                }
+              />
             </div>
-          </Col>
-          <Col sm={12} md={5} className="custom-right">
-            <Card className="mb-3 custom-card-title">
-              <Card.Body className="fw-bold">
-                {" "}
-                View list of users booking requests
-              </Card.Body>
-
-              {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
-              <div className="filter-dropdown-container">
-                <Dropdown as={ButtonGroup}>
-                  <Dropdown.Toggle variant="light" className="filter-btn">
-                    <img src={FilterButton} alt="Filter" />
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu align="end">
-                    <Dropdown.Item
-                      active={filterMode === "day"}
-                      onClick={() => setFilterMode("day")}
-                    >
-                      View by day
-                    </Dropdown.Item>
-
-                    <Dropdown.Item
-                      active={filterMode === "all"}
-                      onClick={() => setFilterMode("all")}
-                    >
-                      View all
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-            </Card>
-            <div className="treatment-scroll-container">
-              {pendingTreatments?.length === 0 ? (
-                <div className="no-treatments-message">
-                  No {status === "current" ? "current" : "pending"} treatments
-                  found.
-                </div>
-              ) : (
-                pendingTreatments?.map((treatment, index) => (
-                  <Card className="mb-3 custom-card">
-                    <Card.Body className="custom-card-content">
-                      <div className="card-header">
-                        <span className="time-text"></span>
-                      </div>
-                      <div className="card-body">
-                        <div>
-                          <span className="date-text"></span>
-                          <span className="header-text fw-bold">
-                            Name: {treatment.expert_id.expert_name}
-                          </span>
-                          <div className="header-text">
-                            Status: {treatment.treatmentStatus}
-                          </div>
-                          <div className="header-text">
-                            Description: {treatment.description}
-                          </div>
-                          <div>
-                            Start at:{" "}
-                            {dateHelper.formatDateToVN(
-                              treatment.schedule_id.start_time
-                            )}
-                          </div>
-                          <div>Duration: {treatment.duration} minutes</div>
-                        </div>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                ))
-              )}
-            </div>
-          </Col>
-        </Row>
-      )}
+          </div>
+        </Col>
+        {renderPage()}
+      </Row>
     </div>
   );
 }

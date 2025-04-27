@@ -4,10 +4,11 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   padding: 20px;
-  flex: 1;
   display: flex;
   flex-direction: column;
-  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1)
+  max-height: 45vh;
+  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
+  flex:1;
 }
   
 .custom-right {
@@ -49,11 +50,14 @@
   background-color: #fff;
 }
 
+.react-datepicker__month-container {
+  width: 100%;
+}
 /* Header (tháng, năm) */
 .react-datepicker__header {
   background-color: transparent !important;
   color: black !important;
-  font-size: 2rem;
+  font-size: 1.5rem;
   width: 100%;
   padding: 15px 0;
   text-align: center;
@@ -63,13 +67,11 @@
 .react-datepicker__day {
   flex: 1; /* Đảm bảo các ô ngày co giãn đều */
   max-width: 60px; /* Điều chỉnh kích thước tối đa */
-  height: 40px;
   line-height: 60px;
   text-align: center;
-  font-size: 1.4rem;
-  margin: 0 5px; /* Tăng khoảng cách ngang */
+  font-size: 1.2rem;
   border-radius: 8px;
-  padding: 5px 0 !important;  
+
 }
 
 .react-datepicker__week {
@@ -101,8 +103,8 @@
   border-radius: 50% !important; /* Tạo đường viền tròn */
   background-color: #E5CAC2 !important; /* Thay đổi màu nền nếu cần */
   color: white !important; /* Màu chữ cho ô ngày được chọn */
-  width: 36px !important; /* Chiều rộng của ô ngày */
-  height: 36px !important; /* Chiều cao của ô ngày */
+  width: 50% !important; /* Chiều rộng của ô ngày */
+  height: 50% !important; /* Chiều cao của ô ngày */
   line-height: 27px !important; /* Căn chỉnh chữ giữa */
   text-align: center !important; /* Căn giữa chữ */
   display: inline-block !important; /* Đảm bảo ô ngày giữ đúng hình dạng */
@@ -187,16 +189,18 @@
 
 /* Đảm bảo DatePicker không bị vỡ layout khi zoom */
 .datepicker-wrapper {
-  max-width: 100%;
+transform: scale(0.8);
+  transform-origin: top center;
   overflow: auto;
-  display: block;
   background-color: #fff;
+  flex: 1;
 }
 
 /* Bạn có thể điều chỉnh kích thước này sao cho phù hợp */
 .custom-datepicker-container {
-  max-width: 100%;
-  margin: 0 auto;
+  width: 100%; /* hoặc bạn chỉnh lại */
+  display: flex;
+  justify-content: center;
 }
 
 /* Các style tùy chỉnh khác */

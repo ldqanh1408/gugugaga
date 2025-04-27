@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Button, Col, Row, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsViewing, updateTreatmentThunk } from "../../redux/expertSlice";
-
+import dateHelper from "../../utils/dateHelper";
 function ViewInfor() {
   const { selectedTreatment } = useSelector((state) => state?.expert);
   const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
-  console.log(selectedTreatment)
+  console.log(selectedTreatment);
   const [feedbackData, setFeedbackData] = useState({
     summary: selectedTreatment?.summary || "",
   });
@@ -23,12 +23,14 @@ function ViewInfor() {
     isSelect = false,
     customOptions = [],
     key,
-    readOnly = true
+    readOnly = true,
+    type = "text" // <- thêm type, mặc định vẫn là text
   ) => {
     const isFeedbackField = ["summary"].includes(key);
     const value = isFeedbackField
       ? (feedbackData[key] ?? "")
       : (getValueByPath(selectedTreatment, key) ?? "");
+
     return (
       <Form.Group as={Row} className="mb-2">
         <Form.Label column sm="4" className="text-end">
@@ -37,7 +39,7 @@ function ViewInfor() {
         <Col sm="8">
           {isSelect ? (
             <Form.Select
-              value={value.toString()}
+              value={value?.toString()}
               disabled={readOnly}
               onChange={(e) =>
                 isFeedbackField && handleFeedbackChange(key, e.target.value)
@@ -62,9 +64,19 @@ function ViewInfor() {
                     </option>,
                   ]}
             </Form.Select>
+          ) : type === "textarea" ? (
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={value}
+              disabled={readOnly}
+              onChange={(e) =>
+                isFeedbackField && handleFeedbackChange(key, e.target.value)
+              }
+            />
           ) : (
             <Form.Control
-              type="text"
+              type={type} // sử dụng type được truyền vào
               value={value}
               disabled={readOnly}
               onChange={(e) =>
@@ -78,7 +90,12 @@ function ViewInfor() {
   };
 
   const handleSave = async () => {
-    dispatch(updateTreatmentThunk({treatment_id: selectedTreatment._id, data: feedbackData}));
+    dispatch(
+      updateTreatmentThunk({
+        treatment_id: selectedTreatment._id,
+        data: feedbackData,
+      })
+    );
     setIsEditing(false);
     // dispatch an update action here if needed
   };
@@ -88,18 +105,51 @@ function ViewInfor() {
         <Col md={6}>
           <div className="fw-bold mb-2">TREATMENT</div>
           {renderField("Treatment code:", false, [], "_id")}
-          {renderField("Time", false, [], "schedule_id.start_time")}
+          <Form.Group as={Row} className="mb-2">
+            <Form.Label column sm="4" className="text-end">
+              Date
+            </Form.Label>
+            <Col sm="8">
+              <Form.Control
+                type="text"
+                value={dateHelper?.getVietnamDate(
+                  selectedTreatment?.schedule_id?.start_time
+                )}
+                disabled={true}
+              />
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-2">
+            <Form.Label column sm="4" className="text-end">
+              Time
+            </Form.Label>
+            <Col sm="8">
+              <Form.Control
+                type="text"
+                value={
+                  dateHelper?.getVietnamTime(
+                    selectedTreatment?.schedule_id?.start_time
+                  ) +
+                  " - " +
+                  dateHelper?.getVietnamTime(
+                    selectedTreatment?.schedule_id?.end_time
+                  )
+                }
+                disabled={true}
+              />
+            </Col>
+          </Form.Group>
+
           {renderField("Duration", false, [], "duration")}
           {renderField("Status", false, [], "treatmentStatus")}
           {renderField("Description", false, [], "description")}
           {renderField("Address", false, [], "address")}
-          {renderField("Summary", false, [], "summary", !isEditing)}
-
+          {renderField("Summary", false, [], "summary", !isEditing, "textarea")}
 
           <div className="fw-bold mt-4 mb-2">EXPERT</div>
           {renderField("Expert code:", false, [], "expert_id._id")}
           {renderField("Expert name:", false, [], "expert_id.expert_name")}
-          {renderField("Gender:", true, [], "expert_id.gendar")}
+          {renderField("Gender:", true, [], "expert_id.gender")}
           {renderField("Phone", false, [], "expert_id.expert_phone")}
           {renderField("Email", false, [], "expert_id.expert_email")}
 
@@ -123,10 +173,10 @@ function ViewInfor() {
               { value: "4", label: "So good" },
               { value: "5", label: "Very good" },
             ],
-            "rating",
+            "rating"
           )}
-          {renderField("Comment:", false, [], "feedback")}
-          {renderField("Complaint:", false, [], "complaint")}
+          {renderField("Comment:", false, [], "feedback", true, "textarea")}
+          {renderField("Complaint:", false, [], "complaint", true, "textarea")}
 
           <div className="fw-bold mt-4 mb-2">INFORMATION OF BUSINESS</div>
           {renderField("Business code:", false, [], "business_id._id")}

@@ -6,14 +6,18 @@ const History = createSlice({
   name: "history",
   initialState: {
     isViewing: false,
+    selectedTreatment: null,
   },
   reducers: {
     setIsViewing : (state, action) => {
         state.isViewing = action.payload
+    },
+    setSelectedTreatment : (state, action) => {
+        state.selectedTreatment = action.payload
     }
   },
   
 });
 
-export const {setIsViewing} = History.actions
+export const {setIsViewing, setSelectedTreatment} = History.actions
 export default History.reducer;
