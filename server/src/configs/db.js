@@ -1,16 +1,13 @@
 const mongoose = require("mongoose");
-const { GridFSBucket } = require('mongodb');
+const { GridFSBucket } = require("mongodb");
 let gfs;
 
 const connectDB = async () => {
   try {
-    const conn  = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGO_URI); // Loại bỏ các tùy chọn deprecated
 
     const db = conn.connection.db;
-    gfs = new GridFSBucket(db, { bucketName: 'uploads' }); // GridFS bucket
+    gfs = new GridFSBucket(db, { bucketName: "uploads" }); // GridFS bucket
 
     console.log("✅ Kết nối MongoDB thành công");
   } catch (error) {
@@ -21,10 +18,11 @@ const connectDB = async () => {
 
 const getGFS = () => {
   if (!gfs) {
-    throw new Error("❌ gfs chưa được khởi tạo. Hãy đảm bảo connectDB đã chạy!");
+    throw new Error(
+      "❌ gfs chưa được khởi tạo. Hãy đảm bảo connectDB đã chạy!"
+    );
   }
   return gfs;
 };
-
 
 module.exports = { connectDB, getGFS };

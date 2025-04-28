@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ExploreYourselfPage.css";
 
 const ExploreYourselfPage = () => {
@@ -8,6 +9,7 @@ const ExploreYourselfPage = () => {
   const [timeRange, setTimeRange] = useState("today");
   const [futureMails, setFutureMails] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("3 months");
+  const navigate = useNavigate();
 
   // Mock data for statistics
   const emotionData = {
@@ -42,28 +44,39 @@ const ExploreYourselfPage = () => {
   // Check for due mails periodically
   useEffect(() => {
     const checkMails = () => {
-      const now = new Date();
-      const updatedMails = futureMails.map((mail) => {
-        const receiveDate = new Date(mail.receiveDate);
+      const now = new Date().toISOString().split("T")[0];
+      const pendingMails = futureMails.filter(
+        (mail) => mail.receiveDate === now && !mail.notified
+      );
 
-        if (receiveDate <= now && !mail.notified) {
-          showMailNotification(mail);
-          return { ...mail, notified: true };
+      if (pendingMails.length > 0) {
+        const firstMail = pendingMails[0];
+        if (
+          window.confirm(
+            `Bạn có ${pendingMails.length} thư từ quá khứ đến! Bạn muốn xem ngay bây giờ không?`
+          )
+        ) {
+          navigate("/today-mails", { state: { mail: firstMail } });
         }
-        return mail;
-      });
 
-      if (JSON.stringify(updatedMails) !== JSON.stringify(futureMails)) {
+        // Đánh dấu tất cả thư đã thông báo
+        const updatedMails = futureMails.map((mail) =>
+          pendingMails.find((m) => m.id === mail.id)
+            ? { ...mail, notified: true }
+            : mail
+        );
         setFutureMails(updatedMails);
         localStorage.setItem("futureMails", JSON.stringify(updatedMails));
       }
     };
 
-    const interval = setInterval(checkMails, 60000); // Check every minute
-    checkMails(); // Check immediately on load
+    // Kiểm tra ngay khi component mount
+    checkMails();
 
+    // Kiểm tra mỗi phút
+    const interval = setInterval(checkMails, 60000);
     return () => clearInterval(interval);
-  }, [futureMails]);
+  }, [futureMails, navigate]);
 
   const handleSendMail = () => {
     if (!mailContent || !sendDate) {
@@ -75,16 +88,29 @@ const ExploreYourselfPage = () => {
       id: Date.now(),
       title:
         mailContent.substring(0, 30) + (mailContent.length > 30 ? "..." : ""),
-      recipient: `Chính mình của ngày ${sendDate}`,
-      duration: calculateDuration(sendDate),
-      receiveDate: sendDate,
       content: mailContent,
-      notified: false,
+      sendDate: new Date().toISOString().split("T")[0], // Ngày gửi (hiện tại)
+      receiveDate: sendDate, // Ngày nhận trong tương lai
+      notified: false, // Chưa thông báo
+      read: false, // Chưa đọc
     };
 
     const updatedMails = [...futureMails, newMail];
     setFutureMails(updatedMails);
     localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+
+    // Kiểm tra nếu ngày nhận là ngày hiện tại
+    const today = new Date().toISOString().split("T")[0];
+    if (sendDate === today) {
+      if (
+        window.confirm(
+          "Bạn có thư từ quá khứ đến! Bạn muốn xem ngay bây giờ không?"
+        )
+      ) {
+        navigate("/today-mails", { state: { mail: newMail } });
+        return;
+      }
+    }
 
     setMailContent("");
     setSendDate("");

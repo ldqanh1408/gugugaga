@@ -45,7 +45,9 @@ function Navigation() {
               >
                 Explore
               </Nav.Link>{" "}
-              {/* 👈 Thêm dòng này */}
+              <Nav.Link as={Link} to="/today-mails" className="fw-semibold">
+                Today Mails
+              </Nav.Link>
               {!isAuthenticated ? (
                 <div className="d-lg-flex d-none flex-grow-1 justify-content-end">
                   <Nav.Link as={Link} to="/sign-up">

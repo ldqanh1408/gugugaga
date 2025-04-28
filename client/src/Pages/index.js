@@ -8,6 +8,7 @@ import ChangePassword from "./ChangePassword";
 import NoteEditor from "./Note/NoteEditor";
 import ChatBox from "./Note/ChatBox";
 import ExploreYourselfPage from "./ExploreYourself/ExploreYourselfPage"; // 👈 thêm dòng này
+import TodayMailsPage from "./TodayMailsPage/TodayMailsPage";
 
 export {
   Home,
@@ -20,4 +21,5 @@ export {
   NoteEditor,
   ChatBox,
   ExploreYourselfPage, // 👈 thêm dòng này
+  TodayMailsPage, // Thêm TodayMailsPage vào danh sách export
 };

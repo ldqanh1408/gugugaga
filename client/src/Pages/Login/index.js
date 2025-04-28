@@ -6,7 +6,7 @@ import { logging, getToken } from "../../services/authService.js";
 import { handleBlur, handleFocus } from "../../services";
 import { ACCOUNT, PASSWORD } from "../../constants";
 import { ClipLoader } from "react-spinners";
-import './Login.css'
+import "./Login.css";
 function Login() {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,19 @@ function Login() {
     const checkAuth = async () => {
       const token = await getToken();
       if (token) {
-        navigate("/", { replace: true });
+        const futureMails =
+          JSON.parse(localStorage.getItem("futureMails")) || [];
+        const today = new Date().toISOString().split("T")[0];
+
+        const todayMail = futureMails.find(
+          (mail) => mail.receiveDate === today && !mail.notified
+        );
+
+        if (todayMail) {
+          navigate("/today-mails", { state: { mail: todayMail } });
+        } else {
+          navigate("/", { replace: true });
+        }
       }
     };
     checkAuth();
@@ -31,9 +43,26 @@ function Login() {
     setLoading(true);
     try {
       await logging({ account, password });
-      console.log({ message: "Login successful...." });
-      navigate("/");
-      window.location.reload();
+
+      // Kiểm tra thư đến hạn
+      const futureMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+      const today = new Date().toISOString().split("T")[0];
+      const todayMail = futureMails.find(
+        (mail) => mail.receiveDate === today && !mail.notified
+      );
+
+      if (todayMail) {
+        // Nếu có thư đến hạn, chuyển hướng đến TodayMailsPage
+        navigate("/today-mails", { state: { mail: todayMail } });
+
+        // Đánh dấu thư đã được thông báo
+        const updatedMails = futureMails.map((mail) =>
+          mail.id === todayMail.id ? { ...mail, notified: true } : mail
+        );
+        localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       setError("Incorrect password or account.");
     }
@@ -56,7 +85,9 @@ function Login() {
         <Form className="">
           <div className="d-flex flex-column form-2">
             <Form.Group>
-              <Form.Label className="login-custom-h2-label">User name:</Form.Label>
+              <Form.Label className="login-custom-h2-label">
+                User name:
+              </Form.Label>
               <Form.Control
                 placeholder="Enter your username..."
                 className="login-box"
@@ -83,7 +114,9 @@ function Login() {
               <Form.Text className="text-danger">{accountError}</Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
-              <Form.Label className="login-custom-h2-label">Password:</Form.Label>
+              <Form.Label className="login-custom-h2-label">
+                Password:
+              </Form.Label>
               <Form.Control
                 type="password"
                 placeholder="Enter your password..."
@@ -112,16 +145,20 @@ function Login() {
             </Form.Group>
           </div>
           <Form.Text className="text-danger d-block">{error}</Form.Text>
-          
+
           {/* Nút login hiển thị loading khi đang xử lý */}
-          <div className="d-flex justify-content-end">  
-            <Button style={{ marginRight: '0' }} type="submit" onClick={handleSubmit} disabled={loading}>
+          <div className="d-flex justify-content-end">
+            <Button
+              style={{ marginRight: "0" }}
+              type="submit"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
               {loading ? <ClipLoader color="white" size={20} /> : "Login"}
             </Button>
           </div>
         </Form>
       </div>
-     
     </div>
   );
 }

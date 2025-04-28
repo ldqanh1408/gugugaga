@@ -75,7 +75,7 @@ exports.loadProfile = async (req, res) => {
         .status(404)
         .json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
-    
+
     return res.status(200).json({
       success: true,
       profile: {
@@ -87,7 +87,7 @@ exports.loadProfile = async (req, res) => {
         gender: user.gender || "",
         phone: user.phone || "",
         email: user.email || "",
-        avatarPreview: user.avatar || ""
+        avatarPreview: user.avatar || "",
       },
     });
   } catch (error) {
@@ -100,14 +100,16 @@ exports.uploadProfile = async (req, res) => {
     // Kiểm tra xem user có tồn tại không
     const user = await User.findOne({ _id: userId });
     if (!user) {
-      return res.status(404).json({ success: false, message: "❌ Người dùng không tồn tại." });
+      return res
+        .status(404)
+        .json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
 
-    const { nickName, userName, bio, dob, gender, phone, email, avatar } = req.body;
+    const { nickName, userName, bio, dob, gender, phone, email, avatar } =
+      req.body;
     console.error(req.body);
 
     // Kiểm tra và upload ảnh lên Cloudinary nếu có file được tải lên
-
 
     // Cập nhật thông tin khác của user (và avatar mới nếu có)
     user.avatar = avatar || user.avatar;
@@ -139,5 +141,59 @@ exports.uploadProfile = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.addFutureMail = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { title, content, receiveDate } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const newMail = {
+      title,
+      content,
+      receiveDate,
+    };
+
+    user.futureMails.push(newMail);
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Future mail added successfully.",
+      futureMail: newMail,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getFutureMails = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const today = new Date();
+    const dueMails = user.futureMails.filter(
+      (mail) =>
+        new Date(mail.receiveDate).toDateString() === today.toDateString()
+    );
+
+    res.status(200).json({ success: true, futureMails: dueMails });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -99,12 +99,16 @@ const uploadProfile = async ({ profile, avatarFile }) => {
       const formData = new FormData();
       formData.append("avatar", avatarFile); // Thêm file avatar vào form data
 
-      const uploadResponse = await axios.post(`${API_URL}users/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // Gửi token trong header
-        },
-      });
+      const uploadResponse = await axios.post(
+        `${API_URL}users/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // Gửi token trong header
+          },
+        }
+      );
 
       // Lấy URL ảnh từ response nếu upload thành công
       if (uploadResponse.data && uploadResponse.data.success) {
@@ -137,6 +141,35 @@ const uploadProfile = async ({ profile, avatarFile }) => {
   }
 };
 
+const addFutureMail = async (userId, mailData) => {
+  try {
+    const token = await getToken();
+    const response = await axios.post(
+      `${API_URL}users/${userId}/future-mails`,
+      mailData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding future mail:", error);
+    throw error;
+  }
+};
+
+const getFutureMails = async (userId) => {
+  try {
+    const token = await getToken();
+    const response = await axios.get(`${API_URL}users/${userId}/future-mails`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.futureMails;
+  } catch (error) {
+    console.error("Error fetching future mails:", error);
+    throw error;
+  }
+};
 
 export {
   getUsers,
@@ -146,4 +179,6 @@ export {
   uploadAvatar,
   loadProfile,
   uploadProfile,
+  addFutureMail,
+  getFutureMails,
 };

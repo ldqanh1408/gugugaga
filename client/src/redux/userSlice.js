@@ -5,7 +5,9 @@ import {
   loadProfile,
   uploadProfile,
   getEntries,
-  getConsecutiveDays
+  getConsecutiveDays,
+  addFutureMail,
+  getFutureMails,
 } from "../services"; // API services
 
 // Thunk lấy user cơ bản (thông tin đăng nhập)
@@ -89,6 +91,30 @@ export const fetchConsecutiveDays = createAsyncThunk(
   }
 );
 
+export const addFutureMailAsync = createAsyncThunk(
+  "user/addFutureMail",
+  async ({ userId, mailData }, thunkAPI) => {
+    try {
+      const response = await addFutureMail(userId, mailData);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchFutureMailsAsync = createAsyncThunk(
+  "user/fetchFutureMails",
+  async (userId, thunkAPI) => {
+    try {
+      const futureMails = await getFutureMails(userId);
+      return futureMails;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -101,6 +127,7 @@ const userSlice = createSlice({
     logoutError: null,
     entries: 0,
     consecutiveDays: 0,
+    futureMails: [],
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -189,6 +216,13 @@ const userSlice = createSlice({
       .addCase(uploadProfileAsync.rejected, (state, action) => {
         state.error = action.payload || "Failed to update profile"; // Xử lý lỗi khi thất bại
         state.loading = false;
+      })
+
+      .addCase(addFutureMailAsync.fulfilled, (state, action) => {
+        state.futureMails.push(action.payload);
+      })
+      .addCase(fetchFutureMailsAsync.fulfilled, (state, action) => {
+        state.futureMails = action.payload;
       });
   },
 });

@@ -24,7 +24,19 @@ import {
   register,
   changePassword,
 } from "./authService.js";
-import { getNotes, getEntries, getConsecutiveDays} from "./journalService.js";
+import { getNotes, getEntries, getConsecutiveDays } from "./journalService.js";
+
+export const addFutureMail = async (mailData) => {
+  // Logic để thêm mail vào cơ sở dữ liệu hoặc localStorage
+  console.log("Adding future mail:", mailData);
+};
+
+export const getFutureMails = async () => {
+  // Logic để lấy danh sách mail từ cơ sở dữ liệu hoặc localStorage
+  console.log("Fetching future mails");
+  return [];
+};
+
 export {
   getNotes,
   getUsers,
@@ -47,5 +59,5 @@ export {
   loadProfile,
   uploadProfile,
   getEntries,
-  getConsecutiveDays
+  getConsecutiveDays,
 };
