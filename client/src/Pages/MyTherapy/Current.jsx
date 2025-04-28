@@ -17,16 +17,15 @@ import FilterButton from "../../assets/imgs/FilterButton.svg";
 import { getTreaments } from "../../services/userService";
 import {
   getTreatmentsThunk,
-  setIsViewing,
   setSelectedTreatment,
 } from "../../redux/userSlice";
+import { setIsViewing, setStatus } from "../../redux/myTherapySlice.js";
 import dateHelper from "../../utils/dateHelper.js";
 function Current() {
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
-  const [status, setStatus] = useState("pending");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { treatments, currentTreatments, pendingTreatments, isViewing } =
-    useSelector((state) => state?.user);
+  const { treatments } = useSelector((state) => state?.user);
+  const { isViewing, status } = useSelector((state) => state?.myTherapy);
   const dispatch = useDispatch();
   return (
     <Col sm={12} md={5} className="custom-right">
@@ -59,52 +58,47 @@ function Current() {
         </div>
       </Card>
       <div className="treatment-scroll-container">
-        {currentTreatments?.length === 0 ? (
+        {treatments?.length === 0 ? (
           <div className="no-treatments-message">
-            No {status === "current" ? "current" : "pending"} treatments found.
+            No current treatments found.
           </div>
         ) : (
-          currentTreatments?.map((treatment, index) => (
-            <Card className="mb-3 custom-card">
-              <Card.Body className="custom-card-content">
-                <div className="card-header">
-                  <span className="time-text"></span>
-                </div>
-                <div className="card-body">
-                  <div>
-                    <span className="date-text"></span>
-                    <span className="header-text fw-bold">
-                      Name: {treatment.expert_id.expert_name}
-                    </span>
-                    <div className="header-text">
-                      Status: {treatment.treatmentStatus}
-                    </div>
-                    <div className="header-text">
-                      Description: {treatment.description}
-                    </div>
+          treatments
+            ?.filter((treatment) => {
+              const startTime = new Date(treatment.schedule_id.start_time);
+              return startTime > new Date();
+            })
+            ?.map((treatment, index) => (
+              <Card className="mb-3 custom-card">
+                <Card.Body className="custom-card-content">
+                  <div className="card-header">
+                    <span className="time-text"></span>
+                  </div>
+                  <div className="card-body">
                     <div>
-                      Start at:{" "}
-                      {dateHelper.formatDateToVN(
-                        treatment.schedule_id.start_time
-                      )}
-                    </div>
-                    <div>Duration: {treatment.duration} minutes</div>
-                    <div className="d-flex justify-content-end">
-                      <Button
-                        className="small-btn"
-                        onClick={() => {
-                          dispatch(setSelectedTreatment(treatment));
-                          dispatch(setIsViewing(true));
-                        }}
-                      >
-                        View
-                      </Button>
+                      <span className="date-text"></span>
+                      <span className="header-text fw-bold">
+                        Name: {treatment.expert_id.expert_name}
+                      </span>
+                      <div className="header-text">
+                        Status: {treatment.treatmentStatus}
+                      </div>
+                      <div className="header-text">
+                        Description: {treatment.description}
+                      </div>
+                      <div>
+                        Start at:{" "}
+                        {dateHelper.formatDateToVN(
+                          treatment.schedule_id.start_time
+                        )}
+                      </div>
+                      <div>Duration: {treatment.duration} minutes</div>
+                      <div className="d-flex justify-content-end"></div>
                     </div>
                   </div>
-                </div>
-              </Card.Body>
-            </Card>
-          ))
+                </Card.Body>
+              </Card>
+            ))
         )}
       </div>
     </Col>

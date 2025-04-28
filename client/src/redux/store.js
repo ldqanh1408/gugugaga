@@ -23,6 +23,6 @@ export const store = configureStore({
     schedule: scheduleReducer,
     business: businessReducer,
     complaint: complaintReducer,
-    MyTherapy: myTherapyReducer
+    myTherapy: myTherapyReducer
   },
 });

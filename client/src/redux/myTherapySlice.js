@@ -18,5 +18,5 @@ const myTherapySlice = createSlice({
   
 });
 
-export const {setIsViewing,} = myTherapySlice.actions
+export const {setIsViewing, setStatus} = myTherapySlice.actions
 export default myTherapySlice.reducer;

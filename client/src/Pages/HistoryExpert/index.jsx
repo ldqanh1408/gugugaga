@@ -18,7 +18,24 @@ function HistoryExpert() {
     };
     fetchTreatments();
   }, [dispatch]);
-  console.log(treatments);
+
+  const renderRating = (rating) => {
+    switch (rating) {
+      case 1:
+        return "Bad";
+      case 2:
+        return "Not oke";
+      case 3:
+        return "Neutral";
+      case 4:
+        return "So good";
+      case 5:
+        return "Very good";
+      default:
+        return ""
+    }
+  };
+
   return (
     <Container className="history container mt-4">
       <h1>History</h1>
@@ -50,11 +67,11 @@ function HistoryExpert() {
                   // })
                   .map((t, idx) => (
                     <tr>
-                      <td className="shell-infor">{idx}</td>
+                      <td className="shell-infor">{idx + 1}</td>
                       <td>{t.user_id.userName}</td>
                       <td>{t.user_id.phone}</td>
                       <td>{t.user_id.email}</td>
-                      <td>{t.rating}</td>
+                      <td>{renderRating(t.rating)}</td>
                       <td className="d-flex justify-content-center">
                         <Button
                           onClick={() => {

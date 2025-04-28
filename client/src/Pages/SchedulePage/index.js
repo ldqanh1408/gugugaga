@@ -19,15 +19,13 @@ import Current from "./Current";
 import Booking from "./Booking";
 import Pending from "./Pending";
 import { getBookings } from "../../services/expertService";
+import dateHelper from "../../utils/dateHelper";
 function SchedulePage() {
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const {
-    treatments,
-    selectedTreatment,
-    status,
-    bookings
-  } = useSelector((state) => state?.expert);
+  const { treatments, selectedTreatment, status, bookings } = useSelector(
+    (state) => state?.expert
+  );
   const { isViewing } = useSelector((state) => state?.expert);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -37,7 +35,6 @@ function SchedulePage() {
     };
     fetchData();
   }, [dispatch]);
-
 
   const renderPage = () => {
     if (status === "pending") {
@@ -79,7 +76,10 @@ function SchedulePage() {
                 scrollableYearDropdown
                 yearDropdownItemNumber={2000}
                 showMonthDropdown
-                maxDate={new Date()}
+                minDate={new Date()}
+                dayClassName={(date) =>
+                  dateHelper.getDayClassName(date, treatments)
+                }
               />
             </div>
           </div>

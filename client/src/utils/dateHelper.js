@@ -11,30 +11,24 @@ const dateHelper = {
     });
   },
   getDayClassName: (date, treatments) => {
-    const formattedDate = date.toISOString().split("T")[0];
-
+    // Lấy ngày từ đối tượng `date` mà không phải qua UTC
+    const formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Đảm bảo rằng chỉ có ngày, không có giờ
+  
     // Tìm treatment khớp với ngày đó
     const match = treatments.find((t) => {
-      const treatmentDate = new Date(t.schedule_id.start_time)
-        .toISOString()
-        .split("T")[0];
-      return treatmentDate === formattedDate;
+      const treatmentDate = new Date(t.schedule_id.start_time);
+      // Đảm bảo so sánh chỉ phần ngày, không so sánh giờ
+      const treatmentDateOnly = new Date(treatmentDate.getFullYear(), treatmentDate.getMonth(), treatmentDate.getDate());
+      return treatmentDateOnly.getTime() === formattedDate.getTime();
     });
-
+  
     if (match) {
-      switch (match.treatmentStatus) {
-        case "pending":
-          return "dot-pending";
-        case "rejected":
-          return "dot-rejected";
-        case "approved":
-          return "dot-approved";
-        default:
-          return null;
-      }
+      const now = new Date();
+      if (new Date(match.schedule_id.start_time) > now) return "dot-pending"; // Nếu start_time của treatment lớn hơn thời gian hiện tại, trả về class "dot-pending"
+      else return null;
     }
-
-    return null;
+  
+    return null; // Nếu không có treatment nào khớp
   },
   getVietnamDate: (isoString) => {
     const date = new Date(isoString);

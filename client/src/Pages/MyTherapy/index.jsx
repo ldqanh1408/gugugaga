@@ -15,22 +15,24 @@ import DatePicker from "react-datepicker";
 import EditButton from "../../assets/imgs/EditButton.svg";
 import FilterButton from "../../assets/imgs/FilterButton.svg";
 import { getTreaments } from "../../services/userService";
-import Current from "./Current.jsx"
-import History from "./History.jsx"
-import WaitingFeedback from "./WaitingFeedback.jsx"
+import Current from "./Current.jsx";
+import History from "./History.jsx";
+import WaitingFeedback from "./WaitingFeedback.jsx";
 import {
   getTreatmentsThunk,
   setIsViewing,
   setSelectedTreatment,
 } from "../../redux/userSlice";
+
+import { setStatus } from "../../redux/myTherapySlice.js";
 import dateHelper from "../../utils/dateHelper.js";
 function MyTherapy() {
   console.log(dateHelper);
   const [filterMode, setFilterMode] = useState("day"); // "day" hoặc "all"
-  const [status, setStatus] = useState("current");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { treatments, currentTreatments, pendingTreatments, isViewing } =
-    useSelector((state) => state?.user);
+  const { treatments } = useSelector((state) => state?.user);
+  const { status } = useSelector((state) => state?.myTherapy);
+  console.log(status);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchTreaments = () => {
@@ -40,23 +42,29 @@ function MyTherapy() {
   }, [dispatch]);
 
   const renderPage = () => {
-    if(status === "current"){return <Current></Current>}
-    if(status === "feedback"){return <WaitingFeedback></WaitingFeedback>}
-    if(status === "history"){return <History></History>}
-  }
+    if (status === "current") {
+      return <Current></Current>;
+    }
+    if (status === "feedback") {
+      return <WaitingFeedback></WaitingFeedback>;
+    }
+    if (status === "history") {
+      return <History></History>;
+    }
+  };
 
   return (
     <div className="schedule container mt-4">
       <h1>My Therapy</h1>
       <hr className=""></hr>
       <Row className="d-flex flex-row justify-content-start">
-        <Col xs="auto" onClick={() => setStatus("current")}>
+        <Col xs="auto" onClick={() => dispatch(setStatus("current"))}>
           <Button>Current</Button>
         </Col>
-        <Col xs="auto" onClick={() => setStatus("feedback")}>
+        <Col xs="auto" onClick={() => dispatch(setStatus("feedback"))}>
           <Button>Waiting feedback</Button>
         </Col>
-        <Col xs="auto" onClick={() => setStatus("history")}>
+        <Col xs="auto" onClick={() => dispatch(setStatus("history"))}>
           <Button>History</Button>
         </Col>
       </Row>
