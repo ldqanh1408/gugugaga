@@ -9,6 +9,7 @@ import { Row } from "react-bootstrap";
 import { checkToken } from "../../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { setProfile } from "../../redux/userSlice"; // Thêm dòng này để import setProfile
 
 function Navigation() {
   const dispatch = useDispatch();
@@ -16,8 +17,16 @@ function Navigation() {
   const { user, profile } = useSelector((state) => state.user);
 
   useEffect(() => {
+    // Khôi phục profile từ localStorage khi component được mount
+    const storedProfile = JSON.parse(localStorage.getItem("profile"));
+    if (storedProfile) {
+      dispatch(setProfile(storedProfile));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
     dispatch(checkToken());
-  }, [dispatch, profile]);
+  }, [dispatch]);
 
   return (
     <Row>

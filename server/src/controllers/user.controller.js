@@ -147,7 +147,7 @@ exports.uploadProfile = async (req, res) => {
 exports.addFutureMail = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { title, content, receiveDate } = req.body;
+    const { title, content, sendDate, receiveDate, notified, read } = req.body;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -159,7 +159,10 @@ exports.addFutureMail = async (req, res) => {
     const newMail = {
       title,
       content,
+      sendDate,
       receiveDate,
+      notified: notified || false,
+      read: read || false,
     };
 
     user.futureMails.push(newMail);
@@ -187,10 +190,13 @@ exports.getFutureMails = async (req, res) => {
     }
 
     const today = new Date();
-    const dueMails = user.futureMails.filter(
-      (mail) =>
-        new Date(mail.receiveDate).toDateString() === today.toDateString()
-    );
+    today.setHours(0, 0, 0, 0);
+
+    const dueMails = user.futureMails.filter((mail) => {
+      const receiveDate = new Date(mail.receiveDate);
+      receiveDate.setHours(0, 0, 0, 0);
+      return receiveDate.getTime() === today.getTime();
+    });
 
     res.status(200).json({ success: true, futureMails: dueMails });
   } catch (error) {

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getPayLoad } from "../../services/authService";
+import { addFutureMail } from "../../services/userService";
 import "./ExploreYourselfPage.css";
 
 const ExploreYourselfPage = () => {
@@ -78,67 +80,73 @@ const ExploreYourselfPage = () => {
     return () => clearInterval(interval);
   }, [futureMails, navigate]);
 
-  const handleSendMail = () => {
+  const handleSendMail = async () => {
     if (!mailContent || !sendDate) {
       alert("Vui lòng nhập nội dung và chọn ngày gửi");
       return;
     }
 
-    const newMail = {
-      id: Date.now(),
-      title:
-        mailContent.substring(0, 30) + (mailContent.length > 30 ? "..." : ""),
-      content: mailContent,
-      sendDate: new Date().toISOString().split("T")[0], // Ngày gửi (hiện tại)
-      receiveDate: sendDate, // Ngày nhận trong tương lai
-      notified: false, // Chưa thông báo
-      read: false, // Chưa đọc
-    };
+    // Đặt giờ về 00:00:00 để so sánh chính xác ngày
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split("T")[0];
 
-    const updatedMails = [...futureMails, newMail];
-    setFutureMails(updatedMails);
-    localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+    const selectedDate = new Date(sendDate);
+    selectedDate.setHours(0, 0, 0, 0);
 
-    // Kiểm tra nếu ngày nhận là ngày hiện tại
-    const today = new Date().toISOString().split("T")[0];
-    if (sendDate === today) {
-      if (
-        window.confirm(
-          "Bạn có thư từ quá khứ đến! Bạn muốn xem ngay bây giờ không?"
-        )
-      ) {
-        navigate("/today-mails", { state: { mail: newMail } });
-        return;
-      }
+    // Kiểm tra nếu chọn ngày trong quá khứ
+    if (selectedDate < today) {
+      alert("Không thể gửi thư cho ngày trong quá khứ!");
+      return;
     }
 
-    setMailContent("");
-    setSendDate("");
-    alert(
-      "Thư đã được gửi thành công! Bạn sẽ nhận được thông báo khi đến ngày nhận."
-    );
-  };
+    // Kiểm tra giới hạn 30 ngày
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 30);
+    if (selectedDate > maxDate) {
+      alert("Bạn chỉ có thể gửi thư trong vòng 30 ngày kể từ hôm nay.");
+      return;
+    }
 
-  const calculateDuration = (dateString) => {
-    const today = new Date();
-    const receiveDate = new Date(dateString);
-    const diffTime = receiveDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    try {
+      const payload = await getPayLoad();
+      const newMail = {
+        id: Date.now(),
+        title:
+          mailContent.substring(0, 30) + (mailContent.length > 30 ? "..." : ""),
+        content: mailContent,
+        sendDate: todayString,
+        receiveDate: sendDate,
+        notified: false,
+        read: false,
+      };
 
-    if (diffDays <= 7) return "1 week";
-    if (diffDays <= 30) return "1 month";
-    if (diffDays <= 90) return "3 months";
-    if (diffDays <= 180) return "6 months";
-    return "1 year";
-  };
+      // Lưu vào backend
+      if (payload?.userId) {
+        await addFutureMail(payload.userId, newMail);
+      }
 
-  const showMailNotification = (mail) => {
-    if (
-      window.confirm(
-        `📨 Thư từ quá khứ đã đến!\n\nTiêu đề: ${mail.title}\nNgày gửi: ${new Date(mail.receiveDate).toLocaleDateString()}\n\nBạn có muốn xem nội dung ngay bây giờ?`
-      )
-    ) {
-      alert(`Nội dung thư:\n\n${mail.content || "Không có nội dung cụ thể"}`);
+      // Lưu vào localStorage
+      const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+      const updatedMails = [...savedMails, newMail];
+      localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+      setFutureMails(updatedMails);
+
+      // Reset form
+      setMailContent("");
+      setSendDate("");
+
+      // Nếu gửi thư cho ngày hiện tại, chuyển đến TodayMailsPage
+      if (sendDate === todayString) {
+        navigate("/today-mails", { state: { mail: newMail } });
+      } else {
+        alert(
+          "Thư đã được gửi thành công! Bạn sẽ nhận được thông báo khi đến ngày nhận."
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi gửi thư:", error);
+      alert("Có lỗi xảy ra khi gửi thư. Vui lòng thử lại.");
     }
   };
 

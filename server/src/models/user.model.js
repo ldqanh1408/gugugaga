@@ -3,8 +3,10 @@ const mongoose = require("mongoose");
 const futureMailSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
+  sendDate: { type: Date, required: true },
   receiveDate: { type: Date, required: true },
   notified: { type: Boolean, default: false },
+  read: { type: Boolean, default: false },
 });
 
 const userSchema = new mongoose.Schema(

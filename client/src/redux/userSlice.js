@@ -118,10 +118,9 @@ export const fetchFutureMailsAsync = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    user: null, // Dữ liệu user cơ bản
-    profile: null, // Dữ liệu profile chi tiết
+    user: null,
+    profile: JSON.parse(localStorage.getItem("profile")) || null, // Khôi phục profile từ localStorage
     loading: false,
-    profileLoading: false, // Loading riêng cho profile
     error: null,
     logoutLoading: false,
     logoutError: null,
@@ -137,6 +136,10 @@ const userSlice = createSlice({
       if (state.profile) {
         state.profile.avatar = action.payload;
       }
+    },
+    setProfile: (state, action) => {
+      state.profile = action.payload;
+      localStorage.setItem("profile", JSON.stringify(action.payload));
     },
   },
   extraReducers: (builder) => {
@@ -227,6 +230,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { updateAvatar } = userSlice.actions; // Action để đồng bộ avatar
+export const { updateAvatar, setProfile } = userSlice.actions; // Action để đồng bộ avatar
 
 export default userSlice.reducer;

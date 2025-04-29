@@ -30,43 +30,68 @@ function Login() {
 
         if (todayMail) {
           navigate("/today-mails", { state: { mail: todayMail } });
-        } else {
-          navigate("/", { replace: true });
+
+          // Đánh dấu thư đã được thông báo
+          const updatedMails = futureMails.map((mail) =>
+            mail.id === todayMail.id ? { ...mail, notified: true } : mail
+          );
+          localStorage.setItem("futureMails", JSON.stringify(updatedMails));
         }
       }
     };
     checkAuth();
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!account || !password) {
+      setError("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+
     setLoading(true);
     try {
-      await logging({ account, password });
+      const response = await logging({ account, password });
 
-      // Kiểm tra thư đến hạn
-      const futureMails = JSON.parse(localStorage.getItem("futureMails")) || [];
-      const today = new Date().toISOString().split("T")[0];
-      const todayMail = futureMails.find(
-        (mail) => mail.receiveDate === today && !mail.notified
-      );
+      if (response.success) {
+        // Khôi phục profile
+        if (response.profile) {
+          localStorage.setItem("profile", JSON.stringify(response.profile));
 
-      if (todayMail) {
-        // Nếu có thư đến hạn, chuyển hướng đến TodayMailsPage
-        navigate("/today-mails", { state: { mail: todayMail } });
+          // Khôi phục futureMails từ profile nếu có
+          if (response.profile.futureMails) {
+            localStorage.setItem(
+              "futureMails",
+              JSON.stringify(response.profile.futureMails)
+            );
+          }
+        }
 
-        // Đánh dấu thư đã được thông báo
-        const updatedMails = futureMails.map((mail) =>
-          mail.id === todayMail.id ? { ...mail, notified: true } : mail
+        // Kiểm tra thư đến hạn ngay sau khi đăng nhập
+        const futureMails =
+          JSON.parse(localStorage.getItem("futureMails")) || [];
+        const today = new Date().toISOString().split("T")[0];
+        const todayMail = futureMails.find(
+          (mail) => mail.receiveDate === today && !mail.notified
         );
-        localStorage.setItem("futureMails", JSON.stringify(updatedMails));
-      } else {
-        navigate("/");
+
+        if (todayMail) {
+          navigate("/today-mails", { state: { mail: todayMail } });
+
+          // Đánh dấu thư đã được thông báo
+          const updatedMails = futureMails.map((mail) =>
+            mail.id === todayMail.id ? { ...mail, notified: true } : mail
+          );
+          localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+        } else {
+          navigate("/");
+        }
       }
     } catch (error) {
-      setError("Incorrect password or account.");
+      setError(error.message || "Incorrect password or account.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

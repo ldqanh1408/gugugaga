@@ -6,11 +6,11 @@ import {
   Profile,
   ChangePassword,
   ExploreYourselfPage,
-} from "../Pages"; // 👈 thêm ExploreYourselfPage
-import TodayMailsPage from "../Pages/TodayMailsPage/TodayMailsPage"; // Import TodayMailsPage
+  TodayMailsPage,
+} from "../Pages";
 import PrivateRoutes from "./PrivateRoutes";
 import PublicRoutes from "./PublicRoutes";
-import routes from "./ConfigRouter"; // giữ nguyên nếu bạn dùng config riêng
+import routes from "./ConfigRouter";
 import "../styles/common.css";
 import "../styles/AppRouter.css";
 
@@ -35,9 +35,7 @@ function AppRouter() {
               ))}
           </Route>
           <Route path="/explore-yourself" element={<ExploreYourselfPage />} />{" "}
-          {/* 👈 thêm dòng này */}
           <Route path="/today-mails" element={<TodayMailsPage />} />{" "}
-          {/* Add route for TodayMailsPage */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/sign-up" element={<SignUp />} />
