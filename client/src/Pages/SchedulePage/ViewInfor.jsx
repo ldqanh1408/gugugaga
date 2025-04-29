@@ -176,7 +176,7 @@ function ViewInfor() {
             "rating"
           )}
           {renderField("Comment:", false, [], "feedback", true, "textarea")}
-          {renderField("Complaint:", false, [], "complaint", true, "textarea")}
+          {renderField("Complaint:", false, [], "complaint", false, "textarea")}
 
           <div className="fw-bold mt-4 mb-2">INFORMATION OF BUSINESS</div>
           {renderField("Business code:", false, [], "business_id._id")}

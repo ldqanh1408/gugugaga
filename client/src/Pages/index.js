@@ -13,7 +13,9 @@ import ColorsPage from "./Personalize/ColorsPage";
 import FontsPage from "./Personalize/FontsPage";
 import BackgroundSettings from "./Personalize/BackgroundPage";
 import SchedulePage from "./SchedulePage"
-import ExpertProfile from "./ExpertProfile";
+
+import ExpertProfile from "./Profile/ExpertProfile";
+import BusinessProfile from "./Profile/BusinessProfile";
 import HistoryExpert from "./HistoryExpert";
 import EnterLogin from "./Login/EnterLogin";
 import ExpertManagement from "./ExpertManagement";
@@ -37,6 +39,7 @@ export {
   BackgroundSettings,
   SchedulePage,
   ExpertProfile,
+  BusinessProfile,
   HistoryExpert,
   EnterLogin,
   ExpertManagement,

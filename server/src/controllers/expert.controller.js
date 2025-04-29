@@ -23,6 +23,8 @@ exports.addExpert = async (req, res) => {
       gender = "",
       diploma_url = "",
       avatar_url = "",
+      expert_phone = "",
+      expert_email = "",
     } = req.body;
     // Kiểm tra các trường bắt buộc
     if (!account || !password || !expert_name || !gender) {
@@ -52,6 +54,8 @@ exports.addExpert = async (req, res) => {
       diploma_url,
       business_id,
       avatar_url,
+      expert_phone,
+      expert_email,
     });
 
     await newExpert.save();
@@ -60,7 +64,7 @@ exports.addExpert = async (req, res) => {
       businessId: business._id,
     });
 
-    return res.status(200).json({ success: true, expert: newExpert });
+    return res.status(200).json({ success: true, data: newExpert });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -76,7 +80,7 @@ exports.getExperts = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "Found not business" });
-    const experts = await Expert.find({ business_id: business_id });
+    const experts = await Expert.find({ business_id: business_id }).populate("business_id");
 
     return res.status(200).json({ success: true, experts });
   } catch (error) {

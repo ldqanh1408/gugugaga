@@ -1,14 +1,7 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  Button,
-  Container,
-  Form,
-  Row,
-  Col,
-} from "react-bootstrap";
-import { setIsAddView } from "../../redux/businessSlice";
-import { addExpertThunk } from "../../redux/businessSlice";
+import { useDispatch } from "react-redux";
+import { Button, Form, Row, Col, Spinner } from "react-bootstrap";
+import { setIsAddView, addExpertThunk } from "../../redux/businessSlice";
 
 function ViewAdd() {
   const dispatch = useDispatch();
@@ -16,82 +9,82 @@ function ViewAdd() {
     expert_name: "",
     account: "",
     password: "",
-    gendar: "male",
-    diploma_url: "",
+    gender: "male",
+    file: null,
+    expert_phone: "",
+    expert_email: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: type === "file" ? files[0] : value,
-    });
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý gửi dữ liệu ở đây (gửi về API backend)
-    dispatch(addExpertThunk(formData))
+    setIsLoading(true);
+    try {
+      await dispatch(addExpertThunk(formData));
+      dispatch(setIsAddView(false)); // Redirect back to ExpertManagement
+    } catch (error) {
+      console.error("Error adding expert:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handleClose = () => {
+    dispatch(setIsAddView(false));
+  };
+
   return (
     <div className="history p-4">
-      
       <Form onSubmit={handleSubmit}>
-      <Row className="mb-3">
+        <Row className="mb-3">
+          {[
+            { label: "Account", name: "account", type: "text", placeholder: "Enter account" },
+            { label: "Password", name: "password", type: "password", placeholder: "Enter password" },
+            { label: "Full Name", name: "expert_name", type: "text", placeholder: "Enter full name" },
+            { label: "Phone", name: "expert_phone", type: "phone", placeholder: "Enter phone number" },
+            { label: "Email", name: "expert_email", type: "email", placeholder: "Enter email" },
+          ].map(({ label, name, type, placeholder }) => (
+            <Col md={6} key={name}>
+              <Form.Group controlId={`form${name}`}>
+                <Form.Label>{label}</Form.Label>
+                <Form.Control
+                  type={type}
+                  name={name}
+                  placeholder={placeholder}
+                  value={formData[name]}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
+            </Col>
+          ))}
           <Col md={6}>
-            <Form.Group controlId="formAccount">
-              <Form.Label>Tài khoản</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Tài khoản đăng nhập"
-                name="account"
-                value={formData.account}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-          </Col>
-
-          <Col md={6}>
-            <Form.Group controlId="formPassword">
-              <Form.Label>Mật khẩu</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Mật khẩu"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+            <Form.Group controlId="formGender">
+              <Form.Label>Gender</Form.Label>
+              <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </Form.Select>
             </Form.Group>
           </Col>
         </Row>
+
         <Row className="mb-3">
           <Col md={6}>
-            <Form.Group controlId="formName">
-              <Form.Label>Họ tên</Form.Label>
+            <Form.Group controlId="formDiploma">
+              <Form.Label>Diploma Image</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Nhập họ tên"
-                name="expert_name"
-                value={formData.expert_name}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-          </Col>
-
-          
-        </Row>
-
-        <Row className="mb-3">
-          
-
-          <Col md={12}>
-            <Form.Group controlId="formDegree">
-              <Form.Label>Ảnh bằng cấp</Form.Label>
-              <Form.Control
-                type="file" 
-                name="dipoma_url"
+                type="file"
+                name="file"
                 onChange={handleChange}
                 accept="image/*"
               />
@@ -99,31 +92,12 @@ function ViewAdd() {
           </Col>
         </Row>
 
-        
-
-        <Row className="mb-4">
-          <Col md={6}>
-            <Form.Group controlId="formGender">
-              <Form.Label>Giới tính</Form.Label>
-              <Form.Select
-                name="gendar"
-                value={formData.gendar}
-                onChange={handleChange}
-              >
-                <option value="male">Nam</option>
-                <option value="female">Nữ</option>
-                <option value="other">Khác</option>
-              </Form.Select>
-            </Form.Group>
-          </Col>
-        </Row>
-
         <div className="d-flex gap-3">
-          <Button variant="secondary" onClick={() => dispatch(setIsAddView(false))}>
+          <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
             Close
           </Button>
-          <Button type="submit" variant="primary">
-            Add
+          <Button type="submit" variant="primary" disabled={isLoading}>
+            {isLoading ? <Spinner animation="border" size="sm" /> : "Add"}
           </Button>
         </div>
       </Form>
