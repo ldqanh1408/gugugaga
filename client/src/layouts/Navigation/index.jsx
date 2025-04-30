@@ -6,16 +6,30 @@ import { UserAvatar } from "../../components";
 import "../../styles/common.css";
 import "./Navigation.css";
 import { Row } from "react-bootstrap";
-import { checkToken } from "../../redux/authSlice"; // Import Redux Thunk
+import { checkToken } from "../../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom"; // Import Link từ React Router
+
+import { Link } from "react-router-dom";
+import { setProfile } from "../../redux/userSlice"; // Thêm dòng này để import setProfile
 
 function Navigation() {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth); // Lấy trạng thái isAuthenticated từ Redux store
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { user, profile } = useSelector((state) => state.user);
 
+  useEffect(() => {
+    // Khôi phục profile từ localStorage khi component được mount
+    const storedProfile = JSON.parse(localStorage.getItem("profile"));
+    if (storedProfile) {
+      dispatch(setProfile(storedProfile));
+    }
+  }, [dispatch]);
 
-  const {role} = useSelector((state) => state?.auth)
+  useEffect(() => {
+    dispatch(checkToken());
+  }, [dispatch]);
+
+  const { role } = useSelector((state) => state?.auth);
 
   const renderNavItems = () => {
     switch (role) {
@@ -48,6 +62,12 @@ function Navigation() {
             <Nav.Link as={Link} to="/me/therapy" className="fw-semibold">
               Me
             </Nav.Link>
+            <Nav.Link as={Link} to="/today-mails" className="fw-semibold">
+              Today Mails
+            </Nav.Link>
+            <Nav.Link as={Link} to="/explore-yourself" className="fw-semibold">
+              Explore
+            </Nav.Link>
           </>
         );
       case "EXPERT":
@@ -73,23 +93,24 @@ function Navigation() {
           <Navbar.Brand as={Link} to="/" className="fw-bold mb-2">
             Gugugaga
           </Navbar.Brand>
+
           {/* Sử dụng Link để tránh reload */}
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="d-flex flex-grow-1">
               {renderNavItems()}
-                {!isAuthenticated ? (
-                  <div className="d-lg-flex d-none flex-grow-1 justify-content-end">
-                    <Nav.Link as={Link} to="/sign-up">
-                      Sign up
-                    </Nav.Link>
-                    <Nav.Link as={Link} to="/login">
-                      Login
-                    </Nav.Link>
-                  </div>
-                ) : (
-                  <UserAvatar />
-                )}
+              {!isAuthenticated ? (
+                <div className="d-lg-flex d-none flex-grow-1 justify-content-end">
+                  <Nav.Link as={Link} to="/sign-up">
+                    Sign up
+                  </Nav.Link>
+                  <Nav.Link as={Link} to="/login">
+                    Login
+                  </Nav.Link>
+                </div>
+              ) : (
+                <UserAvatar />
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>

@@ -219,6 +219,36 @@ export const createBooking = async (payload) => {
   }
 };
 
+const addFutureMail = async (userId, mailData) => {
+  try {
+    const token = await getToken();
+    const response = await axios.post(
+      `${API_URL}users/${userId}/future-mails`,
+      mailData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding future mail:", error);
+    throw error;
+  }
+};
+
+const getFutureMails = async (userId) => {
+  try {
+    const token = await getToken();
+    const response = await axios.get(`${API_URL}users/${userId}/future-mails`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.futureMails;
+  } catch (error) {
+    console.error("Error fetching future mails:", error);
+    throw error;
+  }
+}
+
 export const cancelBooking = async (payload) => {
   try {
     const token = await getToken();
@@ -283,4 +313,6 @@ export {
   uploadAvatar,
   loadProfile,
   uploadProfile,
+  addFutureMail,
+  getFutureMails,
 };

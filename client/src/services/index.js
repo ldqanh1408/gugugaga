@@ -24,7 +24,55 @@ import {
   register,
   changePassword,
 } from "./authService.js";
-import { getNotes, getEntries, getConsecutiveDays} from "./journalService.js";
+import { getNotes, getEntries, getConsecutiveDays } from "./journalService.js";
+
+export const addFutureMail = async (userId, mailData) => {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/users/${userId}/future-mails`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await getToken()}`,
+        },
+        body: JSON.stringify(mailData),
+      }
+    );
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message);
+    }
+    return data;
+  } catch (error) {
+    console.error("Error adding future mail:", error);
+    throw error;
+  }
+};
+
+export const getFutureMails = async (userId) => {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/users/${userId}/future-mails`,
+      {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message);
+    }
+    return data.futureMails;
+  } catch (error) {
+    console.error("Error fetching future mails:", error);
+    throw error;
+  }
+};
+
 export {
   getNotes,
   getUsers,

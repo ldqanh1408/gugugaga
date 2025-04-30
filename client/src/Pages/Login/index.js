@@ -3,13 +3,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Col, Form, Row, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+
 import { setRole, setTempRole } from "../../redux/authSlice";
 import { useDispatch } from "react-redux";
+
 import "./Login.css";
 function Login() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+
+
 
   return (
     
@@ -68,6 +73,7 @@ function Login() {
           </p>
         </Col>
 
+
         {/* Lovers */}
         <Col className="d-flex flex-column justify-content-center align-items-center text-center p-5">
           <h2 className="fw-bold">For Lovers</h2>
@@ -99,6 +105,7 @@ function Login() {
           </p>
         </Col>
       </Row>
+
     </div>
   );
 }

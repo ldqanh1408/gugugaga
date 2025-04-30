@@ -34,6 +34,7 @@ async function hashPassword(password) {
 }
 
 // // 📝 Đăng ký
+
 router.post("/v1/register", validateRegister, async (req, res) => {
   try {
     var {
@@ -81,22 +82,52 @@ router.post("/v1/register", validateRegister, async (req, res) => {
 // 🔐 Đăng nhập
 router.post("/v1/login", validateLogin, async (req, res) => {
   try {
-    var { account, password } = req.body;
+    const { account, password } = req.body;
 
     const user = await User.findOne({ account });
-    if (!user) return res.status(400).json("Người dùng không tồn tại");
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Tài khoản không tồn tại",
+      });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json("Mật khẩu không hợp lệ");
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Mật khẩu không chính xác",
+      });
+    }
+
     const token = createToken(user);
+
+    // Tạo profile object để trả về cho client
+    const profile = {
+      id: user._id,
+      userName: user.userName,
+      email: user.email,
+      avatar: user.avatar,
+      futureMails: user.futureMails,
+    };
+
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
-    res.status(201).json({ message: "Đăng nhập thành công" });
+
+    return res.status(200).json({
+      success: true,
+      token,
+      profile,
+    });
   } catch (error) {
-    res.status(400).json({ message: "Lỗi khi tạo user", error: error.message });
+    console.error("Login error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server khi đăng nhập",
+    });
   }
 });
 

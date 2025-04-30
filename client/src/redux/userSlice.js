@@ -6,6 +6,10 @@ import {
   uploadProfile,
   getEntries,
   getConsecutiveDays,
+
+  addFutureMail,
+  getFutureMails,
+
 } from "../services"; // API services
 import { getTreaments, updateTreatment } from "../services/userService";
 
@@ -90,6 +94,32 @@ export const fetchConsecutiveDays = createAsyncThunk(
   }
 );
 
+
+export const addFutureMailAsync = createAsyncThunk(
+  "user/addFutureMail",
+  async ({ userId, mailData }, thunkAPI) => {
+    try {
+      const response = await addFutureMail(userId, mailData);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchFutureMailsAsync = createAsyncThunk(
+  "user/fetchFutureMails",
+  async (userId, thunkAPI) => {
+    try {
+      const futureMails = await getFutureMails(userId);
+      return futureMails;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+
 export const updateTreatmentThunk = createAsyncThunk(
   "user/updateTreatment",
   async (payload, { rejectWithValue }) => {
@@ -111,23 +141,26 @@ export const getTreatmentsThunk = createAsyncThunk(
     return data?.treatments;
   }
 );
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    user: null, // Dữ liệu user cơ bản
-    profile: null, // Dữ liệu profile chi tiết
+    user: null,
+    profile: JSON.parse(localStorage.getItem("profile")) || null, // Khôi phục profile từ localStorage
     loading: false,
-    profileLoading: false, // Loading riêng cho profile
     error: null,
     logoutLoading: false,
     logoutError: null,
     entries: 0,
     consecutiveDays: 0,
+    futureMails: [],
+
     treatments: [],
     currentTreatments: [],
     pendingTreatments: [],
     selectedTreatment: null,
     isViewing: false,
+
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -138,6 +171,10 @@ const userSlice = createSlice({
         state.profile.avatar = action.payload;
       }
     },
+    setProfile: (state, action) => {
+      state.profile = action.payload;
+      localStorage.setItem("profile", JSON.stringify(action.payload));
+},
     setIsViewing: (state, action) => {
       state.isViewing = action.payload;
     },
@@ -223,6 +260,17 @@ const userSlice = createSlice({
         state.error = action.payload || "Failed to update profile"; // Xử lý lỗi khi thất bại
         state.loading = false;
       })
+
+
+      .addCase(addFutureMailAsync.fulfilled, (state, action) => {
+        state.futureMails.push(action.payload);
+      })
+      .addCase(fetchFutureMailsAsync.fulfilled, (state, action) => {
+        state.futureMails = action.payload;
+      })
+
+
+
       .addCase(getTreatmentsThunk.pending, (state) => {
         state.loading = true;
         state.treatments = [];
@@ -289,7 +337,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { updateAvatar, setIsViewing, setSelectedTreatment } =
+export const { updateAvatar, setIsViewing, setSelectedTreatment, setProfile } =
   userSlice.actions; // Action để đồng bộ avatar
 
 export default userSlice.reducer;

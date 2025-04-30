@@ -1,3 +1,4 @@
+
 import {
   Home,
   Calendar,
@@ -14,6 +15,8 @@ import {
   Complaint,
   Therapy,
   MyTherapy,
+  TodayMailsPage,
+  ExploreYourselfPage
 } from "../Pages";
 import NoteViewer from "../Pages/Note/NoteViewer";
 import SignUpBusiness from "../Pages/SignUpBusiness";
@@ -24,6 +27,7 @@ const routes = [
   { path: "/note", element: <Note />, isPrivate: true },
   { path: "/chat", element: <ChatBox />, isPrivate: true },
   { path: "/note-editor", element: <NoteEditor />, isPrivate: true },
+
   {
     path: "/personalize/background",
     element: <BackgroundPage />,
@@ -71,6 +75,18 @@ const routes = [
     element: <MyTherapy></MyTherapy>,
     isPrivate: true,
   },
+  {
+    path: "/explore-yourself",
+    element: <ExploreYourselfPage></ExploreYourselfPage>,
+
+    isPrivate: true,
+  },
+  {
+    path: "/today-mails",
+    element: <TodayMailsPage></TodayMailsPage>,
+    isPrivate: true,
+  },
+
 ];
 
 export default routes;
