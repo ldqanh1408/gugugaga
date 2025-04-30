@@ -127,6 +127,7 @@ function ChatBox() {
     await addMessage({ message: userMessage });
     setMessages((prev) => [...prev, userMessage]);
     const userInput = input;
+    const userMedia = selectedMedia;
     setInput("");
     setSelectedMedia([]); // Clear selected media after sending
 
@@ -137,6 +138,7 @@ function ChatBox() {
         {
           chatId: chatId,
           message: userInput,
+          media: userMedia
         },
         {
           headers: {

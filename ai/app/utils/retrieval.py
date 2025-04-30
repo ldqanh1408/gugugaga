@@ -2,7 +2,8 @@ import time
 import re
 from app.db.chromadb_client import chat_vectors
 from app.services.embedding_service import get_embedding
-
+from app.models.chat_models import ChatRequest
+from app.services.chat_handler import handle_chat_request
 # Lưu message vào ChromaDB
 
 def save_message(chatId: str, user_message: str, ai_response: str) -> None:
@@ -30,10 +31,15 @@ def retrieve_context(chatId: str, message: str, n_results: int = 5) -> str:
 
 # Tạo prompt đầy đủ
 
-def create_prompt(chatId: str, message: str) -> str:
+def create_prompt(req : ChatRequest) -> str:
+    
+    
+    
     # Lấy context (tin nhắn trước đó) của người dùng từ cơ sở dữ liệu
-    context = retrieve_context(chatId, message)
-
+    context = retrieve_context(req.chatId, req.message)
+    # context_retrieve_media = retrieve_context(req.chatId, handle_chat_request(req.media))
+    
+    
     # Xây dựng nội dung system với hướng dẫn ban đầu
     system_prompt = (
         "🌟 You are an emotional support AI. Provide empathetic, constructive responses with lots of emojis. 🌟\n"
@@ -47,10 +53,11 @@ def create_prompt(chatId: str, message: str) -> str:
     # Nếu có context, thêm vào sau phần hướng dẫn của system
     if context.strip():
         system_prompt += "\nPrevious user's messages (for context only):\n" + context.strip()
+        # system_prompt += "\nPrevious user's messages (for context only):\n" + context.strip()
 
     final_prompt = (
         f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
-        f"<|im_start|>user\n{message}<|im_end|>\n"
+        f"<|im_start|>user\n{req.message}<|im_end|>\n"
         f"<|im_start|>assistant"
     )
 
