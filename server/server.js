@@ -7,7 +7,6 @@ const cookieParser = require("cookie-parser");
 const limiter = require("./src/utils/limitHelper");
 
 const {swaggerSpec, swaggerUi} = require("./src/configs/swagger")
-const pubSubHelper = require("./src/utils/pubSubHelper"); 
 // const authRoutes = require("./routes/auth"); // Import routes
 
 // Kết nối MongoDB
@@ -68,8 +67,6 @@ app.use("/api", bookingRoutes)
 app.use("/api", uploadRoutes)
 // Middleware xử lý lỗi
 app.use(require("./src/middleware/errorHandler"));
-const subscriptions = require("./src/utils/subscriptions")
-pubSubHelper.startPubSub(subscriptions);
 // Chạy server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server chạy trên cổng ${PORT}`));

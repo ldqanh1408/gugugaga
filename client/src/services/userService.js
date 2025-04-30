@@ -2,6 +2,12 @@ import axios from "axios";
 import { getToken, getPayLoad } from "../services";
 const API_URL = "http://localhost:5000/api/v1/";
 
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+
 const getUsers = async () => {
   try {
     const response = await axios.get(`${API_URL}/users`);
@@ -77,9 +83,12 @@ const loadProfile = async () => {
       console.error("Token không tồn tại");
       return null;
     }
-    const { userId } = await getPayLoad();
-    const response = await axios.get(`${API_URL}users/load-profile/${userId}`);
-    return response.data.profile;
+    const response = await api.get(`${API_URL}users/load-profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
   } catch (error) {
     return { success: false, message: true };
   }
@@ -91,14 +100,12 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     if (!token) {
       return { success: false, message: "Không có token" };
     }
-    const payload = await getPayLoad();
     let avatarUrl = profile.avatar; // Nếu không thay đổi ảnh thì giữ nguyên
 
     // **Bước 1: Upload avatar lên Cloudinary (nếu có file mới được chọn)**
     if (avatarFile) {
       const formData = new FormData();
       formData.append("avatar", avatarFile); // Thêm file avatar vào form data
-
       const uploadResponse = await axios.post(
         `${API_URL}users/upload`,
         formData,
@@ -124,7 +131,7 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     };
     // Gửi thông tin profile đã cập nhật lên backend
     const data = await axios.patch(
-      `${API_URL}users/upload-profile/${payload.userId}`,
+      `${API_URL}users/upload-profile`,
       updatedProfile,
       {
         headers: {
@@ -133,18 +140,15 @@ const uploadProfile = async ({ profile, avatarFile }) => {
         withCredentials: true, // Đảm bảo cookie được gửi kèm
       }
     );
-    return { success: true, profile: data.data.profile };
+    
+    return data.data;
   } catch (error) {
     console.error("❌ Lỗi khi cập nhật profile:", error);
     alert("❌ Có lỗi xảy ra khi cập nhật profile.");
     return { success: false, message: "Lỗi khi cập nhật profile." };
   }
 };
-const api = axios.create({
-  baseURL: "http://localhost:5000/api",
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
+
 
 export const getTreaments = async () => {
   try {

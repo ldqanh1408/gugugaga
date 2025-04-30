@@ -14,7 +14,8 @@ function UserAvatar() {
   const navigate = useNavigate();
 
   // Lấy user, trạng thái loading, và logout từ Redux store
-  const { profile, loading, logoutLoading } = useSelector((state) => state.user);
+  const { profile, logoutLoading } = useSelector((state) => state.user);
+  const { role } = useSelector((state) => state.auth); // Lấy role từ authSlice
 
   // Gọi fetchUser khi component mount nếu chưa có user trong Redux store
   useEffect(() => {
@@ -25,32 +26,33 @@ function UserAvatar() {
 
   // Hàm xử lý logout
   const handleLogout = async () => {
-    await dispatch(logoutUserAsync()); // Gọi Thunk logoutUserAsyn
-    await dispatch(logout())
-    await navigate("/login"); // Điều hướng về trang chính sau khi logout
-    window.location.reload(); // Tải lại trang để cập nhật trạng thái
+    await dispatch(logoutUserAsync());
+    await dispatch(logout());
+    await navigate("/login");
+    window.location.reload();
   };
+
   return (
     <div className="container justify-content-end d-flex">
       <Row>
         <Col>
           <Dropdown className="d-none d-lg-block">
             <DropdownToggle as="div" className="p-0 border-0 bg-transparent">
-              {/* Nếu user.avatar tồn tại thì hiển thị ảnh user, nếu không thì dùng avatar mặc định */}
               <img src={profile?.avatar || avatarPlaceholder} alt="" className="avatar" />
             </DropdownToggle>
             <DropdownMenu>
-              <Dropdown.Item as={Link} to="/profile">
-                Profile
-              </Dropdown.Item>
-              <Dropdown.Item as={Link} to="/personalize">
-                Personalize
-              </Dropdown.Item>
-              <Link to="/change-password" state={{ user: profile }} className="dropdown-item">
-                Change Password
-              </Link>
+              {role === "USER" && (
+                <>
+                  <Dropdown.Item as={Link} to="/profile">
+                    Profile
+                  </Dropdown.Item>
+                  <Link to="/change-password" state={{ user: profile }} className="dropdown-item">
+                    Change Password
+                  </Link>
+                </>
+              )}
               <Dropdown.Item onClick={handleLogout}>
-                {logoutLoading ? "Logging out..." : "Logout"} {/* Hiển thị trạng thái logout */}
+                {logoutLoading ? "Logging out..." : "Logout"}
               </Dropdown.Item>
             </DropdownMenu>
           </Dropdown>
