@@ -6,6 +6,8 @@ const {
   getUser,
   loadProfile,
   uploadProfile,
+  addFutureMail,
+  getFutureMails,
   getTreatment,
   updateTreatment,
   getReceivers,
@@ -19,6 +21,9 @@ const jwt = require("../middleware/authenticateJWT");
 router.get("/v1/users", getUsers);
 router.delete("/v1/users/:userId", deleteUser);
 router.get("/:userId", getUser);
+
+router.post("/:userId/future-mails", authenticateJWT, addFutureMail); // Add future mail
+router.get("/:userId/future-mails", authenticateJWT, getFutureMails); // Get future mails for today
 router.post("/v1/users/upload", upload.single("avatar"), uploadAvatar); // Route upload ảnh
 router.get(
   "/v1/users/me/treatments",

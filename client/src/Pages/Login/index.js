@@ -3,13 +3,95 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Col, Form, Row, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+
 import { setRole, setTempRole } from "../../redux/authSlice";
 import { useDispatch } from "react-redux";
+
 import "./Login.css";
 function Login() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getToken();
+      if (token) {
+        const futureMails =
+          JSON.parse(localStorage.getItem("futureMails")) || [];
+        const today = new Date().toISOString().split("T")[0];
+
+        const todayMail = futureMails.find(
+          (mail) => mail.receiveDate === today && !mail.notified
+        );
+
+        if (todayMail) {
+          navigate("/today-mails", { state: { mail: todayMail } });
+
+          // Đánh dấu thư đã được thông báo
+          const updatedMails = futureMails.map((mail) =>
+            mail.id === todayMail.id ? { ...mail, notified: true } : mail
+          );
+          localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+        }
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!account || !password) {
+      setError("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await logging({ account, password });
+
+      if (response.success) {
+        // Khôi phục profile
+        if (response.profile) {
+          localStorage.setItem("profile", JSON.stringify(response.profile));
+
+          // Khôi phục futureMails từ profile nếu có
+          if (response.profile.futureMails) {
+            localStorage.setItem(
+              "futureMails",
+              JSON.stringify(response.profile.futureMails)
+            );
+          }
+        }
+
+        // Kiểm tra thư đến hạn ngay sau khi đăng nhập
+        const futureMails =
+          JSON.parse(localStorage.getItem("futureMails")) || [];
+        const today = new Date().toISOString().split("T")[0];
+        const todayMail = futureMails.find(
+          (mail) => mail.receiveDate === today && !mail.notified
+        );
+
+        if (todayMail) {
+          navigate("/today-mails", { state: { mail: todayMail } });
+
+          // Đánh dấu thư đã được thông báo
+          const updatedMails = futureMails.map((mail) =>
+            mail.id === todayMail.id ? { ...mail, notified: true } : mail
+          );
+          localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      setError(error.message || "Incorrect password or account.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <div className="form-1 container w-100 flex-grow-1">
@@ -64,6 +146,7 @@ function Login() {
           </p>
         </Col>
 
+
         {/* Lovers */}
         <Col className="d-flex flex-column justify-content-center align-items-center text-center p-5">
           <h2 className="fw-bold">For Lovers</h2>
@@ -95,6 +178,7 @@ function Login() {
           </p>
         </Col>
       </Row>
+
     </div>
   );
 }

@@ -7,6 +7,10 @@ import ImageButton from "../../assets/imgs/ImageButton.svg";
 import RecordButton from "../../assets/imgs/RecordButton.svg";
 import VideoButton from "../../assets/imgs/VideoButton.svg";
 import { useDispatch, useSelector } from "react-redux";
+import { getPayLoad } from "../../services/authService"; 
+import { addMessage } from "../../services";
+// import { getMessages, addMessage, getNotes } from "../../services";
+import axios from "axios";
 import {
   setCurrentIndex,
   setIsEditing,
@@ -22,6 +26,7 @@ function NoteEditor({
   const { isEditing, currentIndex, notes, currentNote } = useSelector(
     (state) => state.notes
   );
+  const [messages, setMessages] = useState([]);
   const [header, setHeader] = useState(currentNote.header || "");
   const [date, setDate] = useState(currentNote.date || "");
   const [text, setText] = useState(currentNote.text || "");
@@ -49,7 +54,9 @@ function NoteEditor({
     console.log("Add audio clicked");
   };
 
-  const handleSubmit = () => {
+
+  const handleSubmit = async () => {
+
     if (!header.trim() || !date.trim() || !text.trim()) {
       alert("Please fill in all the required fields!!!");
       return;
@@ -57,11 +64,46 @@ function NoteEditor({
     const updatedNote = { _id: currentNote?._id, header, date, text, mood, media };
     dispatch(setCurrentNote(updatedNote));
     if (isEditing) {
-      dispatch(updateExistingNote(updatedNote))
+      dispatch(updateExistingNote(updatedNote));
       dispatch(setIsEditing(false));
     } else {
-      dispatch(saveNewNote(updatedNote))
+      dispatch(saveNewNote(updatedNote));
       dispatch(fetchNotes());
+
+      const payload = await getPayLoad();
+      if (!payload?.chatId) {
+        console.error("Không lấy được chatId từ payload");
+        return;
+      }
+      const { chatId } = payload;
+
+      let promptNote = "UPDATED JOURNAL ENTRY\n";
+      promptNote += "Below is the user's updated journal entry for reference:\n\n";
+      const d = new Date(updatedNote.date);
+      promptNote += `Date: ${d.toLocaleDateString()} | Mood: ${updatedNote.mood}\n`;
+      promptNote += `Title: "${updatedNote.header}"\n`;
+      promptNote += `Entry: ${updatedNote.text}`;
+
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/api/chats/ai",
+          {
+            chatId: chatId,
+            message: promptNote,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        const botText = response.data?.response || "No response";
+        const botMessage = { text: botText, role: "ai" };
+
+        // Add bot's response to chat and update UI
+        await addMessage({ message: botMessage });
+        setMessages((prev) => [...prev, botMessage]);
+      } catch (error) {
+        console.error("Error while submitting note:", error.message);
+      }
     }
   };
 

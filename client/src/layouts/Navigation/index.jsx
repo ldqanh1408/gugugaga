@@ -6,14 +6,29 @@ import { UserAvatar } from "../../components";
 import "../../styles/common.css";
 import "./Navigation.css";
 import { Row } from "react-bootstrap";
-import { checkToken } from "../../redux/authSlice"; // Import Redux Thunk
+import { checkToken } from "../../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom"; // Import Link từ React Router
+
+import { Link } from "react-router-dom";
+import { setProfile } from "../../redux/userSlice"; // Thêm dòng này để import setProfile
 
 function Navigation() {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth); // Lấy trạng thái isAuthenticated từ Redux store
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { user, profile } = useSelector((state) => state.user);
 
+  useEffect(() => {
+    // Khôi phục profile từ localStorage khi component được mount
+    const storedProfile = JSON.parse(localStorage.getItem("profile"));
+    if (storedProfile) {
+      dispatch(setProfile(storedProfile));
+    }
+  }, [dispatch]);
+
+
+  useEffect(() => {
+    dispatch(checkToken());
+  }, [dispatch]);
 
   const {role} = useSelector((state) => state?.auth)
 
@@ -45,9 +60,17 @@ function Navigation() {
             <Nav.Link as={Link} to="/therapy" className="fw-semibold">
               Therapy
             </Nav.Link>
+            <Nav.Link as={Link}  to="/explore-yourself"
+ className="fw-semibold">
+              Explore
+            </Nav.Link>
             <Nav.Link as={Link} to="/me/therapy" className="fw-semibold">
               Me
             </Nav.Link>
+             <Nav.Link as={Link} to="/today-mails" className="fw-semibold">
+              Today Mails
+            </Nav.Link>
+            
           </>
         );
       case "EXPERT":
@@ -73,6 +96,7 @@ function Navigation() {
           <Navbar.Brand as={Link} to="/" className="fw-bold mb-2">
             Gugugaga
           </Navbar.Brand>
+
           {/* Sử dụng Link để tránh reload */}
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
@@ -90,6 +114,7 @@ function Navigation() {
                 ) : (
                   <UserAvatar />
                 )}
+
             </Nav>
           </Navbar.Collapse>
         </Container>

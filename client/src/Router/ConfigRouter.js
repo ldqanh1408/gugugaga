@@ -1,3 +1,4 @@
+
 import {
   Home,
   Calendar,
@@ -24,6 +25,7 @@ const routes = [
   { path: "/note", element: <Note />, isPrivate: true },
   { path: "/chat", element: <ChatBox />, isPrivate: true },
   { path: "/note-editor", element: <NoteEditor />, isPrivate: true },
+
   {
     path: "/personalize/background",
     element: <BackgroundPage />,
@@ -71,6 +73,7 @@ const routes = [
     element: <MyTherapy></MyTherapy>,
     isPrivate: false,
   },
+
 ];
 
 export default routes;

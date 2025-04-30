@@ -92,6 +92,7 @@ exports.loadProfile = async (req, res) => {
         .status(404)
         .json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
+
     await redis.set(cacheKey, {
       avatar: user.avatar || "",
       nickName: user.userName || "",
@@ -174,6 +175,63 @@ exports.uploadProfile = async (req, res) => {
   }
 };
 
+exports.addFutureMail = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { title, content, sendDate, receiveDate, notified, read } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const newMail = {
+      title,
+      content,
+      sendDate,
+      receiveDate,
+      notified: notified || false,
+      read: read || false,
+    };
+
+    user.futureMails.push(newMail);
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Future mail added successfully.",
+      futureMail: newMail,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getFutureMails = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const dueMails = user.futureMails.filter((mail) => {
+      const receiveDate = new Date(mail.receiveDate);
+      receiveDate.setHours(0, 0, 0, 0);
+      return receiveDate.getTime() === today.getTime();
+    });
+
+    res.status(200).json({ success: true, futureMails: dueMails });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
 exports.getTreatment = async (req, res) => {
   try {
     let { _id } = req.payload;

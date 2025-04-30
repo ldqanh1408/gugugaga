@@ -3,7 +3,7 @@ import axios from "axios";
 const API_URL = "http://localhost:5000/api/v1";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
@@ -31,12 +31,15 @@ export const register = async (payload) => {
 
 export const logging = async (payload) => {
   try {
+
     const response = await api_3.post("/login", payload);
     console.log(response)
     return response;
   } catch (error) {
-    console.error("Error fetching notes:", error);
-    throw error;
+    console.error("Error during login:", error);
+    throw new Error(
+      error.response?.data?.message || "Incorrect password or account."
+    );
   }
 };
 
@@ -80,6 +83,8 @@ export const logout = async () => {
   try {
     localStorage.removeItem("accessToken");
     await api.post("/logout");
+    // Không xóa profile từ localStorage khi đăng xuất
+    localStorage.removeItem("token");
   } catch (error) {
     console.error({ message: error.message });
   }

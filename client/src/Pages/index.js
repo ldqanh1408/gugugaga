@@ -7,6 +7,10 @@ import Profile from "./Profile";
 import ChangePassword from "./ChangePassword";
 import NoteEditor from "./Note/NoteEditor";
 import ChatBox from "./Note/ChatBox";
+
+import ExploreYourselfPage from "./ExploreYourself/ExploreYourselfPage";
+import TodayMailsPage from "./TodayMailsPage"; // Sửa lại đường dẫn này
+
 import Personalize from "./Personalize";
 import BackgroundPage from "./Personalize/BackgroundPage";
 import ColorsPage from "./Personalize/ColorsPage";
@@ -22,6 +26,7 @@ import ExpertManagement from "./ExpertManagement";
 import Complaint from "./Complaint";
 import Therapy from "./Therapy";
 import MyTherapy from "./MyTherapy";
+
 export {
   Home,
   Calendar,
@@ -32,6 +37,10 @@ export {
   ChangePassword,
   NoteEditor,
   ChatBox,
+
+  ExploreYourselfPage,
+  TodayMailsPage,
+
   Personalize,
   BackgroundPage,
   ColorsPage,
@@ -47,3 +56,4 @@ export {
   Therapy ,
   MyTherapy
 };
+
