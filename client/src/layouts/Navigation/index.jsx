@@ -4,13 +4,13 @@ import Navbar from "react-bootstrap/Navbar";
 import React, { useEffect } from "react";
 import { UserAvatar } from "../../components";
 import "../../styles/common.css";
-import "./Navigation.css";
+import "./Navigation.css"; // Ensure this file contains the new styles
 import { Row } from "react-bootstrap";
 import { checkToken } from "../../redux/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Link } from "react-router-dom";
-import { setProfile } from "../../redux/userSlice"; // Thêm dòng này để import setProfile
+import { setProfile } from "../../redux/userSlice";
 
 function Navigation() {
   const dispatch = useDispatch();
@@ -18,7 +18,6 @@ function Navigation() {
   const { user, profile } = useSelector((state) => state.user);
 
   useEffect(() => {
-    // Khôi phục profile từ localStorage khi component được mount
     const storedProfile = JSON.parse(localStorage.getItem("profile"));
     if (storedProfile) {
       dispatch(setProfile(storedProfile));
@@ -36,10 +35,10 @@ function Navigation() {
       case "BUSINESS":
         return (
           <>
-            <Nav.Link as={Link} to="/business/expert-list">
+            <Nav.Link as={Link} to="/business/expert-list" className="nav-item">
               Expert List
             </Nav.Link>
-            <Nav.Link as={Link} to="/business/complaints">
+            <Nav.Link as={Link} to="/business/complaints" className="nav-item">
               Complaints
             </Nav.Link>
           </>
@@ -47,25 +46,25 @@ function Navigation() {
       case "USER":
         return (
           <>
-            <Nav.Link as={Link} to="/calendar" className="fw-semibold">
+            <Nav.Link as={Link} to="/calendar" className="nav-item">
               Calendar
             </Nav.Link>
-            <Nav.Link as={Link} to="/note" className="fw-semibold">
+            <Nav.Link as={Link} to="/note" className="nav-item">
               Note
             </Nav.Link>
-            <Nav.Link as={Link} to="/chat" className="fw-semibold">
+            <Nav.Link as={Link} to="/chat" className="nav-item">
               Chat
             </Nav.Link>
-            <Nav.Link as={Link} to="/therapy" className="fw-semibold">
+            <Nav.Link as={Link} to="/therapy" className="nav-item">
               Therapy
             </Nav.Link>
-            <Nav.Link as={Link} to="/me/therapy" className="fw-semibold">
+            <Nav.Link as={Link} to="/me/therapy" className="nav-item">
               Me
             </Nav.Link>
-            <Nav.Link as={Link} to="/today-mails" className="fw-semibold">
+            <Nav.Link as={Link} to="/today-mails" className="nav-item">
               Today Mails
             </Nav.Link>
-            <Nav.Link as={Link} to="/explore-yourself" className="fw-semibold">
+            <Nav.Link as={Link} to="/explore-yourself" className="nav-item">
               Explore
             </Nav.Link>
           </>
@@ -73,16 +72,16 @@ function Navigation() {
       case "EXPERT":
         return (
           <>
-            <Nav.Link as={Link} to="/expert/schedule" className="fw-semibold">
+            <Nav.Link as={Link} to="/expert/schedule" className="nav-item">
               Schedule
             </Nav.Link>
-            <Nav.Link as={Link} to="/expert/history" className="fw-semibold">
+            <Nav.Link as={Link} to="/expert/history" className="nav-item">
               History
             </Nav.Link>
           </>
         );
       default:
-        return <Nav.Link href="/">Home</Nav.Link>;
+        return <Nav.Link href="/" className="nav-item">Home</Nav.Link>;
     }
   };
 
@@ -93,18 +92,16 @@ function Navigation() {
           <Navbar.Brand as={Link} to="/" className="fw-bold mb-2">
             Gugugaga
           </Navbar.Brand>
-
-          {/* Sử dụng Link để tránh reload */}
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="d-flex flex-grow-1">
               {renderNavItems()}
               {!isAuthenticated ? (
                 <div className="d-lg-flex d-none flex-grow-1 justify-content-end">
-                  <Nav.Link as={Link} to="/sign-up">
+                  <Nav.Link as={Link} to="/sign-up" className="nav-item">
                     Sign up
                   </Nav.Link>
-                  <Nav.Link as={Link} to="/login">
+                  <Nav.Link as={Link} to="/login" className="nav-item">
                     Login
                   </Nav.Link>
                 </div>

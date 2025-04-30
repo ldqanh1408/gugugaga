@@ -79,44 +79,19 @@ exports.getUser = async (req, res) => {
 
 exports.loadProfile = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { _id } = req.payload;
     // Kiểm tra xem user có tồn tại không
-    const cacheKey = `${constants.CHANEL_PROFILES}:${userId}`;
-    const cacheData = await redis.get(cacheKey);
-    if (cacheData) {
-      return res.status(200).json({ success: true, profile: cacheData });
-    }
-    const user = await User.findOne({ _id: userId });
+
+    const user = await User.findOne({ _id: _id });
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
 
-    await redis.set(cacheKey, {
-      avatar: user.avatar || "",
-      nickName: user.userName || "",
-      userName: user.account || "",
-      bio: user.bio || "",
-      dob: user.dob || "",
-      gender: user.gender || "",
-      phone: user.phone || "",
-      email: user.email || "",
-      avatarPreview: user.avatar || "",
-    });
     return res.status(200).json({
       success: true,
-      profile: {
-        avatar: user.avatar || "",
-        nickName: user.userName || "",
-        userName: user.account || "",
-        bio: user.bio || "",
-        dob: user.dob || "",
-        gender: user.gender || "",
-        phone: user.phone || "",
-        email: user.email || "",
-        avatarPreview: user.avatar || "",
-      },
+      data: user,
     });
   } catch (error) {
     return res.status(500).json({ success: false, messsage: error.message });
@@ -125,7 +100,8 @@ exports.loadProfile = async (req, res) => {
 
 exports.uploadProfile = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { _id } = req.payload;
+    const userId = _id;
     // Kiểm tra xem user có tồn tại không
     const user = await User.findOne({ _id: userId });
     if (!user) {
@@ -150,25 +126,11 @@ exports.uploadProfile = async (req, res) => {
     user.email = email || user.email;
 
     await user.save();
-    const chanel = constants.CHANEL_USERS;
-    await pubSub.publishInvalidation(chanel, { userId });
-    console.log("User sau khi cập nhật trong MongoDB:", user);
 
     return res.status(200).json({
       success: true,
       message: "✅ Hồ sơ đã được cập nhật thành công.",
-      profile: {
-        avatar: user.avatar,
-        nickName: user.userName,
-        userName: user.account,
-        bio: user.bio,
-        dob: user.dob,
-        gender: user.gender,
-        phone: user.phone,
-        email: user.email,
-      },
-      avatar: user.avatar,
-      user,
+      data: user,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

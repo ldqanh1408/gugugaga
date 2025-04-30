@@ -6,10 +6,8 @@ import {
   uploadProfile,
   getEntries,
   getConsecutiveDays,
-
   addFutureMail,
   getFutureMails,
-
 } from "../services"; // API services
 import { getTreaments, updateTreatment } from "../services/userService";
 
@@ -31,8 +29,8 @@ export const fetchProfile = createAsyncThunk(
   "user/fetchProfile",
   async (_, thunkAPI) => {
     try {
-      const profile = await loadProfile(); // Giả sử đây là API profile
-      return profile; // Trả về dữ liệu profile chi tiết
+      const res = await loadProfile(); // Giả sử đây là API profile
+      return res.data; // Trả về dữ liệu profile chi tiết
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -59,7 +57,7 @@ export const uploadProfileAsync = createAsyncThunk(
     try {
       // Gửi request upload profile và file avatar
       const response = await uploadProfile({ profile, avatarFile });
-      return response.profile; // Trả về profile từ server sau khi update thành công
+      return response.data; // Trả về profile từ server sau khi update thành công
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message); // Xử lý lỗi khi upload thất bại
     }
@@ -94,7 +92,6 @@ export const fetchConsecutiveDays = createAsyncThunk(
   }
 );
 
-
 export const addFutureMailAsync = createAsyncThunk(
   "user/addFutureMail",
   async ({ userId, mailData }, thunkAPI) => {
@@ -118,7 +115,6 @@ export const fetchFutureMailsAsync = createAsyncThunk(
     }
   }
 );
-
 
 export const updateTreatmentThunk = createAsyncThunk(
   "user/updateTreatment",
@@ -160,7 +156,6 @@ const userSlice = createSlice({
     pendingTreatments: [],
     selectedTreatment: null,
     isViewing: false,
-
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -174,7 +169,7 @@ const userSlice = createSlice({
     setProfile: (state, action) => {
       state.profile = action.payload;
       localStorage.setItem("profile", JSON.stringify(action.payload));
-},
+    },
     setIsViewing: (state, action) => {
       state.isViewing = action.payload;
     },
@@ -182,6 +177,7 @@ const userSlice = createSlice({
       state.selectedTreatment = action.payload;
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchConsecutiveDays.pending, (state) => {
@@ -261,15 +257,12 @@ const userSlice = createSlice({
         state.loading = false;
       })
 
-
       .addCase(addFutureMailAsync.fulfilled, (state, action) => {
         state.futureMails.push(action.payload);
       })
       .addCase(fetchFutureMailsAsync.fulfilled, (state, action) => {
         state.futureMails = action.payload;
       })
-
-
 
       .addCase(getTreatmentsThunk.pending, (state) => {
         state.loading = true;

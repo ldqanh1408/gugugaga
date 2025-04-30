@@ -1,18 +1,25 @@
 .footer {
-    background-color: var(--nav-color);
+    background: linear-gradient(135deg, #5e5df0, #4543c6); /* Unified gradient color */
+    color: white;
     padding: 30px 25px 25px 25px;
-    border-top: 1px #333 solid;
+    border-top: 1px solid #333;
     margin-top: 48px;
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .item1 {
     margin-left: 5%;
 }
 
-.item2{
-
-}
-
 .icon {
     padding: 8px;
+    font-size: 1.5rem;
+    color: white;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icon:hover {
+    transform: scale(1.2);
+    color: #ffd700; /* Highlight color on hover */
 }

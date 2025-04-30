@@ -14,7 +14,7 @@ function Profile() {
     const { profile, loading, entries, consecutiveDays } = useSelector((state) => state.user);
     const { role } = useSelector((state) => state.auth);
     const [isEditing, setIsEditing] = useState(false);
-
+    console.log(profile)
     useEffect(() => {
         if (!profile) {
             dispatch(fetchProfile());

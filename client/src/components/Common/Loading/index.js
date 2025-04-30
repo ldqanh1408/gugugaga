@@ -5,7 +5,7 @@ import { ClipLoader } from "react-spinners";
 
 function Loading() {
   return (
-    <div>
+    <div className="wrapper">
       <div className="coating"></div>
       <div className="loading-overlay">
         <ClipLoader color="#ffffff" size={50} />

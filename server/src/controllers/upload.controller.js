@@ -28,7 +28,7 @@ uploadAvatar = (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "No file uploaded or path missing" });
-  }
+  } 
 
   res.status(200).json({
     success: true,
