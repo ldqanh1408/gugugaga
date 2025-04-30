@@ -1,7 +1,7 @@
 import "./NoteEditor.css";
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { DropdownToggle, Dropdown, DropdownMenu } from "react-bootstrap";
+import { DropdownToggle, Dropdown, DropdownMenu, Modal, Form } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import ImageButton from "../../assets/imgs/ImageButton.svg";
 import RecordButton from "../../assets/imgs/RecordButton.svg";
@@ -9,7 +9,6 @@ import VideoButton from "../../assets/imgs/VideoButton.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getPayLoad } from "../../services/authService"; 
 import { addMessage } from "../../services";
-// import { getMessages, addMessage, getNotes } from "../../services";
 import axios from "axios";
 import {
   setCurrentIndex,
@@ -20,6 +19,8 @@ import {
   saveNewNote,
   addMediaToCurrentNote,
 } from "../../redux/notesSlice";
+import { uploadAudio, uploadImage } from "../../services/userService"; // Import the uploadAudio and uploadImage functions
+
 function NoteEditor({
   isFromViewer = false,
 }) {
@@ -31,90 +32,109 @@ function NoteEditor({
   const [date, setDate] = useState(currentNote.date || "");
   const [text, setText] = useState(currentNote.text || "");
   const [mood, setMood] = useState(currentNote.mood || "");
-  const [media, setMedia] = useState(currentNote.media || []);
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [customFileName, setCustomFileName] = useState("");
   const dispatch = useDispatch();
+<<<<<<< HEAD
+=======
+  console.error(currentNote); 
+
+>>>>>>> testQA
   function formatDateForInput(dateString) {
     if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
     const date = new Date(dateString);
     return date.toISOString().split("T")[0]; // Lấy YYYY-MM-DD
   }
-  
+
   useEffect(() => {
-    dispatch(setCurrentNote({ _id: currentNote?._id, header, date, text, mood, media }));
-  }, [header, date, text, mood, media]);
-  const handleAddImage = () => {
-    console.log("Add image clicked");
-  };
-  
-  const handleAddVideo = () => {
-    console.log("Add video clicked");
-  };
-  
-  const handleAddAudio = () => {
-    console.log("Add audio clicked");
-  };
+    dispatch(setCurrentNote({ _id: currentNote?._id, header, date, text, mood, media: currentNote.media }));
+  }, [header, date, text, mood]);
 
 
   const handleSubmit = async () => {
+<<<<<<< HEAD
 
     if (!header.trim() || !date.trim() || !text.trim()) {
+=======
+    if (!header.trim() || !date.trim() || !text.trim() || !mood.trim()) {
+>>>>>>> testQA
       alert("Please fill in all the required fields!!!");
       return;
     }
-    const updatedNote = { _id: currentNote?._id, header, date, text, mood, media };
+
+    const updatedNote = { 
+      _id: currentNote?._id || undefined, // Đảm bảo `_id` không bị undefined
+      header: header.trim(),
+      date: date.trim(),
+      text: text.trim(),
+      mood: mood.trim(),
+      media: currentNote.media || [] // Use media directly from Redux store
+    };
+
+    console.log("Payload being sent to backend:", updatedNote); // Log payload để kiểm tra
+
     dispatch(setCurrentNote(updatedNote));
-    if (isEditing) {
-      dispatch(updateExistingNote(updatedNote));
-      dispatch(setIsEditing(false));
-    } else {
-      dispatch(saveNewNote(updatedNote));
-      dispatch(fetchNotes());
 
-      const payload = await getPayLoad();
-      if (!payload?.chatId) {
-        console.error("Không lấy được chatId từ payload");
-        return;
+    try {
+      if (isEditing) {
+        await dispatch(updateExistingNote(updatedNote));
+        dispatch(setIsEditing(false));
+      } else {
+        await dispatch(saveNewNote(updatedNote)); // Gửi payload để lưu note mới
+        dispatch(fetchNotes()); // Fetch danh sách notes mới nhất
       }
-      const { chatId } = payload;
-
-      let promptNote = "UPDATED JOURNAL ENTRY\n";
-      promptNote += "Below is the user's updated journal entry for reference:\n\n";
-      const d = new Date(updatedNote.date);
-      promptNote += `Date: ${d.toLocaleDateString()} | Mood: ${updatedNote.mood}\n`;
-      promptNote += `Title: "${updatedNote.header}"\n`;
-      promptNote += `Entry: ${updatedNote.text}`;
-
-      try {
-        const response = await axios.post(
-          "http://localhost:4000/api/chats/ai",
-          {
-            chatId: chatId,
-            message: promptNote,
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        const botText = response.data?.response || "No response";
-        const botMessage = { text: botText, role: "ai" };
-
-        // Add bot's response to chat and update UI
-        await addMessage({ message: botMessage });
-        setMessages((prev) => [...prev, botMessage]);
-      } catch (error) {
-        console.error("Error while submitting note:", error.message);
-      }
+    } catch (error) {
+      console.error("Error saving note:", error);
+      alert("Failed to save note. Please try again.");
     }
   };
 
-  const handleMediaChange = (e) => {
-    const files = Array.from(e.target.files);
-    const newMedia = files.map((file) => ({
-      type: file.type.split("/")[0], // image / video / audio
-      url: URL.createObjectURL(file),
-      name: file.name,
-    }));
-    setMedia([...media, ...newMedia]);
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setCustomFileName(file.name);
+      setShowNameModal(true);
+    }
+  };
+
+  const handleUploadWithName = async () => {
+    if (!selectedFile || !customFileName) return;
+
+    try {
+      if (selectedFile.type.startsWith("audio")) {
+        const response = await uploadAudio(selectedFile);
+        if (response.success) {
+          const mediaItem = { 
+            type: "audio", 
+            url: response.audioUrl, 
+            name: customFileName 
+          };
+          dispatch(addMediaToCurrentNote(mediaItem));
+        } else {
+          console.error("Audio upload failed:", response.message);
+        }
+      } else if (selectedFile.type.startsWith("image")) {
+        const response = await uploadImage(selectedFile);
+        if (response.success) {
+          const mediaItem = { 
+            type: "image", 
+            url: response.imageUrl, 
+            name: customFileName 
+          };
+          dispatch(addMediaToCurrentNote(mediaItem));
+        } else {
+          console.error("Image upload failed:", response.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error processing file:", error);
+    }
+
+    setShowNameModal(false);
+    setSelectedFile(null);
+    setCustomFileName("");
   };
 
 
@@ -122,6 +142,11 @@ function NoteEditor({
   const autoResizeTextArea = (event) => {
     event.target.style.height = "auto"; // Reset height trước
     event.target.style.height = event.target.scrollHeight + "px"; // Gán chiều cao theo nội dung
+  };
+
+  const handleDeleteMedia = (index) => {
+    const updatedMedia = currentNote.media.filter((_, idx) => idx !== index);
+    dispatch(setCurrentNote({ ...currentNote, media: updatedMedia }));
   };
 
   if (!currentNote) return <div>Loading...</div>; // Hoặc xử lý lỗi khác
@@ -179,27 +204,73 @@ function NoteEditor({
       <div className="media-toolbar" style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
         <label className="btn p-0">
           <img src={ImageButton} alt="Add Image" width="24" />
-          <input type="file" accept="image/*" hidden onChange={handleMediaChange} />
+          <input type="file" accept="image/*" hidden onChange={handleFileSelect} />
         </label>
         <label className="btn p-0">
           <img src={VideoButton} alt="Add Video" width="24" />
-          <input type="file" accept="video/*" hidden onChange={handleMediaChange} />
+          <input type="file" accept="video/*" hidden onChange={handleFileSelect} />
         </label>
         <label className="btn p-0">
           <img src={RecordButton} alt="Add Audio" width="24" />
-          <input type="file" accept="audio/*" hidden onChange={handleMediaChange} />
+          <input type="file" accept="audio/*" hidden onChange={handleFileSelect} />
         </label>
       </div>
-      {/* Preview Media */}
-      <div className="media-preview mt-2">
-        {media.map((m, idx) => {
-          if (m.type === "image") return <img key={idx} src={m.url} alt={m.name} width="100" />;
-          if (m.type === "video") return <video key={idx} src={m.url} width="100" controls />;
-          if (m.type === "audio") return <audio key={idx} src={m.url} controls />;
-          return null;
+      
+      {/* File Name Modal */}
+      <Modal show={showNameModal} onHide={() => setShowNameModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Name your file</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>File name</Form.Label>
+            <Form.Control
+              type="text"
+              value={customFileName}
+              onChange={(e) => setCustomFileName(e.target.value)}
+              placeholder="Enter file name"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-secondary" onClick={() => setShowNameModal(false)}>
+            Cancel
+          </button>
+          <button className="btn btn-primary" onClick={handleUploadWithName}>
+            Upload
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Media Preview */}
+      <div className="media-preview">
+        {currentNote.media?.map((m, idx) => {
+          if (!m || !m.type) return null;
+          return (
+            <div key={idx} className="media-item">
+              <button 
+                className="delete-media-btn"
+                onClick={() => handleDeleteMedia(idx)}
+                title="Remove"
+              >
+                ×
+              </button>
+              {m.type === "image" && (
+                <div className="media-content">
+                  <img src={m.url} alt={m.name} />
+                  <span className="media-filename" title={m.name}>{m.name}</span>
+                </div>
+              )}
+              {m.type === "audio" && (
+                <div className="audio-container">
+                  <span className="audio-filename" title={m.name}>{m.name}</span>
+                  <audio src={m.url} controls className="audio-player" />
+                </div>
+              )}
+            </div>
+          );
         })}
       </div>
-
 
       <div className="button-container">
         <button className="save-btn" onClick={handleSubmit}>

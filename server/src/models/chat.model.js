@@ -9,7 +9,7 @@ const messageSchema = new mongoose.Schema(
         values: ["user", "ai"],
         message: "{VALUE} không phải là vai trò hợp lệ",
       },
-      trim: true, // Loại bỏ khoảng trắng thừa
+      trim: true,
     },
     text: {
       type: String,
@@ -20,10 +20,25 @@ const messageSchema = new mongoose.Schema(
     imgUrl: {
       type: String,
       trim: true,
-    }
+    },
+    media: [{
+      type: {
+        type: String,
+        enum: ["image", "audio"],
+        required: true
+      },
+      url: {
+        type: String,
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      }
+    }]
   },
   {
-    timestamps: true, // Tự động thêm createdAt và updatedAt
+    timestamps: true,
   }
 );
 
@@ -36,17 +51,17 @@ const chatSchema = new mongoose.Schema(
     },
     messages: {
       type: [messageSchema],
-      default: [], // Đảm bảo messages luôn là mảng, không undefined
+      default: [],
       validate: {
         validator: function (arr) {
-          return arr.length <= 1000; // Giới hạn tối đa 1000 tin nhắn
+          return arr.length <= 1000;
         },
         message: "Số lượng tin nhắn không được vượt quá 1000",
       },
     },
   },
   {
-    timestamps: true, // Tự động thêm createdAt và updatedAt
+    timestamps: true,
   }
 );
 

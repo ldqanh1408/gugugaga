@@ -13,7 +13,14 @@ const {
   getReceivers,
   getBooking,
 } = require("../controllers/user.controller");
-const { upload, uploadAvatar } = require("../controllers/upload.controller");
+const {
+  upload,
+  uploadAvatar,
+  uploadAudio,
+  uploadAudioFile,
+  uploadImage,
+  uploadImageFile,
+} = require("../controllers/upload.controller");
 const { authenticateJWT } = require("../middleware");
 const jwt = require("../middleware/authenticateJWT");
 
@@ -56,4 +63,14 @@ router.get(
   jwt.authenticateAndAuthorize(["USER"]),
   getBooking
 );
+// router.post("/upload", upload.single("avatar"), uploadAvatar); // Route upload ảnh
+// router.get("/load-profile/:userId", loadProfile);
+// router.patch("/upload-profile/:userId", uploadProfile);
+
+// Route for uploading audio files
+router.post("/upload-audio", uploadAudio.single("audio"), uploadAudioFile);
+
+// Route for uploading image files
+router.post("/upload-image", uploadImage.single("image"), uploadImageFile);
+
 module.exports = router;

@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic-settings>=2.0.3
+chromadb
+sentence-transformers>=2.2.2
+llama-cpp-python

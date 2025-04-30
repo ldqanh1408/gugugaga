@@ -19,13 +19,14 @@ function Note() {
   const dispatch = useDispatch();
   const { notes, currentIndex, isEditing, currentNote } = useSelector((state) => state.notes);
   useEffect(() => {
-    if (currentIndex !== null && notes.length > 0) {
-      dispatch(setCurrentNote(notes[currentIndex]));  // Cập nhật currentNote khi currentIndex thay đổi
+    if (!notes.length) {
+      dispatch(fetchNotes()); // Fetch notes if the notes array is empty
     }
-    if(!notes){
-      dispatch(fetchNotes());
+    if (currentIndex !== null && notes.length > 0) {
+      dispatch(setCurrentNote(notes[currentIndex])); // Update currentNote when currentIndex changes
     }
   }, [currentIndex, notes, dispatch]);
+  
   const handleSave = (newNote) => {
     dispatch(saveNewNote(newNote));
   };
