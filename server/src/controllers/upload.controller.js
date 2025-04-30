@@ -6,25 +6,41 @@ const mongoose = require("mongoose");
 // Cấu hình GridFsStorage cho Multer
 const storage = new CloudinaryStorage({
   cloudinary,
-<<<<<<< HEAD
   params: async (req, file) => {
-    let folderName = "others"; // default
-    if (req.payload.role === "USER") folderName = "users";
-    if (req.payload.role === "EXPERT") folderName = "experts";
-    if (req.payload.role === "BUSINESS") folderName = "business";
+    // 1. Xác định folder
+    let folderName;
+    if (file.fieldname === "avatar") {
+      folderName = "avatars";
+    } else {
+      switch (req.payload.role) {
+        case "USER":
+          folderName = "users";
+          break;
+        case "EXPERT":
+          folderName = "experts";
+          break;
+        case "BUSINESS":
+          folderName = "business";
+          break;
+        default:
+          folderName = "others";
+      }
+    }
 
+    // 2. Xác định allowed_formats tuỳ trường hợp
+    const allowedFormats = (file.fieldname === "avatar")
+      ? ["jpg", "png", "mp3"]
+      : ["jpg", "png", "pdf"];
+
+    // 3. Trả về object config
     return {
       folder: folderName,
-      resource_type: "auto", // <-- thêm dòng này để cho phép PDF và các định dạng khác
-      allowed_formats: ["jpg", "png", "pdf"],
+      resource_type: "auto",
+      allowed_formats: allowedFormats,
     };
-=======
-  params: {
-    folder: "avatars", // Thư mục lưu ảnh trên Cloudinary
-    allowed_formats: ["jpg", "png", "mp3"], // Giới hạn định dạng file
->>>>>>> testQA
   },
 });
+
 
 const upload = multer({ storage });
 
@@ -85,7 +101,6 @@ const uploadAudioFile = (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 const uploadImg = (req, res) => {
   if (!req.file || !req.file.path) {
     return res
@@ -102,7 +117,6 @@ const uploadImg = (req, res) => {
 
 
 module.exports = { upload, uploadAvatar, uploadImg };
-=======
 // API to handle image upload
 const uploadImageFile = (req, res) => {
   try {
@@ -162,4 +176,3 @@ const saveNote = async (req, res) => {
 };
 
 module.exports = { upload, uploadAvatar, uploadAudio, uploadAudioFile, uploadImage, uploadImageFile, saveNote };
->>>>>>> testQA
