@@ -226,32 +226,75 @@ export const createBooking = async (payload) => {
 const addFutureMail = async (userId, mailData) => {
   try {
     const token = await getToken();
+    if (!token) {
+      return { success: false, message: "No token found" };
+    }
+
     const response = await axios.post(
       `${API_URL}users/${userId}/future-mails`,
       mailData,
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
       }
     );
-    return response.data;
+
+    if (response.data.success) {
+      return { success: true, data: response.data.futureMail };
+    } else {
+      throw new Error(response.data.message || "Failed to add future mail");
+    }
   } catch (error) {
     console.error("Error adding future mail:", error);
-    throw error;
+    return { 
+      success: false, 
+      message: error.response?.data?.message || error.message || "Failed to add future mail"
+    };
   }
 };
 
 const getFutureMails = async (userId) => {
   try {
     const token = await getToken();
+    if (!token) {
+      return { success: false, message: "No token found" };
+    }
+
     const response = await axios.get(`${API_URL}users/${userId}/future-mails`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
     return response.data.futureMails;
   } catch (error) {
     console.error("Error fetching future mails:", error);
     throw error;
   }
-}
+};
+
+const updateFutureMail = async (userId, mailId, updates) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "No token found" };
+    }
+
+    const response = await axios.patch(
+      `${API_URL}users/${userId}/future-mails/${mailId}`,
+      updates,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response.data.mail;
+  } catch (error) {
+    console.error("Error updating future mail:", error);
+    throw error;
+  }
+};
 
 export const cancelBooking = async (payload) => {
   try {
@@ -319,4 +362,5 @@ export {
   uploadProfile,
   addFutureMail,
   getFutureMails,
+  updateFutureMail,
 };

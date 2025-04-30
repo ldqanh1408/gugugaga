@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/user.model");
 const Chat = require("../models/chat.model");
 const Journal = require("../models/journal.model");
@@ -9,6 +10,7 @@ const pubSub = require("../utils/pubSubHelper");
 const constants = require("../constants");
 const Booking = require("../models/booking.model");
 const Schedule = require("../models/schedule.model");
+
 async function hashPassword(password) {
   const saltRounds = 10; // Số lần hash (càng cao càng an toàn nhưng chậm)
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -140,34 +142,76 @@ exports.uploadProfile = async (req, res) => {
 exports.addFutureMail = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { title, content, sendDate, receiveDate, notified, read } = req.body;
+    const { title, content, sendDate, receiveDate } = req.body;
 
+    // Validation
+    if (!title?.trim()) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Title is required" 
+      });
+    }
+
+    if (!content?.trim()) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content is required" 
+      });
+    }
+
+    if (!receiveDate) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Receive date is required" 
+      });
+    }
+
+    // Check if user exists and has permission
     const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
+    }
+
+    // Ensure the user can only add mails to their own account
+    if (req.payload._id !== userId) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "You can only add mails to your own account" 
+      });
     }
 
     const newMail = {
-      title,
-      content,
-      sendDate,
-      receiveDate,
-      notified: notified || false,
-      read: read || false,
+      _id: new mongoose.Types.ObjectId(),
+      title: title.trim(),
+      content: content.trim(),
+      sendDate: sendDate || new Date(),
+      receiveDate: new Date(receiveDate),
+      notified: false,
+      read: false,
+      reply: ""
     };
+
+    if (!user.futureMails) {
+      user.futureMails = [];
+    }
 
     user.futureMails.push(newMail);
     await user.save();
 
     res.status(201).json({
       success: true,
-      message: "Future mail added successfully.",
-      futureMail: newMail,
+      message: "Future mail added successfully",
+      futureMail: newMail
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error adding future mail:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || "Error adding future mail" 
+    });
   }
 };
 
@@ -177,25 +221,63 @@ exports.getFutureMails = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
+      return res.status(404).json({ success: false, message: "User not found." });
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const dueMails = user.futureMails.filter((mail) => {
-      const receiveDate = new Date(mail.receiveDate);
-      receiveDate.setHours(0, 0, 0, 0);
-      return receiveDate.getTime() === today.getTime();
-    });
+    const futureMails = user.futureMails || [];
 
-    res.status(200).json({ success: true, futureMails: dueMails });
+    res.status(200).json({ 
+      success: true, 
+      futureMails: futureMails.filter(mail => {
+        const receiveDate = new Date(mail.receiveDate);
+        receiveDate.setHours(0, 0, 0, 0);
+        return receiveDate.getTime() <= today.getTime();
+      })
+    });
   } catch (error) {
+    console.error("Error fetching future mails:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.updateFutureMail = async (req, res) => {
+  try {
+    const { userId, mailId } = req.params;
+    const { read, reply } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    const mailIndex = user.futureMails.findIndex(m => m._id.toString() === mailId);
+    if (mailIndex === -1) {
+      return res.status(404).json({ success: false, message: "Mail not found." });
+    }
+
+    if (read !== undefined) {
+      user.futureMails[mailIndex].read = read;
+    }
+    if (reply !== undefined) {
+      user.futureMails[mailIndex].reply = reply;
+    }
+
+    await user.save();
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Mail updated successfully.",
+      mail: user.futureMails[mailIndex]
+    });
+  } catch (error) {
+    console.error("Error updating future mail:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 exports.getTreatment = async (req, res) => {
   try {
     let { _id } = req.payload;

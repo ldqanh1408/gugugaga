@@ -7,6 +7,7 @@ const futureMailSchema = new mongoose.Schema({
   receiveDate: { type: Date, required: true },
   notified: { type: Boolean, default: false },
   read: { type: Boolean, default: false },
+  reply: { type: String, default: "" }
 });
 
 const userSchema = new mongoose.Schema(
@@ -21,15 +22,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["male", "female", "other"],
     },
-
     futureMails: [futureMailSchema],
     role: {type: String, required: true, default: "USER"},
-    bio:{type: String},
-    dob:{type: Date},
-    phone:{type: String, unique:true},  
-    avatar:{type: String}  
+    bio: {type: String},
+    dob: {type: Date},
+    phone: {type: String, unique: true},  
+    avatar: {type: String}  
   },
-  { timestamps: true } // Tự động tạo createdAt & updatedAt
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("User", userSchema);
