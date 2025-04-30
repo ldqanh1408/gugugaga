@@ -57,7 +57,7 @@ function EditProfile({ setIsEditing }) {
             <h1 className="edit-profile-header">Edit Profile</h1>
             <hr className="edit-profile-line" />
 
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} className='wrapper'>
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Avatar</Form.Label>
                     <Form.Group className="edit-profile-box">
@@ -108,7 +108,7 @@ function EditProfile({ setIsEditing }) {
                     <Form.Label className="custom-h2-label">Bio</Form.Label>
                     <Form.Group className="edit-profile-box">
                         <Form.Control
-                            className="no-border"
+                            className="no-border bio"
                             as="textarea"
                             name="bio"
                             value={profile.bio}

@@ -13,11 +13,14 @@ const messageSchema = new mongoose.Schema(
     },
     text: {
       type: String,
-      required: [true, "Nội dung tin nhắn là bắt buộc"],
       trim: true, // Loại bỏ khoảng trắng thừa
       minlength: [1, "Nội dung tin nhắn không được để trống"],
       maxlength: [2000, "Nội dung tin nhắn không được vượt quá 2000 ký tự"],
     },
+    imgUrl: {
+      type: String,
+      trim: true,
+    }
   },
   {
     timestamps: true, // Tự động thêm createdAt và updatedAt

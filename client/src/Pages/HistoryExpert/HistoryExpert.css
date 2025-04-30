@@ -1,0 +1,13 @@
+.history {
+    min-height: 100vh;
+}
+
+.left, .right {
+    background-color: #ccc;
+    min-height: 400px;
+    margin: 28px 10px;
+}
+
+.td {
+    height: 100%;
+}

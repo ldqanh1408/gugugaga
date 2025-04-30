@@ -4,7 +4,9 @@
 
     "start": "node server.js",
 
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+
+    "redis-ui": "redis-commander"
 
   },
 
@@ -15,6 +17,8 @@
     "bcryptjs": "^3.0.2",
 
     "body-parser": "^1.20.3",
+
+    "bullmq": "^5.49.0",
 
     "child_process": "^1.0.2",
 
@@ -32,6 +36,8 @@
 
     "express-validator": "^7.2.1",
 
+    "ioredis": "^5.6.1",
+
     "jsonwebtoken": "^9.0.2",
 
     "mongoose": "^8.12.1",
@@ -45,6 +51,10 @@
     "node-cron": "^3.0.3",
 
     "nodemailer": "^6.10.1",
+
+    "redis": "^4.7.0",
+
+    "redis-commander": "^0.8.0",
 
     "swagger-jsdoc": "^6.2.8",
 

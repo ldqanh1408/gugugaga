@@ -1,0 +1,37 @@
+/* ExpertManagement.css */
+.table-container {
+    max-height: 500px; /* Giới hạn chiều cao của phần thân bảng */
+    overflow-y: auto;  /* Thêm cuộn dọc khi chiều cao vượt quá */
+    display: block;    /* Chuyển phần tbody thành block để cuộn được */
+  }
+  
+
+  
+  /* Tệp ExpertManagement.css */
+.expert-item div {
+    font-size: 12px; /* Giảm font chữ cho tất cả các phần tử trong expert-item */
+  }
+  
+  .expert-name,
+  .expert-email,
+  .expert-phone,
+  .expert-gender,
+  .expert-account {
+    font-size: 12px;
+  }
+  
+  button, .btn {
+    font-size: 12px;
+  }
+  
+  h1 {
+    font-size: 20px; /* Đảm bảo rằng tiêu đề nhỏ */
+  }
+  
+  .expert-index, .expert-name, .expert-email, .expert-phone, .expert-gender, .expert-account {
+    max-width: 100%; /* Đảm bảo mỗi cột chiếm 100% chiều rộng của nó */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Ngừng xuống dòng */
+    
+  }

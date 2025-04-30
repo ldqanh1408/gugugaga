@@ -1,0 +1,44 @@
+.wrapper {
+  min-height: 100vh;
+  max-width: 80vh;
+}
+
+.expert-card {
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  height: 100%;
+}
+
+.expert-card.selected {
+  background-color: #76d7c4 !important; /* Ví dụ màu xanh nhạt */
+  border-color: #1abc9c;
+}
+.expert-card h6 {
+  font-weight: bold;
+}
+.expert-card .emoji {
+  font-size: 1.2rem;
+}
+.tag {
+  display: inline-block;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 0 8px;
+  margin: 2px;
+  font-size: 0.85rem;
+}
+.quote {
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.edit-profile-box {
+    height: 18px;
+}
+
+.icon {
+  width: 32px;
+  cursor: pointer;
+}

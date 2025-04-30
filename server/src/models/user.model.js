@@ -21,11 +21,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["male", "female", "other"],
     },
-    bio: { type: String },
-    dob: { type: Date },
-    phone: { type: String, unique: true },
-    avatar: { type: String },
+
     futureMails: [futureMailSchema],
+    role: {type: String, required: true, default: "USER"},
+    bio:{type: String},
+    dob:{type: Date},
+    phone:{type: String, unique:true},  
+    avatar:{type: String}  
   },
   { timestamps: true } // Tự động tạo createdAt & updatedAt
 );

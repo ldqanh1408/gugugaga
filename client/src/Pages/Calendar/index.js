@@ -54,7 +54,9 @@ function Calendar() {
   };
 
   useEffect(() => {
-    dispatch(fetchNotes()); // Fetch notes khi component mount
+    if (!notes || notes.length === 0) {
+      dispatch(fetchNotes());
+    }
   }, [dispatch]);
 
   // Lọc các ghi chú theo ngày được chọn

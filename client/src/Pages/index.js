@@ -7,8 +7,25 @@ import Profile from "./Profile";
 import ChangePassword from "./ChangePassword";
 import NoteEditor from "./Note/NoteEditor";
 import ChatBox from "./Note/ChatBox";
+
 import ExploreYourselfPage from "./ExploreYourself/ExploreYourselfPage";
 import TodayMailsPage from "./TodayMailsPage"; // Sửa lại đường dẫn này
+
+import Personalize from "./Personalize";
+import BackgroundPage from "./Personalize/BackgroundPage";
+import ColorsPage from "./Personalize/ColorsPage";
+import FontsPage from "./Personalize/FontsPage";
+import BackgroundSettings from "./Personalize/BackgroundPage";
+import SchedulePage from "./SchedulePage"
+
+import ExpertProfile from "./Profile/ExpertProfile";
+import BusinessProfile from "./Profile/BusinessProfile";
+import HistoryExpert from "./HistoryExpert";
+import EnterLogin from "./Login/EnterLogin";
+import ExpertManagement from "./ExpertManagement";
+import Complaint from "./Complaint";
+import Therapy from "./Therapy";
+import MyTherapy from "./MyTherapy";
 
 export {
   Home,
@@ -20,6 +37,23 @@ export {
   ChangePassword,
   NoteEditor,
   ChatBox,
+
   ExploreYourselfPage,
   TodayMailsPage,
+
+  Personalize,
+  BackgroundPage,
+  ColorsPage,
+  FontsPage,
+  BackgroundSettings,
+  SchedulePage,
+  ExpertProfile,
+  BusinessProfile,
+  HistoryExpert,
+  EnterLogin,
+  ExpertManagement,
+  Complaint,
+  Therapy ,
+  MyTherapy
 };
+

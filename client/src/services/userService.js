@@ -140,6 +140,84 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     return { success: false, message: "Lỗi khi cập nhật profile." };
   }
 };
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+
+export const getTreaments = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = "/v1/users/me/treatments";
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const updateTreatment = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/users/me/treatments/${payload.treatment_id}`;
+    const response = await api.patch(url, payload.data, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const getReceivers = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/users/me/receivers`;
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const createBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/bookings`;
+    const response = await api.post(url, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
 
 const addFutureMail = async (userId, mailData) => {
   try {
@@ -169,8 +247,64 @@ const getFutureMails = async (userId) => {
     console.error("Error fetching future mails:", error);
     throw error;
   }
+}
+
+export const cancelBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `v1/bookings/${payload.booking_id}`;
+    const response = await api.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 };
 
+export const getMyBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/users/me/bookings`;
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const acceptBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    console.log("Payload:", payload)
+    const url = `/v1/bookings/${payload.booking_id}/accept`;
+    const response = await api.post(url, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
+  }
+};
 export {
   getUsers,
   getUser,

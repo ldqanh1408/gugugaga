@@ -5,8 +5,9 @@ const morgan = require("morgan");
 const { connectDB } = require("./src/configs/db");
 const cookieParser = require("cookie-parser");
 const limiter = require("./src/utils/limitHelper");
-const { swaggerSpec, swaggerUi } = require("./src/configs/swagger");
 
+const {swaggerSpec, swaggerUi} = require("./src/configs/swagger")
+const pubSubHelper = require("./src/utils/pubSubHelper"); 
 // const authRoutes = require("./routes/auth"); // Import routes
 
 // Kết nối MongoDB
@@ -48,17 +49,27 @@ const {
   journalRoutes,
   authRoutes,
   backupRoutes,
+  expertRoutes,
+  businessRoutes,
+  treatmentRoutes,
+  bookingRoutes,
+  uploadRoutes
 } = require("./src/routes");
 
-app.use("/api/v1/users", userRoutes);
+app.use("/api", userRoutes);
 app.use("/api/v1/chats", chatRoutes);
 app.use("/api/v1/journals", journalRoutes);
 app.use("/api/v1/backup", backupRoutes);
-app.use("/api/v1", authRoutes);
-
+app.use("/api", authRoutes);
+app.use("/api", expertRoutes);
+app.use("/api", businessRoutes);
+app.use("/api", treatmentRoutes);
+app.use("/api", bookingRoutes)
+app.use("/api", uploadRoutes)
 // Middleware xử lý lỗi
 app.use(require("./src/middleware/errorHandler"));
-
+const subscriptions = require("./src/utils/subscriptions")
+pubSubHelper.startPubSub(subscriptions);
 // Chạy server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server chạy trên cổng ${PORT}`));

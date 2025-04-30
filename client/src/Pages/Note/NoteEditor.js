@@ -33,7 +33,6 @@ function NoteEditor({
   const [mood, setMood] = useState(currentNote.mood || "");
   const [media, setMedia] = useState(currentNote.media || []);
   const dispatch = useDispatch();
-  console.error(currentNote)
   function formatDateForInput(dateString) {
     if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
     const date = new Date(dateString);
@@ -55,7 +54,9 @@ function NoteEditor({
     console.log("Add audio clicked");
   };
 
+
   const handleSubmit = async () => {
+
     if (!header.trim() || !date.trim() || !text.trim()) {
       alert("Please fill in all the required fields!!!");
       return;
@@ -115,6 +116,8 @@ function NoteEditor({
     }));
     setMedia([...media, ...newMedia]);
   };
+
+
 
   const autoResizeTextArea = (event) => {
     event.target.style.height = "auto"; // Reset height trước
