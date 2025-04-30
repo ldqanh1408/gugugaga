@@ -56,4 +56,10 @@ router.get(
   jwt.authenticateAndAuthorize(["USER"]),
   getBooking
 );
+
+// Route for uploading audio files
+router.post("/v1/upload-audio", upload.uploadAudio.single("audio"),upload.uploadAudioFile);
+
+// Route for uploading image files
+router.post("/v1/upload-image", upload.uploadImage.single("image"), upload.uploadImageFile);
 module.exports = router;

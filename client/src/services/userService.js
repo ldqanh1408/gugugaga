@@ -309,6 +309,65 @@ export const acceptBooking = async (payload) => {
     return { success: false, message: error.message };
   }
 };
+
+const uploadAudio = async (audioFile) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Token not found" };
+    }
+
+    const formData = new FormData();
+    formData.append("audio", audioFile);
+
+    const response = await axios.post(`${API_URL}users/upload-audio`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+
+    if (response.data && response.data.success) {
+      return { success: true, audioUrl: response.data.audioUrl }; // Trả về URL audio
+    } else {
+      return { success: false, message: "Audio upload failed" };
+    }
+  } catch (error) {
+    console.error("Error uploading audio:", error);
+    return { success: false, message: error.response?.data?.message || "Error uploading audio" };
+  }
+};
+
+const uploadImage = async (imageFile) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Token not found" };
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    const response = await axios.post(`${API_URL}users/upload-image`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+
+    if (response.data && response.data.success) {
+      return { success: true, imageUrl: response.data.imageUrl };
+    } else {
+      return { success: false, message: "Image upload failed" };
+    }
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    return { success: false, message: error.response?.data?.message || "Error uploading image" };
+  }
+};
+
 export {
   getUsers,
   getUser,
@@ -318,5 +377,6 @@ export {
   loadProfile,
   uploadProfile,
   addFutureMail,
-  getFutureMails,
+  getFutureMails,uploadAudio,
+  uploadImage,
 };
