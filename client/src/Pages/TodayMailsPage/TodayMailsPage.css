@@ -120,12 +120,19 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.today-mails-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
 .today-mails-container {
+  flex: 1;
   display: flex;
   gap: 20px;
   padding: 20px;
-  min-height: calc(100vh - 64px);
-  background: #f5f5f5;
+  height: 100vh;
 }
 
 .mails-list {
@@ -134,6 +141,8 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 
 .mails-list h3 {
@@ -171,22 +180,25 @@
   margin-bottom: 5px;
 }
 
-.mail-details {
-  font-size: 0.9em;
+.mail-date {
+  font-size: 13px;
   color: #666;
 }
 
-.read-badge {
-  color: #888;
-  font-style: italic;
+.mail-content {
+  flex: 1;
+  height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 
 .mail-card {
-  flex: 1;
+  height: 100%;
   background: white;
   border-radius: 8px;
   padding: 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .mail-header {
@@ -201,27 +213,30 @@
   margin-bottom: 15px;
 }
 
-.mail-date {
+.mail-info {
   color: #666;
+  font-size: 14px;
   line-height: 1.6;
 }
 
-.mail-content {
+.mail-body {
+  flex: 1;
   font-size: 16px;
   line-height: 1.8;
   color: #333;
+  white-space: pre-wrap;
   margin: 30px 0;
   padding: 20px;
   background: #fafafa;
   border-radius: 8px;
-  min-height: 200px;
-  white-space: pre-wrap;
+  overflow-y: auto;
 }
 
 .mail-actions {
-  margin-top: 30px;
-  border-top: 1px solid #eee;
+  margin-top: auto;
   padding-top: 20px;
+  border-top: 1px solid #eee;
+  text-align: right;
 }
 
 .reply-box {
@@ -273,27 +288,47 @@
 }
 
 .no-mail-container {
-  text-align: center;
-  padding: 40px;
-  max-width: 500px;
-  margin: 40px auto;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+.no-mail-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #666;
 }
 
 /* Responsive styles */
 @media (max-width: 768px) {
   .today-mails-container {
     flex-direction: column;
+    height: auto;
   }
 
   .mails-list {
     width: 100%;
-    margin-bottom: 20px;
+    height: auto;
+    max-height: 300px;
+  }
+
+  .mail-content {
+    height: auto;
   }
 
   .mail-card {
-    width: 100%;
+    height: auto;
+    min-height: calc(100vh - 380px);
   }
 }

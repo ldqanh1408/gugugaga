@@ -1,59 +1,64 @@
 const express = require("express");
 const router = express.Router();
-const {
-  getUsers,
-  deleteUser,
-  getUser,
-  loadProfile,
-  uploadProfile,
-  addFutureMail,
-  getFutureMails,
-  getTreatment,
-  updateTreatment,
-  getReceivers,
-  getBooking,
-} = require("../controllers/user.controller");
+const userController = require("../controllers/user.controller");
 const upload = require("../controllers/upload.controller");
-const { authenticateJWT } = require("../middleware");
-const jwt = require("../middleware/authenticateJWT");
+const { authenticateAndAuthorize } = require("../middleware/authenticateJWT");
 
-// Định nghĩa route
-router.get("/v1/users", getUsers);
-router.delete("/v1/users/:userId", deleteUser);
-router.get("/:userId", getUser);
+// Future mail routes
+router
+  .route("/v1/users/:userId/future-mails")
+  .get(authenticateAndAuthorize(["USER"]), userController.getFutureMails)
+  .post(authenticateAndAuthorize(["USER"]), userController.addFutureMail);
 
-// router.post("/:userId/future-mails", authenticateJWT, addFutureMail); // Add future mail
-// router.get("/:userId/future-mails", authenticateJWT, getFutureMails); // Get future mails for today
-router.post("/v1/users/upload",jwt.authenticateAndAuthorize(["USER"]), upload.upload.single("avatar"), upload.uploadAvatar); // Route upload ảnh
+router
+  .route("/v1/users/:userId/future-mails/:mailId")
+  .patch(authenticateAndAuthorize(["USER"]), userController.updateFutureMail);
+
+// Các routes khác
+router.get("/v1/users", userController.getUsers);
+router.get(
+  "/v1/users/:userId",
+  authenticateAndAuthorize(["USER"]),
+  userController.getUser
+);
+router.delete(
+  "/v1/users/:userId",
+  authenticateAndAuthorize(["USER"]),
+  userController.deleteUser
+);
+
 router.get(
   "/v1/users/me/treatments",
-  jwt.authenticateAndAuthorize(["USER"]),
-  getTreatment
+  authenticateAndAuthorize(["USER"]),
+  userController.getTreatment
 );
 router.get(
   "/v1/users/load-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
-  loadProfile
+  authenticateAndAuthorize(["USER"]),
+  userController.loadProfile
 );
 router.patch(
   "/v1/users/upload-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
-  uploadProfile
-);
-router.patch(
-  "/v1/users/me/treatments/:treatment_id",
-  jwt.authenticateAndAuthorize(["USER"]),
-  updateTreatment
+  authenticateAndAuthorize(["USER"]),
+  userController.uploadProfile
 );
 router.get(
   "/v1/users/me/receivers",
-  jwt.authenticateAndAuthorize(["USER"]),
-  getReceivers
+  authenticateAndAuthorize(["USER"]),
+  userController.getReceivers
 );
-
 router.get(
   "/v1/users/me/bookings",
-  jwt.authenticateAndAuthorize(["USER"]),
-  getBooking
+  authenticateAndAuthorize(["USER"]),
+  userController.getBooking
 );
+
+// Upload route
+router.post(
+  "/v1/users/upload",
+  authenticateAndAuthorize(["USER"]),
+  upload.upload.single("avatar"),
+  upload.uploadAvatar
+);
+
 module.exports = router;

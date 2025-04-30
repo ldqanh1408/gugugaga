@@ -1,9 +1,9 @@
 import axios from "axios";
 import { getToken, getPayLoad } from "../services";
-const API_URL = "http://localhost:5000/api/v1/";
+const API_URL = "http://localhost:5000/api/v1";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
@@ -140,7 +140,7 @@ const uploadProfile = async ({ profile, avatarFile }) => {
         withCredentials: true, // Đảm bảo cookie được gửi kèm
       }
     );
-    
+
     return data.data;
   } catch (error) {
     console.error("❌ Lỗi khi cập nhật profile:", error);
@@ -148,7 +148,6 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     return { success: false, message: "Lỗi khi cập nhật profile." };
   }
 };
-
 
 export const getTreaments = async () => {
   try {
@@ -225,52 +224,65 @@ export const createBooking = async (payload) => {
 
 const addFutureMail = async (userId, mailData) => {
   try {
-    const token = await getToken();
+    const token = localStorage.getItem("token");
     if (!token) {
-      return { success: false, message: "No token found" };
+      throw new Error("No token found");
     }
 
-    const response = await axios.post(
-      `${API_URL}users/${userId}/future-mails`,
+    const response = await api.post(
+      `/v1/users/${userId}/future-mails`,
       mailData,
       {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
         },
-        withCredentials: true
       }
     );
 
-    if (response.data.success) {
-      return { success: true, data: response.data.futureMail };
-    } else {
-      throw new Error(response.data.message || "Failed to add future mail");
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to add mail");
     }
+
+    return response.data.futureMail;
   } catch (error) {
     console.error("Error adding future mail:", error);
-    return { 
-      success: false, 
-      message: error.response?.data?.message || error.message || "Failed to add future mail"
-    };
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    throw error;
   }
 };
 
 const getFutureMails = async (userId) => {
   try {
-    const token = await getToken();
+    const token = localStorage.getItem("token");
     if (!token) {
-      return { success: false, message: "No token found" };
+      console.error("No token found");
+      return [];
     }
 
-    const response = await axios.get(`${API_URL}users/${userId}/future-mails`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const response = await api.get(`/v1/users/${userId}/future-mails`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    return response.data.futureMails;
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch mails");
+    }
+
+    // Sort mails by send date in descending order
+    const mails = response.data.futureMails || [];
+    return mails.sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
   } catch (error) {
     console.error("Error fetching future mails:", error);
-    throw error;
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return [];
   }
 };
 
@@ -338,7 +350,7 @@ export const acceptBooking = async (payload) => {
     if (!token) {
       return { success: false, message: "Không có token" };
     }
-    console.log("Payload:", payload)
+    console.log("Payload:", payload);
     const url = `/v1/bookings/${payload.booking_id}/accept`;
     const response = await api.post(url, payload, {
       headers: {

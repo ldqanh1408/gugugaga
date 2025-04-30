@@ -1,138 +1,83 @@
-import axios from "axios";
+import api from "./api";
+import { jwtDecode } from "jwt-decode";
 
-const API_URL = "http://localhost:5000/api/v1";
+export const getToken = () => {
+  return localStorage.getItem("token");
+};
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
-
-const api_2 = axios.create({
-  baseURL: "http://localhost:5000/api/v2",
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
-
-const api_3 = axios.create({
-  baseURL: "http://localhost:5000/api/v3",
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
-export const register = async (payload) => {
+export const getPayLoad = async () => {
   try {
-    const response = await api_2.post("/register", payload);
-    return response?.data;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+    const decoded = jwtDecode(token);
+    return decoded;
   } catch (error) {
-    console.error("Error fetching:", error?.response?.data?.errors);
-    throw error;
+    console.error("Error decoding token:", error);
+    return null;
   }
 };
 
 export const logging = async (payload) => {
   try {
-
-    const response = await api_3.post("/login", payload);
-    console.log(response)
-    return response;
-  } catch (error) {
-    console.error("Error during login:", error);
-    throw new Error(
-      error.response?.data?.message || "Incorrect password or account."
-    );
-  }
-};
-
-export const checkAuth = async () => {
-  try {
-    const response = await api.get("/check-auth");
-    if (response.data.isAuthenticated) {
-      console.log("Đã đăng nhập, user:", response.data.user);
-      return true;
-    } else {
-      console.log("Chưa đăng nhập:", response.data.message);
-      return false;
-    }
-  } catch (error) {
-    console.error(
-      "Lỗi kiểm tra:",
-      error.response?.data?.message || error.message
-    );
-    return false;
-  }
-};
-
-export const getToken = async () => {
-  try {
-   let accessToken = JSON.parse(localStorage.getItem("accessToken")); // Hoặc chỗ bạn lưu token
-    const response = await api.get("/get-token", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    accessToken = response.data.accessToken;
-    localStorage.setItem("accessToken", JSON.stringify(accessToken));
-    return accessToken;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
-export const logout = async () => {
-  try {
-    localStorage.removeItem("accessToken");
-    await api.post("/logout");
-    // Không xóa profile từ localStorage khi đăng xuất
-    localStorage.removeItem("token");
-  } catch (error) {
-    console.error({ message: error.message });
-  }
-};
-
-export async function getPayLoad() {
-  try {
-    const accessToken = JSON.parse(localStorage.getItem("accessToken"));
-    const response = await api.get("/me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return response.data; // { userId, journalId }
-  } catch (error) {
-    console.error("Lỗi lấy payload:", error);
-    return {};
-  }
-}
-
-export async function changePassword({
-  currentPassword,
-  confirmNewPassword,
-  newPassword,
-  setError,
-}) {
-  try {
-    if (newPassword !== confirmNewPassword) {
-      setError("Change password has failed");
+    const response = await api.post("/v1/auth/login", payload);
+    if (response.data.success) {
+      const { token } = response.data;
+      localStorage.setItem("token", token);
+      const decoded = jwtDecode(token);
       return {
-        success: false,
-        message: "Mật khẩu mới và mật khẩu xác nhận không khớp",
+        success: true,
+        decoded,
+        message: response.data.message,
       };
     }
-    const response = await axios.post(
-      `${API_URL}/change-password`,
-      { currentPassword, newPassword },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true, // Nếu backend dùng cookie
-      }
-    );
     return response.data;
   } catch (error) {
-    setError("Change password has failed");
-    console.error({ message: error.message });
-    return { success: false, message: error.message };
+    console.error("Login error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đăng nhập thất bại",
+    };
   }
-}
+};
+
+export const register = async (payload) => {
+  try {
+    const response = await api.post("/v1/auth/register", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Register error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đăng ký thất bại",
+    };
+  }
+};
+
+export const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("profile");
+};
+
+export const changePassword = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không tìm thấy token" };
+    }
+
+    const response = await api.post("/v1/auth/change-password", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Change password error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đổi mật khẩu thất bại",
+    };
+  }
+};

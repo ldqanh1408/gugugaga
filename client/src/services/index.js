@@ -28,21 +28,27 @@ import { getNotes, getEntries, getConsecutiveDays } from "./journalService.js";
 
 export const addFutureMail = async (userId, mailData) => {
   try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error("No token found");
+    }
+
     const response = await fetch(
       `http://localhost:5000/api/v1/users/${userId}/future-mails`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${await getToken()}`,
+          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify(mailData),
       }
     );
 
     const data = await response.json();
     if (!data.success) {
-      throw new Error(data.message);
+      throw new Error(data.message || "Failed to add future mail");
     }
     return data;
   } catch (error) {
@@ -53,23 +59,33 @@ export const addFutureMail = async (userId, mailData) => {
 
 export const getFutureMails = async (userId) => {
   try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error("Không tìm thấy token");
+    }
+
     const response = await fetch(
       `http://localhost:5000/api/v1/users/${userId}/future-mails`,
       {
+        method: "GET",
         headers: {
-          Authorization: `Bearer ${await getToken()}`,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
+        credentials: "include",
       }
     );
 
     const data = await response.json();
+
     if (!data.success) {
-      throw new Error(data.message);
+      throw new Error(data.message || "Không thể lấy danh sách thư");
     }
-    return data.futureMails;
+
+    return data.futureMails || [];
   } catch (error) {
-    console.error("Error fetching future mails:", error);
-    throw error;
+    console.error("Lỗi khi lấy danh sách thư:", error);
+    return [];
   }
 };
 

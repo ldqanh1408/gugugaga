@@ -142,44 +142,30 @@ exports.uploadProfile = async (req, res) => {
 exports.addFutureMail = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { title, content, sendDate, receiveDate } = req.body;
 
-    // Validation
-    if (!title?.trim()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Title is required" 
+    // Kiểm tra xem userId từ token có khớp với userId trong params không
+    if (req.payload._id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền thực hiện hành động này",
       });
     }
 
-    if (!content?.trim()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Content is required" 
+    const { title, content, receiveDate } = req.body;
+
+    // Validate input
+    if (!title?.trim() || !content?.trim() || !receiveDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin cần thiết",
       });
     }
 
-    if (!receiveDate) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Receive date is required" 
-      });
-    }
-
-    // Check if user exists and has permission
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "User not found" 
-      });
-    }
-
-    // Ensure the user can only add mails to their own account
-    if (req.payload._id !== userId) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "You can only add mails to your own account" 
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
       });
     }
 
@@ -187,30 +173,26 @@ exports.addFutureMail = async (req, res) => {
       _id: new mongoose.Types.ObjectId(),
       title: title.trim(),
       content: content.trim(),
-      sendDate: sendDate || new Date(),
+      sendDate: new Date(),
       receiveDate: new Date(receiveDate),
       notified: false,
       read: false,
-      reply: ""
     };
 
-    if (!user.futureMails) {
-      user.futureMails = [];
-    }
-
+    user.futureMails = user.futureMails || [];
     user.futureMails.push(newMail);
     await user.save();
 
     res.status(201).json({
       success: true,
-      message: "Future mail added successfully",
-      futureMail: newMail
+      message: "Thêm thư thành công",
+      futureMail: newMail,
     });
   } catch (error) {
-    console.error("Error adding future mail:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || "Error adding future mail" 
+    console.error("Error in addFutureMail:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server khi thêm thư",
     });
   }
 };
@@ -218,28 +200,48 @@ exports.addFutureMail = async (req, res) => {
 exports.getFutureMails = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
+    // Kiểm tra xem userId từ token có khớp với userId trong params không
+    if (req.payload._id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền truy cập thư này",
+      });
     }
 
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    // Lấy ngày hiện tại và reset về 00:00:00
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const futureMails = user.futureMails || [];
-
-    res.status(200).json({ 
-      success: true, 
-      futureMails: futureMails.filter(mail => {
+    // Lọc thư có ngày nhận <= ngày hiện tại
+    const availableMails = (user.futureMails || [])
+      .filter((mail) => {
         const receiveDate = new Date(mail.receiveDate);
         receiveDate.setHours(0, 0, 0, 0);
         return receiveDate.getTime() <= today.getTime();
       })
+      .sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
+
+    console.log("Available mails:", availableMails); // Debug log
+
+    res.status(200).json({
+      success: true,
+      futureMails: availableMails,
     });
   } catch (error) {
-    console.error("Error fetching future mails:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error in getFutureMails:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server khi lấy danh sách thư",
+    });
   }
 };
 
@@ -250,12 +252,18 @@ exports.updateFutureMail = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
     }
 
-    const mailIndex = user.futureMails.findIndex(m => m._id.toString() === mailId);
+    const mailIndex = user.futureMails.findIndex(
+      (m) => m._id.toString() === mailId
+    );
     if (mailIndex === -1) {
-      return res.status(404).json({ success: false, message: "Mail not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Mail not found." });
     }
 
     if (read !== undefined) {
@@ -267,10 +275,10 @@ exports.updateFutureMail = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({ 
-      success: true, 
+    res.status(200).json({
+      success: true,
       message: "Mail updated successfully.",
-      mail: user.futureMails[mailIndex]
+      mail: user.futureMails[mailIndex],
     });
   } catch (error) {
     console.error("Error updating future mail:", error);
