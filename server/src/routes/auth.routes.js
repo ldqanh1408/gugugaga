@@ -15,7 +15,6 @@ const Journal = require("../models/journal.model");
 const router = express.Router();
 const dotenv = require("dotenv");
 const ROLE_MODELS = require("../utils/roleHelper");
-const redisHelper = require("../utils/redisHelper");
 const jwt = require("../middleware/authenticateJWT");
 const {
   validateRegister,
@@ -409,8 +408,6 @@ router.post("/v3/login", async (req, res) => {
       sameSite: "strict",
     });
     console.log(accessToken);
-    await redisHelper.saveRefreshToken(roleModel._id, refreshToken);
-    await redisHelper.saveAccessToken(roleModel._id, accessToken);
 
     res.status(201).json({ success: true, accessToken, data: roleModel });
   } catch (error) {
@@ -430,10 +427,7 @@ router.post(
     }
 
     // Kiểm tra xem refresh token có bị blacklist không
-    const isBlacklisted = await redisHelper.isBlacklisted(refreshToken);
-    if (isBlacklisted) {
-      return res.status(403).json({ message: "Refresh token is blacklisted" });
-    }
+  
 
     try {
       // Xác minh refresh token
@@ -446,7 +440,6 @@ router.post(
       const newRefreshToken = jwtHelper.createRefreshToken(decoded.user);
 
       // Lưu refresh token mới vào Redis hoặc cơ sở dữ liệu nếu cần
-      await redisHelper.saveRefreshToken(decoded._id, newRefreshToken);
 
       // Gửi lại Access Token và Refresh Token mới trong cookie
       res.cookie("accessToken", newAccessToken, {
@@ -481,7 +474,6 @@ router.get(
       const decoded = await jwtHelper.verifyRefreshToken(refreshToken); // Giả sử verifyRefreshToken sẽ trả về thông tin người dùng nếu token hợp lệ
       const expiresInSeconds = decoded.exp - Math.floor(Date.now() / 1000);
       // Lưu token vào blacklist (thời gian hết hạn giống với thời gian hết hạn của refresh token)
-      await redisHelper.blacklistToken(refreshToken, expiresInSeconds);
 
       // Xóa refresh token khỏi cookie
       res.clearCookie("refreshToken", { httpOnly: true, secure: true }); // Xóa cookie refresh token

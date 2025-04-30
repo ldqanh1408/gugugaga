@@ -43,14 +43,15 @@ function UserAvatar() {
             <DropdownMenu>
               {role === "USER" && (
                 <>
-                  <Dropdown.Item as={Link} to="/profile">
-                    Profile
-                  </Dropdown.Item>
+                  
                   <Link to="/change-password" state={{ user: profile }} className="dropdown-item">
                     Change Password
                   </Link>
                 </>
               )}
+              <Dropdown.Item as={Link} to="/profile">
+                    Profile
+                  </Dropdown.Item>
               <Dropdown.Item onClick={handleLogout}>
                 {logoutLoading ? "Logging out..." : "Logout"}
               </Dropdown.Item>
