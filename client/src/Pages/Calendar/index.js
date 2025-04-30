@@ -92,18 +92,18 @@ function Calendar() {
   const displayedNotes = filterMode === "all" ? notes : filteredNotes;
   return (
     <div className="container parent">
-      <Row className="justify-content-between gap-3 calendar">
-        <Col sm={12} md={5} className="custom-left">
+      <Row className="justify-content-between gap-3 ">
+        <Col sm={12} md={5} className="custom-left sub">
           <h1 className="heading">Calendar</h1>
           <p className="paragraph">Check your day. Check your life.</p>
 
-          <div className="custom-datepicker-container">
+          <div className="custom-datepicker-container calendar">
             <div className="datepicker-wrapper">
               <DatePicker
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
                 inline
-                className="custom-datepicker"
+                className="custom-daepicker"
                 showYearDropdown
                 showFullMonthYearPicker
                 scrollableYearDropdown

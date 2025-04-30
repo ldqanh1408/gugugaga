@@ -1,6 +1,16 @@
 .wrapper {
   min-height: 100vh;
   max-width: 80vh;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .expert-card {
@@ -9,36 +19,34 @@
   padding: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.expert-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .expert-card.selected {
-  background-color: #76d7c4 !important; /* Ví dụ màu xanh nhạt */
+  background-color: #76d7c4 !important;
   border-color: #1abc9c;
 }
-.expert-card h6 {
-  font-weight: bold;
-}
-.expert-card .emoji {
-  font-size: 1.2rem;
-}
-.tag {
-  display: inline-block;
-  background-color: #f1f1f1;
-  border-radius: 10px;
-  padding: 0 8px;
-  margin: 2px;
-  font-size: 0.85rem;
-}
-.quote {
-  font-style: italic;
-  font-size: 0.9rem;
+
+button {
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.edit-profile-box {
-    height: 18px;
+button:hover {
+  background-color: #ffcccc;
+  transform: scale(1.1);
 }
 
 .icon {
   width: 32px;
   cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.icon:hover {
+  transform: rotate(360deg);
 }

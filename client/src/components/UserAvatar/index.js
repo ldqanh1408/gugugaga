@@ -28,6 +28,7 @@ function UserAvatar() {
     await dispatch(logoutUserAsync()); // Gọi Thunk logoutUserAsyn
     await dispatch(logout())
     await navigate("/login"); // Điều hướng về trang chính sau khi logout
+    window.location.reload(); // Tải lại trang để cập nhật trạng thái
   };
   return (
     <div className="container justify-content-end d-flex">

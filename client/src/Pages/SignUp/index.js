@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import "./SignUp.css";
 import { useNavigate } from "react-router-dom";
 
@@ -29,6 +29,18 @@ function SignUp() {
   const [userNameError, setUserNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSignUpError = (message) => {
+    setErrorMessage(message);
+    setShowErrorModal(true);
+  };
+
+  const closeErrorModal = () => {
+    setShowErrorModal(false);
+    setErrorMessage("");
+  };
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -66,6 +78,9 @@ function SignUp() {
         setPhoneError("Phone number can available");
       }
       setError("Registration has failed");
+      handleSignUpError(
+        "Registration failed. Please check your details and try again."
+      );
       console.error({ message: error.message });
     }
     setLoading(false);
@@ -252,6 +267,17 @@ function SignUp() {
                 {loading ? <ClipLoader color="white" size={20} /> : "Sign Up"}
               </Button>
             </div>
+            <Modal show={showErrorModal} onHide={closeErrorModal} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Registration Failed</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>{errorMessage}</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={closeErrorModal}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </Form>
         </div>
       </div>

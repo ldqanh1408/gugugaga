@@ -46,7 +46,11 @@ function Home() {
           </Row>
         </Col>
         <Col className="are-you-oke-container">
-          <img src={AreYouOke} className="img-fluid img are-you-oke-img" alt="AreYouOke"></img>
+          <img
+            src={AreYouOke}
+            className="img-fluid img are-you-oke-img hover-effect"
+            alt="AreYouOke"
+          ></img>
         </Col>
       </Row>
 
@@ -57,8 +61,12 @@ function Home() {
 
       <Row className="justify-content-center mt-4">
         {/* Dùng 1 Row chung cho tất cả các Col */}
-        <Col className="member text-center mt-4" xs={12} sm={6} md={4} lg={3}>
-          <img src={QA} className="img-fluid member-img img" alt="Quốc Anh"></img>
+        <Col className="member text-center mt-4 hover-effect" xs={12} sm={6} md={4} lg={3}>
+          <img
+            src={QA}
+            className="img-fluid member-img img"
+            alt="Quốc Anh"
+          ></img>
           <div className="description">
             <p className="fs-5 fw-bold">Leader</p>
             <p className="fw-bold">Quốc Anh</p>

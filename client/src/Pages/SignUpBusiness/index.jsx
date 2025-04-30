@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import "./SignUpBusiness.css";
 import { useNavigate } from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux"
@@ -33,7 +33,19 @@ function SignUpBusiness() {
   const state = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSignUpError = (message) => {
+    setErrorMessage(message);
+    setShowErrorModal(true);
+  };
+
+  const closeErrorModal = () => {
+    setShowErrorModal(false);
+    setErrorMessage("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -44,22 +56,17 @@ function SignUpBusiness() {
         account,
         password,
         role: "BUSINESS",
-      }
+      };
       dispatch(registerThunk(formData));
       console.log("You have successfully registered.");
-      navigate("/login/enter");
+      navigate("/login");
     } catch (error) {
-      if (email) {
-        setEmailError("Email can available");
-      }
-      if (phone) {
-        setPhoneError("Phone number can available");
-      }
-      setError("Registration has failed");
+      handleSignUpError("Registration failed. Please check your details and try again.");
       console.error({ message: error.message });
     }
     setLoading(false);
   };
+
   return (
     <div className="container">
       {loading && <Loading />}
@@ -201,6 +208,17 @@ function SignUpBusiness() {
           </Form>
         </div>
       </div>
+      <Modal show={showErrorModal} onHide={closeErrorModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Registration Failed</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{errorMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeErrorModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

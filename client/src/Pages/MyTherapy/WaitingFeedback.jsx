@@ -31,7 +31,7 @@ function WaitingFeedback() {
   return (
     <Col sm={12} md={5} className="custom-right">
       <Card className="mb-3 custom-card-title">
-        <Card.Body className="fw-bold"> View Expert's upcoming list</Card.Body>
+        <Card.Body className="fw-bold">Waiting for feedback</Card.Body>
 
         {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
         <div className="filter-dropdown-container">
@@ -68,8 +68,11 @@ function WaitingFeedback() {
             ?.filter((treatment) => {
               const endTime = new Date(treatment.schedule_id.end_time);
               const now = new Date();
-              const twoHoursLater = new Date(endTime.getTime() + 2 * 60 * 60 * 1000);
-              return now >= endTime && now <= twoHoursLater;
+              const twoHoursLater = new Date(
+                endTime.getTime() + 2 * 60 * 60 * 1000
+              );
+              console.log("1",now,"2", endTime,"3", twoHoursLater);
+              return now.getTime() >= endTime.getTime() && now.getTime() <= twoHoursLater.getTime();
             })
             ?.map((treatment, index) => (
               <Card className="mb-3 custom-card">
@@ -100,7 +103,12 @@ function WaitingFeedback() {
                     </div>
                   </div>
                   <div className="d-flex justify-content-end">
-                    <Button onClick={() => dispatch(setIsViewing(true))}>
+                    <Button
+                      onClick={() => {
+                        dispatch(setSelectedTreatment(treatment));
+                        dispatch(setIsViewing(true));
+                      }}
+                    >
                       View
                     </Button>
                   </div>

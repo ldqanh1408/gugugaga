@@ -1,57 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Col, Form, Row, Container } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { handleBlur, handleFocus } from "../../services";
 import { ACCOUNT, PASSWORD } from "../../constants";
 import { ClipLoader } from "react-spinners";
 import "./Login.css";
-import { loggingThunk, setIsAuthenticated, setRole } from "../../redux/authSlice.js";
-import { useDispatch } from "react-redux";
-import "bootstrap/dist/css/bootstrap.min.css";
-
-
+import { loggingThunk, setIsAuthenticated } from "../../redux/authSlice.js";
+import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../components/Common/Loading";
-import { useSelector } from "react-redux";
 
 function EnterLogin() {
   const [account, setAccount] = useState("");
-  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const [phone, setPhone] = useState("");
-  const [error, setError] = useState("");
   const [accountError, setAccountError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [userNameError, setUserNameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [phoneError, setPhoneError] = useState("");
-  const {tempRole} = useSelector((state) => state?.auth);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const { tempRole, error, loading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
+    try {
       const formData = {
         account,
         password,
-        role: tempRole
-      }
+        role: tempRole,
+      };
       const response = await dispatch(loggingThunk(formData));
-      console.log(response);
-      if(response.payload?.data?.data) {
-        await dispatch(setIsAuthenticated(true))
+      if (response.payload?.data?.data) {
+        await dispatch(setIsAuthenticated(true));
         navigate("/");
-      } ;
-    }
-    catch(error){
+      } else if (error) {
+        setShowErrorModal(true);
+      }
+    } catch (error) {
       console.error(error.message);
+      setShowErrorModal(true);
     }
   };
+
+  const closeErrorModal = () => {
+    setShowErrorModal(false);
+  };
+
   return (
     <div className="container">
       {loading && <Loading />}
@@ -64,9 +57,7 @@ function EnterLogin() {
         <div className="">
           <Form className="d-flex flex-column form-1 login">
             <Form.Group className="mt-4">
-              <Form.Label className="signup-custom-h2-label">
-                Account:
-              </Form.Label>
+              <Form.Label className="signup-custom-h2-label">Account:</Form.Label>
               <Form.Control
                 onChange={(e) => setAccount(e.target.value)}
                 placeholder="Enter your username..."
@@ -76,10 +67,8 @@ function EnterLogin() {
                     field: ACCOUNT,
                     account,
                     password,
-                    userName,
                     setAccountError,
                     setPasswordError,
-                    setUserNameError,
                   })
                 }
                 onFocus={() =>
@@ -87,19 +76,15 @@ function EnterLogin() {
                     field: ACCOUNT,
                     account,
                     password,
-                    userName,
                     setAccountError,
                     setPasswordError,
-                    setUserNameError,
                   })
                 }
               ></Form.Control>
               <Form.Text className="text-danger">{accountError}</Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
-              <Form.Label className="signup-custom-h2-label">
-                Password:
-              </Form.Label>
+              <Form.Label className="signup-custom-h2-label">Password:</Form.Label>
               <Form.Control
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
@@ -110,10 +95,8 @@ function EnterLogin() {
                     field: PASSWORD,
                     account,
                     password,
-                    userName,
                     setAccountError,
                     setPasswordError,
-                    setUserNameError,
                   })
                 }
                 onFocus={() =>
@@ -121,17 +104,13 @@ function EnterLogin() {
                     field: PASSWORD,
                     account,
                     password,
-                    userName,
                     setAccountError,
                     setPasswordError,
-                    setUserNameError,
                   })
                 }
               ></Form.Control>
-              
               <Form.Text className="text-danger">{passwordError}</Form.Text>
             </Form.Group>
-           
             <Button
               style={{ marginRight: "0" }}
               type="submit"
@@ -143,8 +122,20 @@ function EnterLogin() {
           </Form>
         </div>
       </div>
+
+      <Modal show={showErrorModal} onHide={closeErrorModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Login Failed</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{error || "An unknown error occurred. Please try again."}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeErrorModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
 
-export default EnterLogin
+export default EnterLogin;

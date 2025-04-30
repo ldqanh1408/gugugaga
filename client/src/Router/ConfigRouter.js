@@ -13,7 +13,7 @@ import {
   ExpertManagement,
   Complaint,
   Therapy,
-  MyTherapy
+  MyTherapy,
 } from "../Pages";
 import NoteViewer from "../Pages/Note/NoteViewer";
 import SignUpBusiness from "../Pages/SignUpBusiness";
@@ -34,12 +34,12 @@ const routes = [
   {
     path: "/expert/schedule",
     element: <SchedulePage></SchedulePage>,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     path: "/expert/history",
     element: <HistoryExpert></HistoryExpert>,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     path: "/business/sign-up",
@@ -54,22 +54,22 @@ const routes = [
   {
     path: "/business/expert-list",
     element: <ExpertManagement></ExpertManagement>,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     path: "/business/complaints",
     element: <Complaint></Complaint>,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     path: "/therapy",
     element: <Therapy></Therapy>,
-    isPrivate: false,
+    isPrivate: true,
   },
   {
     path: "/me/therapy",
     element: <MyTherapy></MyTherapy>,
-    isPrivate: false,
+    isPrivate: true,
   },
 ];
 

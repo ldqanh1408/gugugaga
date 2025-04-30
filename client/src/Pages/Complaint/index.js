@@ -59,6 +59,7 @@ function Complaint() {
             </Card>
           </Col>
         ))}
+        
       </Row>
 
       <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>

@@ -35,3 +35,22 @@
     white-space: nowrap; /* Ngừng xuống dòng */
     
   }
+  
+  
+  .expert-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .expert-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  button {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #ffcccc;
+    transform: scale(1.1);
+  }

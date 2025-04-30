@@ -53,6 +53,7 @@ exports.requestBooking = async (req, res) => {
       end_time,
       description,
       user_id: _id,
+      duration,
     });
 
     // Lưu vào database
