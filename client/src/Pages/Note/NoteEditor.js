@@ -36,11 +36,8 @@ function NoteEditor({
   const [selectedFile, setSelectedFile] = useState(null);
   const [customFileName, setCustomFileName] = useState("");
   const dispatch = useDispatch();
-<<<<<<< HEAD
-=======
   console.error(currentNote); 
 
->>>>>>> testQA
   function formatDateForInput(dateString) {
     if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
     const date = new Date(dateString);
@@ -53,12 +50,7 @@ function NoteEditor({
 
 
   const handleSubmit = async () => {
-<<<<<<< HEAD
-
-    if (!header.trim() || !date.trim() || !text.trim()) {
-=======
     if (!header.trim() || !date.trim() || !text.trim() || !mood.trim()) {
->>>>>>> testQA
       alert("Please fill in all the required fields!!!");
       return;
     }
