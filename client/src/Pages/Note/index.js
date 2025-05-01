@@ -52,7 +52,7 @@ function Note() {
   if (!currentNote) return <div>Loading...</div>;  // Hoặc xử lý lỗi khác
 
   return (
-    <div>
+    <div className="fade-in">
       {currentIndex === null ? (
         // Render NoteEditor nếu chưa có ghi chú nào được chọn
         <NoteEditor onSave={handleSave} />

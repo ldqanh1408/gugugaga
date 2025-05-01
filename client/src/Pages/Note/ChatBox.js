@@ -158,7 +158,7 @@ function ChatBox() {
   };
 
   return (
-    <div className="chat-box-container d-flex justify-content-center align-items-center">
+    <div className="chat-box-container d-flex justify-content-center align-items-center fade-in">
       <div className={`chat-box ${isChatPage ? "formattedBox" : ""}`}>
         <div className="chat-toolbar top">
           <div className="chat-toolbar-text">Gugugaga</div>

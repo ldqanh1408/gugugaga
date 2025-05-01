@@ -54,7 +54,7 @@ function MyTherapy() {
   };
 
   return (
-    <div className="schedule container mt-4">
+    <div className="schedule container mt-4 fade-in">
       <h1>My Therapy</h1>
       <hr className=""></hr>
       <Row className="d-flex flex-row justify-content-start">

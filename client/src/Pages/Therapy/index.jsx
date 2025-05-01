@@ -49,7 +49,7 @@ function Therapy() {
   }, [experts]);
 
   return (
-    <Container className="wrapper">
+    <Container className="wrapper fade-in">
       <h1 className="mt-4 text-center animate__animated animate__fadeInDown">Therapy Booking</h1>
       <hr className="animate__animated animate__fadeIn" />
 

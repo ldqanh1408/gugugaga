@@ -91,7 +91,7 @@ function Calendar() {
 
   const displayedNotes = filterMode === "all" ? notes : filteredNotes;
   return (
-    <div className="container parent">
+    <div className="container parent fade-in">
       <Row className="justify-content-between gap-3 ">
         <Col sm={12} md={5} className="custom-left sub">
           <h1 className="heading">Calendar</h1>
