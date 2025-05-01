@@ -24,32 +24,10 @@ function Current() {
   return (
     <Col sm={12} md={5} className="custom-right">
       <Card className="mb-3 custom-card-title">
-        <Card.Body className="fw-bold"> View Expert's upcoming list</Card.Body>
+        <Card.Body className="fw-bold">Current</Card.Body>
 
         {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
-        <div className="filter-dropdown-container">
-          <Dropdown as={ButtonGroup}>
-            <Dropdown.Toggle variant="light" className="filter-btn">
-              <img src={FilterButton} alt="Filter" />
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu align="end">
-              <Dropdown.Item
-                active={filterMode === "day"}
-                onClick={() => setFilterMode("day")}
-              >
-                View by day
-              </Dropdown.Item>
-
-              <Dropdown.Item
-                active={filterMode === "all"}
-                onClick={() => setFilterMode("all")}
-              >
-                View all
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
+       
       </Card>
       <div className="treatment-scroll-container">
         {treatments.length === 0 ? (
@@ -59,9 +37,10 @@ function Current() {
         ) : (
           treatments
             .filter((t) => {
-              const startTime = new Date(t.schedule_id.start_time).getTime();
-              const nowMinus2Hours = Date.now() - 2 * 60 * 60 * 1000; // current time - 2 hours
-              return startTime >= nowMinus2Hours;
+              const endTime = new Date(t.schedule_id.end_time);
+              const now = new Date();
+              const endTimePlus2h = new Date(endTime.getTime() + 2 * 60 * 60 * 1000); // current time + 2 hours
+              return now.getTime() <= endTimePlus2h.getTime();
             })
             .map((t, index) => (
               <Card className="mb-3 custom-card">

@@ -22,7 +22,7 @@ function ExpertProfile() {
             <p>Average Rating</p>
           </div>
         </div>
-        <button className="btn-edit mt-3">Edit Profile</button>
+        <button className="btn-edit mt-3">Good job</button>
       </div>
     </div>
   );
