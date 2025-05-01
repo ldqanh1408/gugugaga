@@ -1,35 +1,38 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
-const userController = require("../controllers/user.controller");
+const {
+  addFutureMail,
+  getFutureMails,
+  updateFutureMail,
+  getTodayMails,
+  markMailNotified,
+} = require("../controllers/user.controller");
+const { authenticateAndAuthorize } = require("../middleware/authenticateJWT");
 
-// User routes
-router.get("/", auth.authToken, userController.getUsers);
-router.get("/me/treatments", auth.authToken, userController.getTreatment);
-router.get("/me/bookings", auth.authToken, userController.getBooking);
-router.get("/me/receivers", auth.authToken, userController.getReceivers);
-router.get("/:userId", auth.authToken, userController.getUser);
-router.delete("/:userId", auth.authToken, userController.deleteUser);
-
-// Profile routes
-router.get("/load-profile", auth.authToken, userController.loadProfile);
-router.patch("/upload-profile", auth.authToken, userController.uploadProfile);
-
-// Future mail routes
 router.post(
-  "/:userId/future-mails",
-  auth.authToken,
-  userController.addFutureMail
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  addFutureMail
 );
 router.get(
-  "/:userId/future-mails",
-  auth.authToken,
-  userController.getFutureMails
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  getFutureMails
 );
 router.patch(
-  "/:userId/future-mails/:mailId",
-  auth.authToken,
-  userController.updateFutureMail
+  "/v1/users/:userId/future-mails/:mailId",
+  authenticateAndAuthorize(["USER"]),
+  updateFutureMail
+);
+router.get(
+  "/v1/users/:userId/today-mails",
+  authenticateAndAuthorize(["USER"]),
+  getTodayMails
+);
+router.patch(
+  "/v1/users/:userId/future-mails/:mailId/notify",
+  authenticateAndAuthorize(["USER"]),
+  markMailNotified
 );
 
 module.exports = router;

@@ -1,64 +1,38 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/user.controller");
-const upload = require("../controllers/upload.controller");
+const {
+  addFutureMail,
+  getFutureMails,
+  updateFutureMail,
+  getTodayMails,
+  markMailNotified,
+} = require("../controllers/user.controller");
 const { authenticateAndAuthorize } = require("../middleware/authenticateJWT");
 
-// Future mail routes
-router
-  .route("/v1/users/:userId/future-mails")
-  .get(authenticateAndAuthorize(["USER"]), userController.getFutureMails)
-  .post(authenticateAndAuthorize(["USER"]), userController.addFutureMail);
-
-router
-  .route("/v1/users/:userId/future-mails/:mailId")
-  .patch(authenticateAndAuthorize(["USER"]), userController.updateFutureMail);
-
-// Các routes khác
-router.get("/v1/users", userController.getUsers);
-router.get(
-  "/v1/users/:userId",
+router.post(
+  "/v1/users/:userId/future-mails",
   authenticateAndAuthorize(["USER"]),
-  userController.getUser
-);
-router.delete(
-  "/v1/users/:userId",
-  authenticateAndAuthorize(["USER"]),
-  userController.deleteUser
-);
-
-router.get(
-  "/v1/users/me/treatments",
-  authenticateAndAuthorize(["USER"]),
-  userController.getTreatment
+  addFutureMail
 );
 router.get(
-  "/v1/users/load-profile",
+  "/v1/users/:userId/future-mails",
   authenticateAndAuthorize(["USER"]),
-  userController.loadProfile
+  getFutureMails
 );
 router.patch(
-  "/v1/users/upload-profile",
+  "/v1/users/:userId/future-mails/:mailId",
   authenticateAndAuthorize(["USER"]),
-  userController.uploadProfile
+  updateFutureMail
 );
 router.get(
-  "/v1/users/me/receivers",
+  "/v1/users/:userId/today-mails",
   authenticateAndAuthorize(["USER"]),
-  userController.getReceivers
+  getTodayMails
 );
-router.get(
-  "/v1/users/me/bookings",
+router.patch(
+  "/v1/users/:userId/future-mails/:mailId/notify",
   authenticateAndAuthorize(["USER"]),
-  userController.getBooking
-);
-
-// Upload route
-router.post(
-  "/v1/users/upload",
-  authenticateAndAuthorize(["USER"]),
-  upload.upload.single("avatar"),
-  upload.uploadAvatar
+  markMailNotified
 );
 
 module.exports = router;

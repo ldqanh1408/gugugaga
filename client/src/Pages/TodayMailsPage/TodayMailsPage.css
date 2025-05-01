@@ -30,10 +30,14 @@
   cursor: pointer;
   transition: background-color 0.2s;
   margin-bottom: 10px;
+  animation: slideInFromRight 0.3s ease-out forwards;
+  opacity: 0;
 }
 
 .mail-item:hover {
   background-color: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mail-item.selected {
@@ -61,6 +65,7 @@
   flex: 1;
   padding: 40px;
   background: white;
+  transition: opacity 0.3s ease;
 }
 
 .mail-header {
@@ -104,10 +109,40 @@
   color: #333;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .back-button:hover {
   background: #e0e0e0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:active {
+  transform: translateY(0);
+}
+
+.back-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.back-button:active::after {
+  width: 200px;
+  height: 200px;
+  opacity: 0;
 }
 
 .no-mail-container {
@@ -123,16 +158,15 @@
 .today-mails-page {
   min-height: 100vh;
   background: #f5f5f5;
-  display: flex;
-  flex-direction: column;
+  padding: 20px;
 }
 
 .today-mails-container {
-  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   gap: 20px;
-  padding: 20px;
-  height: 100vh;
+  height: calc(100vh - 40px);
 }
 
 .mails-list {
@@ -141,7 +175,7 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 40px);
+  height: 100%;
   overflow-y: auto;
 }
 
@@ -159,14 +193,19 @@
   border-radius: 6px;
   margin-bottom: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
   border: 1px solid #eee;
+  animation: slideInFromRight 0.3s ease-out forwards;
+  opacity: 0;
 }
 
 .mail-item:hover {
   background: #f8f8ff;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mail-item.selected {
@@ -187,8 +226,9 @@
 
 .mail-content {
   flex: 1;
-  height: calc(100vh - 40px);
+  height: 100%;
   overflow-y: auto;
+  transition: opacity 0.3s ease;
 }
 
 .mail-card {
@@ -236,27 +276,12 @@
   margin-top: auto;
   padding-top: 20px;
   border-top: 1px solid #eee;
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-.reply-box {
-  width: 100%;
-  min-height: 120px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  line-height: 1.6;
-  resize: vertical;
-}
-
-.reply-box:focus {
-  outline: none;
-  border-color: #5e5df0;
-}
-
-.reply-button {
+.send-reply-button {
   padding: 10px 20px;
   background: #5e5df0;
   color: white;
@@ -264,50 +289,146 @@
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
-  margin-right: 10px;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.reply-button:hover {
+.send-reply-button:hover {
   background: #4b4acf;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.back-button {
-  padding: 10px 20px;
-  background: #f0f0f0;
-  border: none;
-  border-radius: 6px;
-  color: #333;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
+.send-reply-button:active {
+  transform: translateY(0);
 }
 
-.back-button:hover {
-  background: #e0e0e0;
+.send-reply-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
-.no-mail-container {
+.send-reply-button:active::after {
+  width: 200px;
+  height: 200px;
+  opacity: 0;
+}
+
+.loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  padding: 20px;
+  color: #666;
+  animation: fadeIn 0.3s ease;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top: 3px solid #5e5df0;
+  border-radius: 50%;
+  animation:
+    spin 1s linear infinite,
+    scaleIn 0.3s ease;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.no-mail-container {
+  text-align: center;
+  padding: 40px;
+  max-width: 500px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .no-mail-container h2 {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #333;
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 18px;
+.no-mail-container p {
   color: #666;
+  margin-bottom: 25px;
+}
+
+/* Animations for page transitions */
+.entrance-animation {
+  animation: scaleIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInFromLeft 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* Responsive styles */
