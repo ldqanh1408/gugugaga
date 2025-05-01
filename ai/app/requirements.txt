@@ -1,6 +1,30 @@
-fastapi
-uvicorn
+# Web framework
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
 pydantic-settings>=2.0.3
-chromadb
+python-dotenv>=1.0.0
+
+# Database
+chromadb>=0.4.15
+
+# ML Libraries
+transformers>=4.35.0
 sentence-transformers>=2.2.2
-llama-cpp-python
+llama-cpp-python>=0.2.0
+torch>=2.0.0
+torchvision>=0.15.0
+av>=10.0.0
+accelerate>=0.21.0
+pillow>=10.0.0
+faster-whisper
+
+
+# Utils
+numpy>=1.24.0
+requests>=2.31.0
+python-multipart>=0.0.6
+
+# Optional: For better performance with LLaMA-cpp
+# llama-cpp-python-cuda
+# llama-cpp-python-cudann
