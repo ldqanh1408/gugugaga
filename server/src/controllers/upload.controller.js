@@ -69,7 +69,7 @@ const imageStorage = new CloudinaryStorage({
 const uploadImage = multer({ storage: imageStorage });
 
 // API xử lý upload
-uploadAvatar = (req, res) => {
+const uploadAvatar = (req, res) => {
   if (!req.file || !req.file.path) {
     return res
       .status(400)
@@ -87,17 +87,43 @@ uploadAvatar = (req, res) => {
 const uploadAudioFile = (req, res) => {
   try {
     if (!req.file || !req.file.path) {
-      return res.status(400).json({ success: false, message: "No file uploaded or path missing" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "No file uploaded or path missing" 
+      });
     }
 
-    res.status(200).json({
+    const fileType = req.file.mimetype.split('/')[0];
+    const isValidType = ['image', 'audio'].includes(fileType);
+
+    if (!isValidType) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid file type. Only images and audio files are allowed." 
+      });
+    }
+
+    const response = {
       success: true,
-      message: "Audio file uploaded successfully!",
-      audioUrl: req.file.path || req.file.secure_url, // Return secure_url
-    });
+      message: `${fileType} uploaded successfully!`,
+      url: req.file.path || req.file.secure_url
+    };
+
+    // Add type-specific URLs for backward compatibility
+    if (fileType === 'audio') {
+      response.audioUrl = response.url;
+    } else if (fileType === 'image') {
+      response.imageUrl = response.url;
+    }
+
+    res.status(200).json(response);
   } catch (error) {
-    console.error("Error uploading audio:", error);
-    res.status(500).json({ success: false, message: "Server error during audio upload" });
+    console.error("Error uploading file:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error during file upload",
+      error: error.message 
+    });
   }
 };
 
@@ -125,7 +151,7 @@ const uploadImageFile = (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Image file uploaded successfully!",
+      message: "Image uploaded successfully!",
       imageUrl: req.file.path || req.file.secure_url, // Return secure_url
     });
   } catch (error) {

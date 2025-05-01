@@ -18,6 +18,10 @@ function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
   const {notes, currentIndex, isEditing, currentNote} = useSelector((state) => state.notes);
   const [note, setNote] = useState(notes[currentIndex] || currentNote);
 
+  useEffect(() => {
+    setNote(notes[currentIndex] || currentNote); // Update note when currentIndex or currentNote changes
+  }, [notes, currentIndex, currentNote]);
+
   if (!note) return <div>Loading...</div>;  // Hoặc xử lý lỗi khác
 
   return (
@@ -52,13 +56,23 @@ function NoteViewer({ hasPrev, hasNext, onPrev, onNext }) {
             <p className="note-viewer-date">{formatDate(currentNote?.date) || ""}</p>
             <p className="note-viewer-content">{currentNote?.text || ""}</p>
             {/* Media Preview */}
-            <div className="media-preview mt-2">
-              {currentNote.media?.map((m, idx) => {
-                if (m.type === "image") return <img key={idx} src={m.url} alt={m.name} width="100" />;
-                if (m.type === "video") return <video key={idx} src={m.url} width="100" controls />;
-                if (m.type === "audio") return <audio key={idx} src={m.url} controls />;
-                return null;
-              })}
+            <div className="media-preview">
+              {currentNote.media?.map((m, idx) => (
+                <div key={idx} className="media-item">
+                  {m.type === "image" && (
+                    <div className="media-content">
+                      <img src={m.url} alt={m.name} />
+                      <span className="media-filename" title={m.name}>{m.name}</span>
+                    </div>
+                  )}
+                  {m.type === "audio" && (
+                    <div className="audio-container">
+                      <span className="audio-filename" title={m.name}>{m.name}</span>
+                      <audio src={m.url} controls className="audio-player" />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 

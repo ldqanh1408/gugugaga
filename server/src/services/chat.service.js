@@ -24,16 +24,22 @@ const getChatsByUserId = async (userId) => {
 };
 
 // Gửi tin nhắn trong một cuộc trò chuyện
-// Ví dụ trong chat.service.js
 const sendMessage = async (chatId, senderId, message) => {
   try {
     const chat = await Chat.findById(chatId);
-    if (!chat) throw new Error("Chat not found"); // Thêm dòng này
-    chat.messages.push({ sender: senderId, content: message });
+    if (!chat) throw new Error("Chat not found");
+
+    const messageData = {
+      role: "user",
+      text: message.text,
+      media: message.media || []
+    };
+
+    chat.messages.push(messageData);
     await chat.save();
     return chat;
   } catch (error) {
-    console.error("[sendMessage Error]:", error); // Thêm context
+    console.error("[sendMessage Error]:", error);
     throw error;
   }
 };
