@@ -220,32 +220,39 @@ router.get("/v1/me", jwt.authenticateAndAuthorize(["USER"]), (req, res) => {
 });
 
 router.post("/v1/change-password", async (req, res) => {
-  const token = req.cookies.token;
+  const token = req.cookies.accessToken;
   if (!token) {
     return res.status(401).json({ message: "Chưa đăng nhập" });
   }
   try {
-    const payload = verifyToken(token);
-    const { newPassword, currentPassword } = req.body;
-    if (!newPassword || !currentPassword) {
+    const payload = jwtHelper.verifyAccessToken(token);
+    const { newPassword, currentPassword, role } = req.body;
+
+    if (!newPassword || !currentPassword || !role) {
       return res
         .status(400)
         .json({ success: false, message: "Thiếu thông tin" });
     }
-    const userId = payload._id;
-    var user = await User.findOne({ _id: userId });
+
+    if (!ROLE_MODELS[role]) {
+      return res.status(400).json({ message: "Vai trò không hợp lệ" });
+    }
+
+    const { model } = ROLE_MODELS[role];
+    const user = await model.findById(payload._id);
+
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "Không tìm thấy user" });
+        .json({ success: false, message: "Không tìm thấy người dùng" });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
-
-    if (!isMatch)
+    if (!isMatch) {
       return res
         .status(404)
         .json({ success: false, message: "Mật khẩu không khớp" });
+    }
 
     user.password = await hashPassword(newPassword);
     await user.save();
