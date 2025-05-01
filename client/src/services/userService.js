@@ -318,9 +318,9 @@ const uploadAudio = async (audioFile) => {
     }
 
     const formData = new FormData();
-    formData.append("audio", audioFile);
+    formData.append("file", audioFile);
 
-    const response = await axios.post(`${API_URL}users/upload-audio`, formData, {
+    const response = await axios.post(`${API_URL}media`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
@@ -329,7 +329,7 @@ const uploadAudio = async (audioFile) => {
     });
 
     if (response.data && response.data.success) {
-      return { success: true, audioUrl: response.data.audioUrl }; // Trả về URL audio
+      return { success: true, audioUrl: response.data.url || response.data.audioUrl }; 
     } else {
       return { success: false, message: "Audio upload failed" };
     }
@@ -347,9 +347,9 @@ const uploadImage = async (imageFile) => {
     }
 
     const formData = new FormData();
-    formData.append("image", imageFile);
+    formData.append("file", imageFile);
 
-    const response = await axios.post(`${API_URL}users/upload-image`, formData, {
+    const response = await axios.post(`${API_URL}media`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
@@ -358,7 +358,7 @@ const uploadImage = async (imageFile) => {
     });
 
     if (response.data && response.data.success) {
-      return { success: true, imageUrl: response.data.imageUrl };
+      return { success: true, imageUrl: response.data.url || response.data.imageUrl };
     } else {
       return { success: false, message: "Image upload failed" };
     }

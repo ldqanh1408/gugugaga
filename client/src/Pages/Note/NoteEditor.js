@@ -94,8 +94,9 @@ function NoteEditor({
     if (!selectedFile || !customFileName) return;
 
     try {
-      if (selectedFile.type.startsWith("audio")) {
-        const response = await uploadAudio(selectedFile);
+      let response;
+      if (selectedFile.type.startsWith('audio')) {
+        response = await uploadAudio(selectedFile);
         if (response.success) {
           const mediaItem = { 
             type: "audio", 
@@ -103,11 +104,13 @@ function NoteEditor({
             name: customFileName 
           };
           dispatch(addMediaToCurrentNote(mediaItem));
+          alert("Audio uploaded successfully!");
         } else {
+          alert(`Failed to upload audio: ${response.message}`);
           console.error("Audio upload failed:", response.message);
         }
-      } else if (selectedFile.type.startsWith("image")) {
-        const response = await uploadImage(selectedFile);
+      } else if (selectedFile.type.startsWith('image')) {
+        response = await uploadImage(selectedFile);
         if (response.success) {
           const mediaItem = { 
             type: "image", 
@@ -115,17 +118,20 @@ function NoteEditor({
             name: customFileName 
           };
           dispatch(addMediaToCurrentNote(mediaItem));
+          alert("Image uploaded successfully!");
         } else {
+          alert(`Failed to upload image: ${response.message}`);
           console.error("Image upload failed:", response.message);
         }
       }
+
+      setShowNameModal(false);
+      setSelectedFile(null);
+      setCustomFileName("");
     } catch (error) {
       console.error("Error processing file:", error);
+      alert(`Error uploading file: ${error.message}`);
     }
-
-    setShowNameModal(false);
-    setSelectedFile(null);
-    setCustomFileName("");
   };
 
   const autoResizeTextArea = (event) => {

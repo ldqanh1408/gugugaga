@@ -14,7 +14,12 @@ export const fetchNotes = createAsyncThunk("notes/fetchNotes", async () => {
 export const saveNewNote = createAsyncThunk(
   "notes/saveNewNote",
   async (newNote) => {
-    const savedNote = await saveNote(newNote); // Send flat payload
+    // Ensure media array exists
+    const noteWithMedia = {
+      ...newNote,
+      media: newNote.media || []
+    };
+    const savedNote = await saveNote(noteWithMedia);
     return savedNote;
   }
 );
@@ -23,7 +28,12 @@ export const saveNewNote = createAsyncThunk(
 export const updateExistingNote = createAsyncThunk(
   "notes/updateExistingNote",
   async (updatedNote) => {
-    const savedNote = await updateNote(updatedNote);
+    // Ensure media array exists
+    const noteWithMedia = {
+      ...updatedNote,
+      media: updatedNote.media || []
+    };
+    const savedNote = await updateNote(noteWithMedia);
     return savedNote;
   }
 );

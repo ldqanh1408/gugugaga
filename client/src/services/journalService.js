@@ -2,8 +2,6 @@ import axios from "axios";
 import { getPayLoad, getToken } from "./authService";
 
 const API_URL = "http://localhost:5000/api/v1/journals/";
-const CLOUD_NAME = process.env.CLOUD_NAME; // Load Cloudinary cloud name from .env
-const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`;
 
 export const getNotes = async () => {
   const token = await getToken();
