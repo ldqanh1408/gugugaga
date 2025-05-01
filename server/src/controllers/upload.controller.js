@@ -69,7 +69,7 @@ const imageStorage = new CloudinaryStorage({
 const uploadImage = multer({ storage: imageStorage });
 
 // API xử lý upload
-uploadAvatar = (req, res) => {
+const uploadAvatar = (req, res) => {
   if (!req.file || !req.file.path) {
     return res
       .status(400)
