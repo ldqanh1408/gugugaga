@@ -13,7 +13,7 @@ const {
   getReceivers,
   getBooking,
 } = require("../controllers/user.controller");
-const { upload, uploadAvatar } = require("../controllers/upload.controller");
+const upload = require("../controllers/upload.controller");
 const { authenticateJWT } = require("../middleware");
 const jwt = require("../middleware/authenticateJWT");
 
@@ -24,7 +24,7 @@ router.get("/:userId", getUser);
 
 // router.post("/:userId/future-mails", authenticateJWT, addFutureMail); // Add future mail
 // router.get("/:userId/future-mails", authenticateJWT, getFutureMails); // Get future mails for today
-router.post("/v1/users/upload",jwt.authenticateAndAuthorize(["USER"]), upload.single("avatar"), uploadAvatar); // Route upload ảnh
+router.post("/v1/users/upload",jwt.authenticateAndAuthorize(["USER"]), upload.upload.single("avatar"), upload.uploadAvatar); // Route upload ảnh
 router.get(
   "/v1/users/me/treatments",
   jwt.authenticateAndAuthorize(["USER"]),
@@ -56,4 +56,10 @@ router.get(
   jwt.authenticateAndAuthorize(["USER"]),
   getBooking
 );
+
+// Route for uploading audio files
+router.post("/v1/upload-audio", upload.uploadAudio.single("audio"),upload.uploadAudioFile);
+
+// Route for uploading image files
+router.post("/v1/upload-image", upload.uploadImage.single("image"), upload.uploadImageFile);
 module.exports = router;
