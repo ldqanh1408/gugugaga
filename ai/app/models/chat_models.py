@@ -3,8 +3,9 @@ from typing import Literal, List
 
 
 class MediaItem(BaseModel):
-    type: Literal["image"]
+    type: Literal["image", "video", "audio"]
     url: HttpUrl
+    name: str
 
 class ChatRequest(BaseModel):
     chatId: str
