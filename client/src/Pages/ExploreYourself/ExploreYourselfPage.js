@@ -167,7 +167,7 @@ const ExploreYourselfPage = () => {
 
   return (
     <div className="explore-container fade-in">
-      <h2 className="explore-title">Yourself</h2>
+      <h2 className="explore-title fs-2 ex-gradient-text">Yourself</h2>
       <div className="explore-tabs">
         <button
           className={activeTab === "statistics" ? "active" : ""}

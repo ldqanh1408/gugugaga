@@ -160,9 +160,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s;
-  box-shadow:
-    inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
-    inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.23);
   display: inline-block;
   width: auto; /* Không bị kéo dài */
   max-width: fit-content; /* Chỉ rộng theo nội dung */
@@ -171,7 +169,9 @@
 
 .save-btn:hover {
   background: #e5cac2;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+  box-shadow:
+    inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
+    inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);
   transform: translateY(-2px); /* Nhấc nút lên một chút */
 }
 .media-preview {
@@ -210,9 +210,9 @@
   background: #f8f9fa;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
   width: 100%;
+  box-shadow: none !important;
   height: fit-content;
 }
 

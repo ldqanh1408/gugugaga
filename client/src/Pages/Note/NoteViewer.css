@@ -192,7 +192,7 @@
     background: #f8f9fa;
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: none !important;
     transition: all 0.2s ease;
     width: 100%;
     height: fit-content;

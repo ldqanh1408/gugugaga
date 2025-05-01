@@ -50,7 +50,7 @@ function Therapy() {
 
   return (
     <Container className="wrapper fade-in">
-      <h1 className="mt-4 text-center animate__animated animate__fadeInDown">Therapy Booking</h1>
+      <h1 className="mt-4 fw-bolder fs-2 gradient-text  text-center animate__animated animate__fadeInDown">Therapy Booking</h1>
       <hr className="animate__animated animate__fadeIn" />
 
       {error && <Alert variant="danger" className="animate__animated animate__shakeX">{error}</Alert>}
@@ -157,8 +157,8 @@ function Therapy() {
           ) : (
             <p className="animate__animated animate__fadeIn">
               {booking
-                ? "Đang chờ chuyên gia phản hồi..."
-                : "Không có chuyên gia phù hợp."}
+                ? "Waiting for expert feedback..."
+                : "No suitable expert available."}
             </p>
           )}
         </div>
