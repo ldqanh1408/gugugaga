@@ -25,8 +25,7 @@ const getUser = async () => {
       console.error("Token không tồn tại");
       return null;
     }
-    const { userId } = await getPayLoad();
-    const response = await axios.get(`${API_URL}users/${userId}`);
+    const response = await axios.get(`${API_URL}users/me`);
     return response.data.user;
   } catch (error) {
     console.error(`Error fetching user with id :`, error);
@@ -90,7 +89,8 @@ const loadProfile = async () => {
     });
     return response.data;
   } catch (error) {
-    return { success: false, message: true };
+    console.log("Error fetching user profile:", error);
+    return { message: true };
   }
 };
 

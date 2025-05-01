@@ -54,7 +54,7 @@ function UserAvatar() {
                 className="avatar"
               />
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu className="drop">
               
               <Dropdown.Item as={Link} to="/profile">
                 Profile

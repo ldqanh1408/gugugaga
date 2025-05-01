@@ -30,7 +30,7 @@ const jwt = require("../middleware/authenticateJWT");
 // Định nghĩa route
 router.get("/v1/users", getUsers);
 router.delete("/v1/users/:userId", deleteUser);
-router.get("/v1/users/:userId", getUser);
+router.get("/v1/users/me", getUser);
 
 // Future mails (commented out)
 // router.post("/:userId/future-mails", authenticateJWT, addFutureMail);

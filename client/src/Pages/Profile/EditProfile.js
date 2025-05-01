@@ -11,7 +11,7 @@ function EditProfile({ setIsEditing }) {
     const [isChanged, setIsChanged] = useState(false);
     const [loading, setLoading] = useState(false);
     const [avatarFile, setAvatarFile] = useState(null);
-
+    console.log('profile', profile);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProfile({ ...profile, [name]: value });
@@ -64,7 +64,7 @@ function EditProfile({ setIsEditing }) {
                             <div className="avatar-preview">
 
                                 <img
-                                    src={profile.avatarPreview || profile.avatar || avatarPlaceholder}
+                                    src={profile?.avatarPreview || profile?.avatar || avatarPlaceholder}
                                     alt="Avatar"
 
                                     className="avatar-image"
@@ -96,7 +96,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="text"
                             name="userName"
-                            value={profile.userName}
+                            value={profile?.userName}
                             onChange={handleChange}
                             placeholder="Enter your name"
                         />
@@ -110,7 +110,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border bio"
                             as="textarea"
                             name="bio"
-                            value={profile.bio}
+                            value={profile?.bio}
                             onChange={handleChange}
                             placeholder="Enter your bio"
                         />
@@ -124,7 +124,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="date"
                             name="dob"
-                            value={profile.dob ? profile.dob.split('T')[0] : ''}
+                            value={profile?.dob ? profile.dob.split('T')[0] : ''}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -136,7 +136,7 @@ function EditProfile({ setIsEditing }) {
                         <Form.Select
                             className="no-border"
                             name="gender"
-                            value={profile.gender}
+                            value={profile?.gender}
                             onChange={handleChange}
                         >
                             <option value="">-- Select Gender --</option>
@@ -154,7 +154,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="tel"
                             name="phone"
-                            value={profile.phone}
+                            value={profile?.phone}
                             onChange={handleChange}
                             placeholder="Enter your phone number"
                         />
@@ -168,7 +168,7 @@ function EditProfile({ setIsEditing }) {
                             className="no-border"
                             type="email"
                             name="email"
-                            value={profile.email}
+                            value={profile?.email}
                             onChange={handleChange}
                             placeholder="Enter your email"
                             required

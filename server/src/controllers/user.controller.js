@@ -54,12 +54,10 @@ exports.deleteUser = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const keyCache = constants.USER_CACHE_KEY;
-    const dataCache = await redis.get(`${keyCache}${userId}`);
-    if (dataCache) {
-      return res.status(200).json({ success: true, user: dataCache });
-    }
+
+    const { _id } = req.payload;
+    const userId = _id;
+  
     // Kiểm tra xem user có tồn tại không
     const user = await User.findById(userId);
     if (!user) {
@@ -67,7 +65,6 @@ exports.getUser = async (req, res) => {
         .status(404)
         .json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
-    await redis.set(`${keyCache}${userId}`, user);
 
     return res.status(200).json({ success: true, user: user });
   } catch (error) {
