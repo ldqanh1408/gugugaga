@@ -6,6 +6,7 @@ import { addMessage, getMessages } from "../services";
 // Thunk để fetch danh sách notes từ API
 export const fetchNotes = createAsyncThunk("notes/fetchNotes", async () => {
   const data = await getNotes();
+  console.warn(data);
   return data; // Trả về danh sách ghi chú
 });
 

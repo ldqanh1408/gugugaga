@@ -20,7 +20,7 @@ exports.getMessages = async (req, res) => {
     }
 
     // Lấy thông tin user từ request (giả định đã có middleware auth)
-    const user = req.user;
+    const user = req.payload;
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -113,6 +113,8 @@ exports.addMessage = async (req, res) => {
     // Thêm message mới vào mảng messages
     chat.messages.push(message);
     await chat.save();
+
+
 
     // Trả về response thành công
     return res.status(200).json({

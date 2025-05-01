@@ -1,7 +1,37 @@
-
-.nav-background {
-  background-color: var(--nav-color)!important;
-  padding: 12px;
-  border-bottom: 1px solid #333;
+.nav-item {
+  position: relative;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
+.nav-item:hover {
+  color: #5e5df0;
+  transform: scale(1.1);
+}
+
+.nav-item::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #5e5df0;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-item:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+.nav-background {
+  
+  
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

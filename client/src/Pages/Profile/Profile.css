@@ -1,85 +1,123 @@
 .profile-container {
-    min-height: 100vh;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    background-color: #FEFBFF;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
+  max-width: 600px;
+  margin: 20px auto;
 }
 
 .profile-header {
-    height: 150px;
-    background-color: #E5CAC2;
+  height: 150px;
+  background: linear-gradient(135deg, #5e5df0, #4543c6);
+  border-radius: 15px 15px 0 0;
+  margin-bottom: -75px;
 }
 
 .profile-content {
-    max-width: 600px;
-    margin: -60px auto 0;
-    padding: 100px;
-    flex: 1;
-    padding-bottom: 50px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.5s ease-in-out;
 }
 
 .profile-image {
-    width: 200px !important;
-    height: 200px !important;
-    border-radius: 50% !important;
-    border: 6px solid #F2E7E0 !important;
-    margin-top: -150px !important;
-    object-fit: cover !important; /* Cắt ảnh để vừa khung tròn */
-    aspect-ratio: 1 / 1; /* Duy trì tỷ lệ vuông */
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: scaleIn 0.5s ease-in-out;
 }
 
 .profile-name {
-    font-weight: bold;
-    font-size: 2.1rem;
-    margin-top: 10px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
 }
 
 .profile-username {
-    color: #7a7a7a;
-    font-size: 1rem;
+  font-size: 1rem;
+  color: #777;
+  margin-bottom: 10px;
 }
 
 .profile-bio {
-    color: #a0a0a0;
-    font-size: 1.3srem;
-    margin-top: 5px;
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 20px;
 }
 
 .profile-stats {
-    max-width: 600px; /* Giới hạn chiều rộng tối đa */
-    margin: 0 auto; /* Căn giữa cụm */
+  margin-top: 20px;
 }
+
 .profile-stats h3 {
-    font-size: 5rem; /* Tăng kích thước số lên */
-    font-weight: bold;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.profile-stats p {
+  font-size: 0.9rem;
+  color: #777;
 }
 
 .divider {
-    width: 1px;
-    background-color: #CDACA0;
-    height: 120px;
-    margin: auto;
+  width: 2px;
+  height: 50px;
+  background: #ddd;
 }
 
 .btn-edit {
-    background-color: #E5CAC2;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 
-    inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
-    inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);  
-    display: inline-block;
-    width: auto; /* Không bị kéo dài */
-    max-width: fit-content; /* Chỉ rộng theo nội dung */
-    transition: all 0.2s ease-in-out; 
+  background-color: #5e5df0;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.btn-edit:hover {    
-    background: #E5CAC2;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
-    transform: translateY(-2px); /* Nhấc nút lên một chút */
+.btn-edit:hover {
+  background-color: #4543c6;
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

@@ -7,11 +7,13 @@ const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upl
 
 export const getNotes = async () => {
   const token = await getToken();
+  console.warn(token)
   if (!token) {
     throw new Error("Không tìm thấy token");
   }
   try {
-    const { journalId } = await getPayLoad();
+    const entity = JSON.parse(localStorage.getItem("entity"));
+    const { journalId } = entity;
     if (!journalId) {
       throw new Error("Journal ID không tồn tại");
     }
@@ -23,7 +25,7 @@ export const getNotes = async () => {
         Authorization: `Bearer ${token}`, // Gửi token trong header
       },
     });
-    
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error(
@@ -41,7 +43,8 @@ export const getNoteById = async (id) => {
     throw new Error("Không tìm thấy token");
   }
   try {
-    const { journalId } = await getPayLoad();
+    const entity = JSON.parse(localStorage.getItem("entity"));
+    const { journalId } = entity;
     if (!journalId) {
       throw new Error("Journal ID không tồn tại");
     }
@@ -67,7 +70,8 @@ export const saveNote = async (newNote) => {
     throw new Error("Không tìm thấy token");
   }
   try {
-    const { journalId } = await getPayLoad();
+    const entity = JSON.parse(localStorage.getItem("entity"));
+    const { journalId } = entity;
     if (!journalId) {
       throw new Error("Journal ID không tồn tại");
     }
@@ -100,7 +104,8 @@ export const updateNote = async (updatedNote) => {
     throw new Error("Không tìm thấy token");
   }
   try {
-    const { journalId } = await getPayLoad();
+    const entity = JSON.parse(localStorage.getItem("entity"));
+    const { journalId } = entity;
     if (!journalId) {
       throw new Error("Journal ID không tồn tại");
     }
@@ -132,7 +137,8 @@ export const getEntries = async () => {
     throw new Error("Không tìm thấy token");
   }
   try {
-    const { journalId } = await getPayLoad();
+    const entity = JSON.parse(localStorage.getItem("entity"));
+    const { journalId } = entity;
     if (!journalId) {
       throw new Error("Journal ID không tồn tại");
     }
@@ -162,7 +168,8 @@ export const getConsecutiveDays = async () => {
     throw new Error("Không tìm thấy token");
   }
   try {
-    const { journalId } = await getPayLoad();
+    const entity = JSON.parse(localStorage.getItem("entity"));
+    const { journalId } = entity;
     if (!journalId) {
       throw new Error("Journal ID không tồn tại");
     }

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button } from 'react-bootstrap';
 import './EditProfile.css';
-import userAva from "../../assets/imgs/userAva.jpg"; 
-import { updateAvatar, updateProfile, uploadProfileAsync } from '../../redux/userSlice'; // Redux action
+import avatarPlaceholder from "../../assets/imgs/userDefault.svg";import { updateAvatar, updateProfile, uploadProfileAsync } from '../../redux/userSlice'; // Redux action
 import {Loading} from "../../components/Common/Loading"
 function EditProfile({ setIsEditing }) {
     const dispatch = useDispatch();
@@ -53,11 +52,11 @@ function EditProfile({ setIsEditing }) {
         }
     };
     return (
-        <div className="container edit-profile-container">
+        <div className="container edit-profile-container wrapper">
             <h1 className="edit-profile-header">Edit Profile</h1>
             <hr className="edit-profile-line" />
 
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} className='wrapper'>
                 <Form.Group>
                     <Form.Label className="custom-h2-label">Avatar</Form.Label>
                     <Form.Group className="edit-profile-box">
@@ -65,7 +64,7 @@ function EditProfile({ setIsEditing }) {
                             <div className="avatar-preview">
 
                                 <img
-                                    src={profile.avatarPreview || userAva}
+                                    src={profile.avatarPreview || profile.avatar || avatarPlaceholder}
                                     alt="Avatar"
 
                                     className="avatar-image"
@@ -96,8 +95,8 @@ function EditProfile({ setIsEditing }) {
                         <Form.Control
                             className="no-border"
                             type="text"
-                            name="nickName"
-                            value={profile.nickName}
+                            name="userName"
+                            value={profile.userName}
                             onChange={handleChange}
                             placeholder="Enter your name"
                         />
@@ -108,7 +107,7 @@ function EditProfile({ setIsEditing }) {
                     <Form.Label className="custom-h2-label">Bio</Form.Label>
                     <Form.Group className="edit-profile-box">
                         <Form.Control
-                            className="no-border"
+                            className="no-border bio"
                             as="textarea"
                             name="bio"
                             value={profile.bio}

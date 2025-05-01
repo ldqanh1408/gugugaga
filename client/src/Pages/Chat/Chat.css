@@ -1,0 +1,31 @@
+
+
+
+.chat-container {
+    background: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.chat-header {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.chat-message {
+    background: var(--secondary-color);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-message:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}

@@ -3,48 +3,43 @@ import axios from "axios";
 const API_URL = "http://localhost:5000/api/v1";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
-export const register = async ({
-  userName,
-  account,
-  password,
-  email,
-  phone,
-}) => {
+
+const api_2 = axios.create({
+  baseURL: "http://localhost:5000/api/v2",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+
+const api_3 = axios.create({
+  baseURL: "http://localhost:5000/api/v3",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+export const register = async (payload) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, {
-      userName,
-      password,
-      account,
-      phone,
-      email,
-    });
-    return response.data;
+    const response = await api_2.post("/register", payload);
+    return response?.data;
   } catch (error) {
-    
     console.error("Error fetching:", error?.response?.data?.errors);
     throw error;
   }
 };
 
-export const logging = async ({ account, password }) => {
+export const logging = async (payload) => {
   try {
-    const response = await axios.post(
-      `${API_URL}/login`,
-      { account, password },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true, // Nếu backend dùng cookie
-      }
-    );
+
+    const response = await api_3.post("/login", payload);
+    console.log(response)
+    return response;
   } catch (error) {
-    console.error("Error fetching notes:", error);
-    throw error;
+    console.error("Error during login:", error);
+    throw new Error(
+      error.response?.data?.message || "Incorrect password or account."
+    );
   }
 };
 
@@ -69,9 +64,15 @@ export const checkAuth = async () => {
 
 export const getToken = async () => {
   try {
-    const response = await api.get("/get-token");
-    const { token } = response.data;
-    return token;
+   let accessToken = JSON.parse(localStorage.getItem("accessToken")); // Hoặc chỗ bạn lưu token
+    const response = await api.get("/get-token", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    accessToken = response.data.accessToken;
+    localStorage.setItem("accessToken", JSON.stringify(accessToken));
+    return accessToken;
   } catch (error) {
     console.log(error);
     return null;
@@ -80,7 +81,10 @@ export const getToken = async () => {
 
 export const logout = async () => {
   try {
+    localStorage.removeItem("accessToken");
     await api.post("/logout");
+    // Không xóa profile từ localStorage khi đăng xuất
+    localStorage.removeItem("token");
   } catch (error) {
     console.error({ message: error.message });
   }
@@ -88,8 +92,11 @@ export const logout = async () => {
 
 export async function getPayLoad() {
   try {
-    const response = await axios.get("http://localhost:5000/api/v1/me", {
-      withCredentials: true, // Gửi cookie để server giải mã
+    const accessToken = JSON.parse(localStorage.getItem("accessToken"));
+    const response = await api.get("/me", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
     return response.data; // { userId, journalId }
   } catch (error) {
@@ -98,27 +105,34 @@ export async function getPayLoad() {
   }
 }
 
-export async function changePassword({currentPassword, confirmNewPassword, newPassword, setError}) {
-    try{
-      if(newPassword !== confirmNewPassword){
-        setError("Change password has failed")
-        return { success: false, message: "Mật khẩu mới và mật khẩu xác nhận không khớp" };
+export async function changePassword({
+  currentPassword,
+  confirmNewPassword,
+  newPassword,
+  setError,
+}) {
+  try {
+    if (newPassword !== confirmNewPassword) {
+      setError("Change password has failed");
+      return {
+        success: false,
+        message: "Mật khẩu mới và mật khẩu xác nhận không khớp",
+      };
+    }
+    const response = await axios.post(
+      `${API_URL}/change-password`,
+      { currentPassword, newPassword },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // Nếu backend dùng cookie
       }
-      const response = await axios.post(
-        `${API_URL}/change-password`,
-        { currentPassword, newPassword},
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, // Nếu backend dùng cookie
-        }
-      );
-      return response.data;
-    }
-    catch(error){
-      setError("Change password has failed")
-      console.error({message: error.message})
-      return { success: false, message: error.message };
-    }
+    );
+    return response.data;
+  } catch (error) {
+    setError("Change password has failed");
+    console.error({ message: error.message });
+    return { success: false, message: error.message };
+  }
 }

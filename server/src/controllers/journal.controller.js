@@ -133,7 +133,6 @@ exports.updateNote = async (req, res) => {
 exports.getEntries = async (req, res) => {
   try {
     const { journalId } = req.params;
-
     const journal = await Journal.findOne({ _id: journalId });
     if (!journal) {
       return res

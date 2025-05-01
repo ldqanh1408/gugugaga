@@ -2,6 +2,12 @@ import axios from "axios";
 import { getToken, getPayLoad } from "../services";
 const API_URL = "http://localhost:5000/api/v1/";
 
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+
 const getUsers = async () => {
   try {
     const response = await axios.get(`${API_URL}/users`);
@@ -77,9 +83,12 @@ const loadProfile = async () => {
       console.error("Token không tồn tại");
       return null;
     }
-    const { userId } = await getPayLoad();
-    const response = await axios.get(`${API_URL}users/load-profile/${userId}`);
-    return response.data.profile;
+    const response = await api.get(`${API_URL}users/load-profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
   } catch (error) {
     return { success: false, message: true };
   }
@@ -91,20 +100,22 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     if (!token) {
       return { success: false, message: "Không có token" };
     }
-    const payload = await getPayLoad();
     let avatarUrl = profile.avatar; // Nếu không thay đổi ảnh thì giữ nguyên
 
     // **Bước 1: Upload avatar lên Cloudinary (nếu có file mới được chọn)**
     if (avatarFile) {
       const formData = new FormData();
       formData.append("avatar", avatarFile); // Thêm file avatar vào form data
-
-      const uploadResponse = await axios.post(`${API_URL}users/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // Gửi token trong header
-        },
-      });
+      const uploadResponse = await axios.post(
+        `${API_URL}users/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // Gửi token trong header
+          },
+        }
+      );
 
       // Lấy URL ảnh từ response nếu upload thành công
       if (uploadResponse.data && uploadResponse.data.success) {
@@ -120,7 +131,7 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     };
     // Gửi thông tin profile đã cập nhật lên backend
     const data = await axios.patch(
-      `${API_URL}users/upload-profile/${payload.userId}`,
+      `${API_URL}users/upload-profile`,
       updatedProfile,
       {
         headers: {
@@ -129,11 +140,173 @@ const uploadProfile = async ({ profile, avatarFile }) => {
         withCredentials: true, // Đảm bảo cookie được gửi kèm
       }
     );
-    return { success: true, profile: data.data.profile };
+    
+    return data.data;
   } catch (error) {
     console.error("❌ Lỗi khi cập nhật profile:", error);
     alert("❌ Có lỗi xảy ra khi cập nhật profile.");
     return { success: false, message: "Lỗi khi cập nhật profile." };
+  }
+};
+
+
+export const getTreaments = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = "/v1/users/me/treatments";
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const updateTreatment = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/users/me/treatments/${payload.treatment_id}`;
+    const response = await api.patch(url, payload.data, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const getReceivers = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/users/me/receivers`;
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const createBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/bookings`;
+    const response = await api.post(url, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+const addFutureMail = async (userId, mailData) => {
+  try {
+    const token = await getToken();
+    const response = await axios.post(
+      `${API_URL}users/${userId}/future-mails`,
+      mailData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding future mail:", error);
+    throw error;
+  }
+};
+
+const getFutureMails = async (userId) => {
+  try {
+    const token = await getToken();
+    const response = await axios.get(`${API_URL}users/${userId}/future-mails`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.futureMails;
+  } catch (error) {
+    console.error("Error fetching future mails:", error);
+    throw error;
+  }
+}
+
+export const cancelBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `v1/bookings/${payload.booking_id}`;
+    const response = await api.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const getMyBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    const url = `/v1/users/me/bookings`;
+    const response = await api.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const acceptBooking = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không có token" };
+    }
+    console.log("Payload:", payload)
+    const url = `/v1/bookings/${payload.booking_id}/accept`;
+    const response = await api.post(url, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error.message);
+    return { success: false, message: error.message };
   }
 };
 
@@ -203,6 +376,8 @@ export {
   uploadAvatar,
   loadProfile,
   uploadProfile,
-  uploadAudio,
   uploadImage,
+  addFutureMail,
+  getFutureMails,
+  uploadAudio,
 };

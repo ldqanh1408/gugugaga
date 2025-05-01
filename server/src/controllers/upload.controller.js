@@ -6,11 +6,41 @@ const mongoose = require("mongoose");
 // Cấu hình GridFsStorage cho Multer
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: "avatars", // Thư mục lưu ảnh trên Cloudinary
-    allowed_formats: ["jpg", "png", "mp3"], // Giới hạn định dạng file
+  params: async (req, file) => {
+    // 1. Xác định folder
+    let folderName;
+    if (file.fieldname === "avatar") {
+      folderName = "avatars";
+    } else {
+      switch (req.payload.role) {
+        case "USER":
+          folderName = "users";
+          break;
+        case "EXPERT":
+          folderName = "experts";
+          break;
+        case "BUSINESS":
+          folderName = "business";
+          break;
+        default:
+          folderName = "others";
+      }
+    }
+
+    // 2. Xác định allowed_formats tuỳ trường hợp
+    const allowedFormats = (file.fieldname === "avatar")
+      ? ["jpg", "png", "mp3"]
+      : ["jpg", "png", "pdf"];
+
+    // 3. Trả về object config
+    return {
+      folder: folderName,
+      resource_type: "auto",
+      allowed_formats: allowedFormats,
+    };
   },
 });
+
 
 const upload = multer({ storage });
 
@@ -39,9 +69,11 @@ const imageStorage = new CloudinaryStorage({
 const uploadImage = multer({ storage: imageStorage });
 
 // API xử lý upload
-const uploadAvatar = (req, res) => {
+uploadAvatar = (req, res) => {
   if (!req.file || !req.file.path) {
-    return res.status(400).json({ success: false, message: "No file uploaded or path missing" });
+    return res
+      .status(400)
+      .json({ success: false, message: "No file uploaded or path missing" });
   }
 
   res.status(200).json({
@@ -68,6 +100,21 @@ const uploadAudioFile = (req, res) => {
     res.status(500).json({ success: false, message: "Server error during audio upload" });
   }
 };
+
+const uploadImg = (req, res) => {
+  if (!req.file || !req.file.path) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No file uploaded or path missing" });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Ảnh đã được upload thành công!",
+    data: req.file.path || req.file.filename || req.file.secure_url, // Lấy secure_url (ưu tiên)
+  });
+};
+
 
 // API to handle image upload
 const uploadImageFile = (req, res) => {
@@ -127,4 +174,4 @@ const saveNote = async (req, res) => {
   }
 };
 
-module.exports = { upload, uploadAvatar, uploadAudio, uploadAudioFile, uploadImage, uploadImageFile, saveNote };
+module.exports = { uploadImg, uploadAudio, upload, uploadAvatar, uploadAudioFile, uploadImage, uploadImageFile, saveNote };

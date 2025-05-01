@@ -19,8 +19,10 @@ const Footer = () => {
           md={4}
           className="d-flex flex-column align-items-center align-items-md-start mb-3"
         >
-          <h2>Gugugaga</h2>
-          <div>
+          
+          
+          <h2 className="footer-title">Gugugaga</h2>
+          <div className="footer-icons">
             <FontAwesomeIcon icon={faYoutube} className="icon mx-2" />
             <FontAwesomeIcon icon={faGithub} className="icon mx-2" />
             <FontAwesomeIcon icon={faFacebook} className="icon mx-2" />
@@ -32,20 +34,20 @@ const Footer = () => {
           md={8}
           className="d-flex flex-wrap justify-content-around text-center text-md-start"
         >
-          <Col className="d-flex flex-column align-items-center align-items-md-start mb-3 ">
-            <h5>Technology</h5>
+          <Col className="d-flex flex-column align-items-center align-items-md-start mb-3">
+            <h5 className="footer-section-title">Technology</h5>
             <p>React</p>
             <p>NodeJS</p>
             <p>Llama</p>
           </Col>
           <Col className="d-flex flex-column align-items-center align-items-md-start mb-3">
-            <h5>Information</h5>
+            <h5 className="footer-section-title">Information</h5>
             <p>Gugugaga</p>
             <p>4 members</p>
             <p>Second-year student</p>
           </Col>
           <Col className="d-flex flex-column align-items-center align-items-md-start mb-3">
-            <h5>Values</h5>
+            <h5 className="footer-section-title">Values</h5>
             <p>Stress Relief</p>
             <p>Mental Clarity</p>
             <p>Emotional Expression</p>

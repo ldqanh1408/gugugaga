@@ -5,8 +5,11 @@ import {
   loadProfile,
   uploadProfile,
   getEntries,
-  getConsecutiveDays
+  getConsecutiveDays,
+  addFutureMail,
+  getFutureMails,
 } from "../services"; // API services
+import { getTreaments, updateTreatment } from "../services/userService";
 
 // Thunk lấy user cơ bản (thông tin đăng nhập)
 export const fetchUser = createAsyncThunk(
@@ -26,8 +29,8 @@ export const fetchProfile = createAsyncThunk(
   "user/fetchProfile",
   async (_, thunkAPI) => {
     try {
-      const profile = await loadProfile(); // Giả sử đây là API profile
-      return profile; // Trả về dữ liệu profile chi tiết
+      const res = await loadProfile(); // Giả sử đây là API profile
+      return res.data; // Trả về dữ liệu profile chi tiết
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -54,7 +57,7 @@ export const uploadProfileAsync = createAsyncThunk(
     try {
       // Gửi request upload profile và file avatar
       const response = await uploadProfile({ profile, avatarFile });
-      return response.profile; // Trả về profile từ server sau khi update thành công
+      return response.data; // Trả về profile từ server sau khi update thành công
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message); // Xử lý lỗi khi upload thất bại
     }
@@ -89,18 +92,70 @@ export const fetchConsecutiveDays = createAsyncThunk(
   }
 );
 
+export const addFutureMailAsync = createAsyncThunk(
+  "user/addFutureMail",
+  async ({ userId, mailData }, thunkAPI) => {
+    try {
+      const response = await addFutureMail(userId, mailData);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchFutureMailsAsync = createAsyncThunk(
+  "user/fetchFutureMails",
+  async (userId, thunkAPI) => {
+    try {
+      const futureMails = await getFutureMails(userId);
+      return futureMails;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateTreatmentThunk = createAsyncThunk(
+  "user/updateTreatment",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await updateTreatment(payload);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
+export const getTreatmentsThunk = createAsyncThunk(
+  "users/getTreaments",
+  async (payload) => {
+    const data = await getTreaments();
+    return data?.treatments;
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    user: null, // Dữ liệu user cơ bản
-    profile: null, // Dữ liệu profile chi tiết
+    user: null,
+    profile: JSON.parse(localStorage.getItem("profile")) || null, // Khôi phục profile từ localStorage
     loading: false,
-    profileLoading: false, // Loading riêng cho profile
     error: null,
     logoutLoading: false,
     logoutError: null,
     entries: 0,
     consecutiveDays: 0,
+    futureMails: [],
+
+    treatments: [],
+    currentTreatments: [],
+    pendingTreatments: [],
+    selectedTreatment: null,
+    isViewing: false,
   },
   reducers: {
     updateAvatar: (state, action) => {
@@ -111,7 +166,18 @@ const userSlice = createSlice({
         state.profile.avatar = action.payload;
       }
     },
+    setProfile: (state, action) => {
+      state.profile = action.payload;
+      localStorage.setItem("profile", JSON.stringify(action.payload));
+    },
+    setIsViewing: (state, action) => {
+      state.isViewing = action.payload;
+    },
+    setSelectedTreatment: (state, action) => {
+      state.selectedTreatment = action.payload;
+    },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchConsecutiveDays.pending, (state) => {
@@ -189,10 +255,82 @@ const userSlice = createSlice({
       .addCase(uploadProfileAsync.rejected, (state, action) => {
         state.error = action.payload || "Failed to update profile"; // Xử lý lỗi khi thất bại
         state.loading = false;
+      })
+
+      .addCase(addFutureMailAsync.fulfilled, (state, action) => {
+        state.futureMails.push(action.payload);
+      })
+      .addCase(fetchFutureMailsAsync.fulfilled, (state, action) => {
+        state.futureMails = action.payload;
+      })
+
+      .addCase(getTreatmentsThunk.pending, (state) => {
+        state.loading = true;
+        state.treatments = [];
+        state.error = null;
+      })
+      .addCase(getTreatmentsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.treatments = action.payload;
+        state.currentTreatments = action.payload?.filter(
+          (treatment, index) => treatment.treatmentStatus !== "pending"
+        );
+        state.pendingTreatments = action.payload?.filter(
+          (treatment, index) => treatment.treatmentStatus === "pending"
+        );
+        state.error = null;
+      })
+      .addCase(getTreatmentsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(updateTreatmentThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTreatmentThunk.fulfilled, (state, action) => {
+        const { treatment_id, data } = action.meta.arg; // lấy từ payload truyền vào thunk
+        state.loading = false;
+
+        // Cập nhật treatment đang xem
+        if (
+          state.selectedTreatment &&
+          state.selectedTreatment._id === treatment_id
+        ) {
+          state.selectedTreatment.rating = data.rating;
+          state.selectedTreatment.feedback = data.feedback;
+          state.selectedTreatment.complaint = data.complaint;
+        }
+
+        // Cập nhật trong danh sách treatment
+        state.treatments = state.treatments.map((t) =>
+          t._id === treatment_id
+            ? {
+                ...t,
+                rating: data.rating,
+                feedback: data.feedback,
+                complaint: data.complaint,
+              }
+            : t
+        );
+
+        state.currentTreatments = state.treatments.filter(
+          (t) => t.treatmentStatus !== "pending"
+        );
+
+        state.pendingTreatments = state.treatments.filter(
+          (t) => t.treatmentStatus === "pending"
+        );
+      })
+
+      .addCase(updateTreatmentThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to update treatment";
       });
   },
 });
 
-export const { updateAvatar } = userSlice.actions; // Action để đồng bộ avatar
+export const { updateAvatar, setIsViewing, setSelectedTreatment, setProfile } =
+  userSlice.actions; // Action để đồng bộ avatar
 
 export default userSlice.reducer;

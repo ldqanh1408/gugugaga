@@ -1,85 +1,59 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
-import userAva from "../../assets/imgs/userDefault.svg"; 
+
 import EditProfile from './EditProfile';
-import { fetchUser, fetchProfile, updateAvatar, fetchEntries, fetchConsecutiveDays } from '../../redux/userSlice';
-import Loading from "../../components/Common/Loading"
+import UserProfile from './UserProfile';
+import ExpertProfile from './ExpertProfile';
+import BusinessProfile from './BusinessProfile';
+import { fetchProfile, fetchEntries, fetchConsecutiveDays, updateAvatar } from '../../redux/userSlice';
+import Loading from "../../components/Common/Loading";
 
 function Profile() {
     const dispatch = useDispatch();
-    const { user, profile, loading, entries, consecutiveDays } = useSelector((state) => state.user);
+    const { profile, loading, entries, consecutiveDays } = useSelector((state) => state.user);
+    const { role } = useSelector((state) => state.auth);
     const [isEditing, setIsEditing] = useState(false);
-
+    console.log(profile)
     useEffect(() => {
-        if(!profile){
+        if (!profile) {
             dispatch(fetchProfile());
         }
-        if(!entries){
+        if (!entries) {
             dispatch(fetchEntries());
         }
-        if(!consecutiveDays){
+        if (!consecutiveDays) {
             dispatch(fetchConsecutiveDays());
         }
     }, [dispatch]);
 
-        
+    if (loading) return <Loading />;
 
-    const handleSave = (updatedProfile) => {
-        setIsEditing(false);
-        // Đồng bộ avatar (nếu avatar trong profile thay đổi)
-        if (updatedProfile.avatar) {
-            dispatch(updateAvatar(updatedProfile.avatar));  // Cập nhật avatar cho cả user và profile
-        }
-    };
+    if (isEditing) {
+        return (
+            <EditProfile 
+                setIsEditing={setIsEditing}
+                initialData={profile}
+                onSave={(updatedProfile) => {
+                    setIsEditing(false);
+                    if (updatedProfile.avatar) {
+                        dispatch(updateAvatar(updatedProfile.avatar));
+                    }
+                }}
+            />
+        );
+    }
 
-    if (loading) return <Loading></Loading>;
-    return (
-        <div>
-            {isEditing ? (
-                <EditProfile 
-                    setIsEditing={setIsEditing}
-                    initialData={profile}
-                    onSave={handleSave}
-                />    
-            ) : (
-                <div className="profile-container"> 
-                    <div className="profile-header"></div>
-                    <div className="profile-content text-center">
-                        <img
-                            src={profile?.avatar || userAva}
-                            alt="userAva"
-                            className="img-fluid rounded-circle profile-image"
-                        />
-                        <h2 className="profile-name">{profile?.nickName}</h2>
-                        <p className="profile-username">{profile?.userName}</p>
-                        <p className="profile-bio">{profile?.bio}</p>
-                   
-
-                        <div className="row profile-stats align-items-center">
-                            <div className="col text-center">
-                                <h3>{consecutiveDays}</h3>
-                                <p>Number of days in streak  </p>
-                            </div>
-                            <div className="col-auto">
-                                <div className="divider"></div>
-                            </div>
-                            <div className="col text-center">
-                                <h3>{entries.length}</h3>
-                                <p>Number of days with different entries</p>
-                            </div>
-                        </div>
-
-                        <button 
-                            className="btn btn-edit mt-3"
-                            onClick={() => setIsEditing(true)}
-                        >Edit</button>
-
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+    switch (role) {
+        case "USER":
+            return <UserProfile profile={profile} consecutiveDays={consecutiveDays} entries={entries} setIsEditing={setIsEditing} />;
+        case "EXPERT":
+            return <ExpertProfile />;
+        case "BUSINESS":
+            return <BusinessProfile />;
+        default:
+            return <div>Role not recognized</div>;
+    }
 }
 
 export default Profile;

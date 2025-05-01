@@ -1,0 +1,45 @@
+.no-treatments-message {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #888;
+}
+
+.treatment-scroll-container {
+  max-height: 500px; /* hoặc 60vh tuỳ ý bạn */
+  overflow-y: auto;
+  padding-right: 10px; /* tránh che mất scrollbar */
+}
+
+.react-datepicker__day.dot-pending::after {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: gold;
+  margin-top: 2px;
+}
+
+.react-datepicker__day.dot-rejected::after {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: red;
+  margin-top: 2px;
+}
+
+.react-datepicker__day.dot-approved::after {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: green;
+  margin-top: 2px;
+}
