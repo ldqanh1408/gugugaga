@@ -15,8 +15,8 @@ function Home() {
   return (
     <div className="container flex-grow-1">
       <Row className="mt-4">
-        <h1 className="fw-bolder text">GUGUGAGA</h1>
-        <p className="opacity-75 text">Write your life</p>
+        <h1 className="fw-bolder fs-2 text">GUGUGAGA</h1>
+        <p className="opacity-75 fs-5 text">Write your life</p>
       </Row>
 
       <Row className="mt-4">
