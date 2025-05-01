@@ -20,7 +20,7 @@ function Home() {
     <div className="container flex-grow-1 fade-in">
       <Row className="mt-4">
         <Col>
-          <h1 className="fw-bolder fs-2 gradient-text"> </h1>
+          <h1 className="fw-bolder fs-2 gradient-text">GUGUGAGA</h1>
           <p className="opacity-75 fs-5 text">Write your life</p>
         </Col>
       </Row>
