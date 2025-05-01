@@ -87,7 +87,7 @@ function Navigation() {
 
   return (
     <Row>
-      <Navbar expand="lg" className="bg-body-tertiary nav-background">
+      <Navbar expand="lg" className="bg-body-tertiary nav-background mb-4">
         <Container>
           <Navbar.Brand as={Link} to="/" className="fw-bold mb-2">
             Gugugaga

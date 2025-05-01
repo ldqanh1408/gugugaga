@@ -20,32 +20,10 @@ function Booking() {
   return (
     <Col sm={12} md={5} className="custom-right">
       <Card className="mb-3 custom-card-title">
-        <Card.Body className="fw-bold"> View Expert's upcoming list</Card.Body>
+        <Card.Body className="fw-bold"> Bookings</Card.Body>
 
         {/* div này chứa danh sách tùy chọn lọc dữ liệu. */}
-        <div className="filter-dropdown-container">
-          <Dropdown as={ButtonGroup}>
-            <Dropdown.Toggle variant="light" className="filter-btn">
-              <img src={FilterButton} alt="Filter" />
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu align="end">
-              <Dropdown.Item
-                active={filterMode === "day"}
-                onClick={() => setFilterMode("day")}
-              >
-                View by day
-              </Dropdown.Item>
-
-              <Dropdown.Item
-                active={filterMode === "all"}
-                onClick={() => setFilterMode("all")}
-              >
-                View all
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
+        
       </Card>
       <div className="treatment-scroll-container">
         {bookings.length === 0 ? (
