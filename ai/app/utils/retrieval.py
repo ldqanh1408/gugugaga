@@ -36,7 +36,12 @@ def save_media_caption(chatId: str, media_type: str, caption: str) -> None:
         ids=[f"{chatId}-media-{timestamp}"],
         embeddings=[emb],
         documents=[f"Media ({media_type}): {caption}"],
-        metadatas=[{"chatId": chatId, "role": "media", "type": media_type, "timestamp": timestamp}]
+        metadatas=[{
+            "chatId": chatId, 
+            "role": "media", 
+            "media_type": media_type, 
+            "timestamp": timestamp
+        }]
     )
 
 def retrieve_context(chatId: str, message: str, n_results: int = 5) -> str:
@@ -62,6 +67,32 @@ def retrieve_context(chatId: str, message: str, n_results: int = 5) -> str:
     texts = list(dict.fromkeys(res.get("documents", [[]])[0]))
     return "\n".join(texts[-n_results:])
 
+def retrieve_media_context(chatId: str, n_results: int = 3) -> str:
+    """
+    Retrieve recent media context from the current chat session
+    
+    Args:
+        chatId: Unique identifier for the chat session
+        n_results: Number of media items to retrieve
+        
+    Returns:
+        String containing context from media captions/descriptions
+    """
+    res = chat_vectors.query(
+        query_embeddings=None,  # No query embedding, just filter by metadata
+        where={"$and": [
+            {"chatId": chatId},
+            {"role": "media"}
+        ]},
+        n_results=n_results,
+        include=["documents", "metadatas"]
+    )
+    
+    # Get the documents returned
+    if res and "documents" in res and res["documents"]:
+        return "\n".join(res["documents"][0])
+    return ""
+
 def create_prompt(chatId: str, message: str) -> str:
     """
     Create a complete prompt including system instructions and context
@@ -74,7 +105,10 @@ def create_prompt(chatId: str, message: str) -> str:
         Formatted prompt ready for the LLM
     """
     # Retrieve context from previous messages
-    context = retrieve_context(chatId, message)
+    conversation_context = retrieve_context(chatId, message)
+    
+    # Retrieve recent media context
+    media_context = retrieve_media_context(chatId)
     
     # Build system prompt with guidelines
     system_prompt = (
@@ -84,11 +118,16 @@ def create_prompt(chatId: str, message: str) -> str:
         "2. 🔍 If the user asks about something personal, check history. If not found, say: 'I don't know that yet 🥺 Could you tell me more?'\n"
         "3. 🎉 Use **lots of emojis** to keep your tone cheerful, comforting, and expressive.\n"
         "4. 🚫 Do **not** solve math, physics, or technical problems. Gently refuse and redirect to emotional support 🥹💗\n"
+        "5. 👂 If the user shares media (images, videos, audio), respond to it and incorporate what you understand from it.\n"
     )
 
-    # Add context if available
-    if context.strip():
-        system_prompt += "\nPrevious messages (for context only):\n" + context.strip()
+    # Add conversation context if available
+    if conversation_context.strip():
+        system_prompt += "\nPrevious messages (for context only):\n" + conversation_context.strip()
+
+    # Add media context if available
+    if media_context.strip():
+        system_prompt += "\nPrevious media shared (for context only):\n" + media_context.strip()
 
     # Format the final prompt with special tokens
     final_prompt = (

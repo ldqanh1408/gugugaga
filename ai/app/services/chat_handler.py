@@ -5,6 +5,7 @@ from app.utils.media_loader import load_image, load_video_frames
 from app.core.prompt_builder import PromptBuilder
 from app.core.config import MODEL_NAME, settings
 from app.utils.retrieval import save_media_caption
+from app.utils.audio_processor import process_audio
 from transformers import LlavaNextForConditionalGeneration
 import logging
 
@@ -110,9 +111,40 @@ def handle_video_chat(req: ChatRequest) -> str:
         return "I couldn't properly analyze this video 🥺"
 
 
+def handle_audio_chat(req: ChatRequest) -> str:
+    """
+    Process audio and generate transcription
+    
+    Args:
+        req: Chat request containing audio URL
+        
+    Returns:
+        Text transcription of the audio
+    """
+    try:
+        # Process audio using the audio processor
+        result = process_audio(req.media[0].url)
+        
+        # Extract transcription text
+        transcription = result.get("text", "")
+        language = result.get("language", "unknown")
+        
+        # Format the response with some metadata
+        response = f"Transcription of audio ({language}): {transcription}"
+        
+        # Save the audio transcription to ChromaDB
+        save_media_caption(req.chatId, "audio", response)
+        
+        return response
+    except Exception as e:
+        logger.error(f"Error processing audio: {str(e)}")
+        save_media_caption(req.chatId, "audio", "Failed to process this audio")
+        return "I couldn't properly transcribe this audio 🥺"
+
+
 def handle_mixed_chat(req: ChatRequest) -> str:
     """
-    Process multiple media items (images and/or videos)
+    Process multiple media items (images, videos, and/or audio)
     
     Args:
         req: Chat request containing multiple media items
@@ -133,6 +165,8 @@ def handle_mixed_chat(req: ChatRequest) -> str:
                 replies.append(handle_image_chat(single_req))
             elif media.type == "video":
                 replies.append(handle_video_chat(single_req))
+            elif media.type == "audio":
+                replies.append(handle_audio_chat(single_req))
             else:
                 logger.warning(f"Unsupported media type: {media.type}")
                 continue
@@ -168,8 +202,7 @@ def handle_chat_request(req: ChatRequest) -> str:
         elif "video" in types:
             return handle_video_chat(req)
         elif "audio" in types:
-            logger.warning("Audio processing not yet implemented")
-            return "Audio analysis isn't available yet 🥺"
+            return handle_audio_chat(req)
     else:
         # Multiple media items
         return handle_mixed_chat(req)

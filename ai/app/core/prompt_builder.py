@@ -1,6 +1,6 @@
 from transformers import LlavaNextProcessor
-from typing import Dict, Any
-from app.models.chat_models import ChatRequest
+from typing import Dict, Any, List
+from app.models.chat_models import ChatRequest, MediaItem
 import logging
 
 logger = logging.getLogger(__name__)
@@ -47,6 +47,8 @@ class PromptBuilder:
                 content.append({"type": "image"})
             elif media.type == "video":
                 content.append({"type": "video"})
+            # Audio doesn't have direct support in LLaVA, but we'll process it separately
+            # and include the transcription in the text context
         
         # Format as conversation for the processor
         conversation = [{"role": "user", "content": content}]
@@ -65,3 +67,28 @@ class PromptBuilder:
                 "text": f"<image>\n{prompt_text}", 
                 "processor": self.processor
             }
+            
+    def build_with_transcription(self, req: ChatRequest, transcription: str) -> Dict[str, Any]:
+        """
+        Build a prompt that includes audio transcription along with other media
+        
+        Args:
+            req: The chat request containing message and media
+            transcription: Text transcription of audio content
+            
+        Returns:
+            Dict containing the processed text and processor object
+        """
+        # Add transcription to the user's message
+        enhanced_message = f"{req.message}\n[Audio Transcription: {transcription}]"
+        
+        # Create enhanced request with transcription included in the message
+        enhanced_req = ChatRequest(
+            chatId=req.chatId,
+            message=enhanced_message,
+            # Filter out audio media since we've included it as text
+            media=[m for m in req.media if m.type != "audio"]
+        )
+        
+        # Use standard build method with enhanced request
+        return self.build(enhanced_req)
