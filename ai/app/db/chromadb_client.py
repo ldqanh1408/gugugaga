@@ -28,20 +28,3 @@ try:
 except Exception as e:
     logger.error(f"Error accessing collection: {str(e)}")
     raise
-
-def reset_database():
-    """
-    Reset the database by deleting and recreating the collection.
-    Use with caution - this will delete all stored chat data!
-    """
-    try:
-        logger.warning("Resetting ChromaDB database - this will delete all data!")
-        client.delete_collection("chat_embeddings")
-        chat_vectors = client.get_or_create_collection(
-            name="chat_embeddings",
-            metadata={"description": "Embeddings for chat messages and media descriptions"}
-        )
-        logger.info("Database reset completed")
-    except Exception as e:
-        logger.error(f"Error resetting database: {str(e)}")
-        raise
