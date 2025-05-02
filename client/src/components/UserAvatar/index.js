@@ -54,9 +54,8 @@ function UserAvatar() {
                 className="avatar"
               />
             </DropdownToggle>
-            <DropdownMenu className="drop">
-              
-              <Dropdown.Item as={Link} to="/profile">
+            <DropdownMenu className="drop" container="body">
+                            <Dropdown.Item as={Link} to="/profile">
                 Profile
               </Dropdown.Item>
               {role === "USER" && (

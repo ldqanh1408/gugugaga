@@ -128,7 +128,7 @@ function Calendar() {
                   <img src={FilterButton} alt="Filter" />
                 </Dropdown.Toggle>
 
-                <Dropdown.Menu align="end">
+                <Dropdown.Menu align="end" className="dropdown-menu-calendar">
                   <Dropdown.Item
                     active={filterMode === "day"}
                     onClick={() => setFilterMode("day")}

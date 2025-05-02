@@ -220,6 +220,7 @@ transform: scale(0.8);
   font-weight: bold;
   font-size: 20px;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .custom-card {
@@ -413,12 +414,13 @@ transform: scale(0.8);
   display: none !important; /* Ẩn mũi tên mặc định của Bootstrap */
 }
 
-.dropdown-menu {
+.dropdown-menu-canlendar {
   min-width: 100px !important; /* Đảm bảo kích thước đẹp */
   width: fit-content !important;
   height: fit-content !important;
   background-color: white !important; /* Màu nền menu */
   border: 1px solid #CDACA0 !important; /* Viền menu */
+  z-index: 1;
 }
 .dropdown-item:hover {
   background-color: #E5CAC2 !important; /* Màu nền khi hover */
