@@ -200,37 +200,29 @@ const ExploreYourselfPage = () => {
               </select>
             </h4>
 
-            <div className="line-chart">
-              <h5>Cảm xúc theo thời gian</h5>
-              <div
-                style={{
-                  height: "200px",
-                  border: "1px solid #ddd",
-                  margin: "20px 0",
-                  display: "flex",
-                  alignItems: "flex-end",
-                }}
-              >
-                {emotionData[timeRange].lineChart.map((value, index) => (
+            <div className="horizontal-bar-chart" style={{ marginLeft: "40px" }}> {/* Nhích biểu đồ qua phải thêm nữa */}
+              {emotionData[timeRange].pieChart.map((value, index) => (
+                <div
+                  key={index}
+                  style={{ display: "flex", alignItems: "center", margin: "10px 0" }} // Tăng khoảng cách giữa các thanh
+                >
                   <div
-                    key={index}
+                    className="bar"
                     style={{
-                      flex: 1,
-                      height: `${(value + 1) * 20}%`,
+                      width: `${value * 12}px`,
                       backgroundColor: [
-                        "#67c6e3",
-                        "#f15b2a",
-                        "#ffd966",
-                        "#7ed957",
-                        "#f891c5",
-                      ][value],
-                      margin: "0 2px",
-                      borderRadius: "3px 3px 0 0",
+                        "#7ed957", // Màu xanh lá
+                        "#67c6e3", // Màu xanh dương
+                        "#f15b2a", // Màu cam
+                        "#f891c5", // Màu hồng
+                        "#ffd966", // Màu vàng
+                      ][index % 5],
+                      height: "30px", // Tăng chiều rộng thanh ngang
                     }}
-                    title={`Ngày ${index + 1}: ${["Sad", "Angry", "Neutral", "Happy", "Excited"][value]}`}
-                  />
-                ))}
-              </div>
+                  ></div>
+                  <span style={{ marginLeft: "10px" }}>{value}%</span> {/* Hiển thị phần trăm */}
+                </div>
+              ))}
             </div>
 
             <div className="pie-chart">

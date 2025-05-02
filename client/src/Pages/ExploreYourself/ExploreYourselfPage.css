@@ -86,10 +86,10 @@
 }
 
 .happy {
-  background: #7ed957;
+  background: #7ed957; /* Trả lại màu xanh lá */
 }
 .sad {
-  background: #67c6e3;
+  background: #67c6e3; /* Trả lại màu xanh da trời */
 }
 .angry {
   background: #f15b2a;
