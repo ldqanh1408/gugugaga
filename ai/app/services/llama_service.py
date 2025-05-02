@@ -51,8 +51,8 @@ def call_llama(prompt: str, max_tokens: int = 256) -> str:
         llm = get_llm()
         response = llm.create_completion(
             prompt=prompt,
-            max_tokens=max_tokens,
-            stop=["<|im_end|>"]
+            max_tokens=max_tokens
+            # stop=["<|im_end|>"]
         )
         return response["choices"][0]["text"].strip()
     
