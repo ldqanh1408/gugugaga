@@ -21,7 +21,7 @@ export const getPayLoad = async () => {
 
 export const logging = async (payload) => {
   try {
-    const response = await api.post("/v1/auth/login", payload);
+    const response = await api.post("/v1/login", payload);
     if (response.data.success) {
       const { token } = response.data;
       localStorage.setItem("token", token);
