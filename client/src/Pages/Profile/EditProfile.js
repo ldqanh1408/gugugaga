@@ -11,7 +11,6 @@ function EditProfile({ setIsEditing }) {
     const [isChanged, setIsChanged] = useState(false);
     const [loading, setLoading] = useState(false);
     const [avatarFile, setAvatarFile] = useState(null);
-    console.log('profile', profile);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProfile({ ...profile, [name]: value });
@@ -176,15 +175,25 @@ function EditProfile({ setIsEditing }) {
                     </Form.Group>
                 </Form.Group>
 
-                <div className="edit-profile-btn-wrapper">
+                <div className="edit-profile-btn-wrapper d-flex justify-content-end">
                     <Button
-                        style={{ marginRight: '0' }}
+                        style={{ marginRight: '10px' }}
                         variant="primary"
                         type="submit"
                         className="mt-3 edit-profile-btn"
                         disabled={!isChanged || loading}
                     >
                         {loading ? 'Updating...' : 'Submit'}
+                    </Button>
+
+                    <Button
+                        style={{ marginRight: '0' }}
+                        variant="primary"
+                        className="mt-3 edit-profile-btn "
+                        disabled={loading}
+                        onClick={() => setIsEditing(false)}
+                    >
+                        {loading ? 'Updating...' : 'Close'}
                     </Button>
                 </div>
             </Form>

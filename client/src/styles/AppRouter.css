@@ -10,4 +10,5 @@
 
 .content-wrapper {
   background-color: var(--white-color);
+  margin-top: 60px;
 }
