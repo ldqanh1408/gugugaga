@@ -2,3 +2,7 @@
 build/
 .cache/
 **package-lock.json
+**__pycache__/
+**chromadb_store/
+**LLaVA-NeXT-Video-7B-hf/
+**zephyr-7b-alpha.Q5_K_M.gguf

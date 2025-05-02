@@ -107,20 +107,21 @@ exports.addMessage = async (req, res) => {
       });
     }
 
-    // Ensure media array exists
-    if (!message.media) message.media = [];
+    // Create message object with proper media handling
+    const newMessage = {
+      role: message.role,
+      text: message.text,
+      media: Array.isArray(message.media) ? message.media : []
+    };
 
     // Thêm message mới vào mảng messages
-    chat.messages.push(message);
+    chat.messages.push(newMessage);
     await chat.save();
-
-
 
     // Trả về response thành công
     return res.status(200).json({
       success: true,
-      message: message,
-      
+      message: newMessage
     });
   } catch (error) {
     console.error("Error in addMessage:", error);

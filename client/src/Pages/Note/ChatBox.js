@@ -138,7 +138,11 @@ function ChatBox() {
         {
           chatId: chatId,
           message: userInput,
-          media: userMedia
+          media: userMedia.map(m => ({
+            type: m.type,
+            url: m.url,
+            name: m.name
+          }))
         },
         {
           headers: {
@@ -147,11 +151,16 @@ function ChatBox() {
         }
       );
 
-      const botText = response.data?.response || "No response";
-      const botMessage = { text: botText, role: "ai", media: [] };
+      if (response.data && response.data.success) {
+        const botText = response.data.response || "No response";
+        const botMessage = { text: botText, role: "ai", media: [] };
 
-      await addMessage({ message: botMessage });
-      setMessages((prev) => [...prev, botMessage]);
+        await addMessage({ message: botMessage });
+        setMessages((prev) => [...prev, botMessage]);
+      } else {
+        console.error("AI response error:", response.data);
+        throw new Error(response.data?.error || "AI response error");
+      }
     } catch (error) {
       console.error("Gửi message không thành công:", error.message);
     }

@@ -133,7 +133,6 @@ def create_prompt(chatId: str, message: str) -> str:
     final_prompt = (
         f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
         f"<|im_start|>user\n{message}<|im_end|>\n"
-        f"<|im_start|>assistant"
     )
 
     return final_prompt

@@ -18,7 +18,7 @@ const messageSchema = new mongoose.Schema(
       minlength: [1, "Nội dung tin nhắn không được để trống"],
       maxlength: [2000, "Nội dung tin nhắn không được vượt quá 2000 ký tự"],
     },
-    media: {
+    media: [{
       type: {
         type: String,
         enum: ["image", "audio"],
@@ -32,7 +32,7 @@ const messageSchema = new mongoose.Schema(
         type: String,
         required: true
       }
-    },
+    }],
     imgUrl: {
       type: String,
       trim: true,

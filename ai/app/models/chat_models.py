@@ -1,13 +1,12 @@
-from pydantic import BaseModel, HttpUrl
-from typing import Literal, List
-
+from pydantic import BaseModel, AnyHttpUrl
+from typing import List, Optional
 
 class MediaItem(BaseModel):
-    type: Literal["image", "video", "audio"]
-    url: HttpUrl
+    type: str  # "image" or "audio"
+    url: AnyHttpUrl
     name: str
 
 class ChatRequest(BaseModel):
     chatId: str
     message: str
-    media: List[MediaItem]
+    media: Optional[List[MediaItem]] = []
