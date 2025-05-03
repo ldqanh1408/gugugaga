@@ -160,18 +160,18 @@ def create_prompt(chatId: str, message: str) -> str:
 
         # Format the final prompt with special tokens
         final_prompt = (
-            f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
-            f"<|im_start|>user\n{message}<|im_end|>\n"
+            f"<|system|>\n{system_prompt}</s>\n"
+            f"<|user|>\n{message}</s>\n"
         )
-
+        print(final_prompt)
         return final_prompt
     
     except Exception as e:
         logger.error(f"Error creating prompt: {str(e)}")
         # Return a basic prompt if context retrieval fails
         return (
-            f"<|im_start|>system\n"
+            f"<|system|>\n"
             f"🌟 You are an emotional support AI. Provide empathetic responses with emojis. 🌟\n"
-            f"<|im_end|>\n"
-            f"<|im_start|>user\n{message}<|im_end|>\n"
+            f"</s>\n"
+            f"<|user|>\n{message}</s>\n"
         )

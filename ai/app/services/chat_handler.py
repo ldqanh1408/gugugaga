@@ -41,27 +41,30 @@ def _get_prompt_builder():
     model_path = _get_model_path()
     return PromptBuilder(model_path)
 
-def handle_image_chat(req: ChatRequest) -> str:
+def process_image(media_item: MediaItem, message_context: str = "") -> str:
     """
     Process image and generate caption/description using LLaVA model
     
     Args:
-        req: Chat request containing image URL
+        media_item: Media item containing image URL
+        message_context: Optional message context
         
     Returns:
         Text description of the image
     """
     try:
-        # Validate media exists
-        if not req.media or len(req.media) == 0:
-            logger.error("No media provided for image handling")
-            return "No image provided to analyze"
-            
+        # Build a simplified chat request
+        req = ChatRequest(
+            chatId="temp", 
+            message=message_context or "Describe this image in detail.",
+            media=[media_item]
+        )
+        
         # Build prompt and prepare input
         builder = _get_prompt_builder()
         data = builder.build(req)
         proc = data["processor"]
-        img = load_image(req.media[0].url)
+        img = load_image(media_item.url)
 
         # Process with model
         inputs = proc(text=data["text"], images=img, return_tensors="pt").to("cuda")
@@ -71,37 +74,36 @@ def handle_image_chat(req: ChatRequest) -> str:
         out = model.generate(**inputs, max_new_tokens=100, do_sample=False)
         response = proc.decode(out[0][2:], skip_special_tokens=True)
         
-        # Save the image caption/description to ChromaDB
-        save_media_caption(req.chatId, "image", response)
-        
-        return response
+        return f"Image analysis ({media_item.name}): {response}"
     except Exception as e:
         logger.error(f"Error processing image: {str(e)}")
-        save_media_caption(req.chatId, "image", "Failed to process this image")
-        return "I couldn't properly analyze this image 🥺"
+        return f"Image analysis ({media_item.name}): [Failed to analyze this image]"
 
 
-def handle_video_chat(req: ChatRequest) -> str:
+def process_video(media_item: MediaItem, message_context: str = "") -> str:
     """
     Process video and generate caption/description using LLaVA model
     
     Args:
-        req: Chat request containing video URL
+        media_item: Media item containing video URL
+        message_context: Optional message context
         
     Returns:
         Text description of the video
     """
     try:
-        # Validate media exists
-        if not req.media or len(req.media) == 0:
-            logger.error("No media provided for video handling")
-            return "No video provided to analyze"
-            
+        # Build a simplified chat request
+        req = ChatRequest(
+            chatId="temp", 
+            message=message_context or "Describe this video in detail.",
+            media=[media_item]
+        )
+        
         # Build prompt and prepare input
         builder = _get_prompt_builder()
         data = builder.build(req)
         proc = data["processor"]
-        clip = load_video_frames(req.media[0].url)
+        clip = load_video_frames(media_item.url)
 
         # Process with model
         inputs = proc(text=data["text"], videos=clip, padding=True, return_tensors="pt").to("cuda")
@@ -111,117 +113,81 @@ def handle_video_chat(req: ChatRequest) -> str:
         out = model.generate(**inputs, max_new_tokens=100, do_sample=False)
         response = proc.decode(out[0][2:], skip_special_tokens=True)
         
-        # Save the video caption/description to ChromaDB
-        save_media_caption(req.chatId, "video", response)
-        
-        return response
+        return f"Video analysis ({media_item.name}): {response}"
     except Exception as e:
         logger.error(f"Error processing video: {str(e)}")
-        save_media_caption(req.chatId, "video", "Failed to process this video")
-        return "I couldn't properly analyze this video 🥺"
+        return f"Video analysis ({media_item.name}): [Failed to analyze this video]"
 
 
-def handle_audio_chat(req: ChatRequest) -> str:
+def process_audio(media_item: MediaItem) -> str:
     """
     Process audio and generate transcription
     
     Args:
-        req: Chat request containing audio URL
+        media_item: Media item containing audio URL
         
     Returns:
         Text transcription of the audio
     """
     try:
-        # Validate media exists
-        if not req.media or len(req.media) == 0:
-            logger.error("No media provided for audio handling")
-            return "No audio provided to transcribe"
-            
         # Process audio using the audio processor
-        result = process_audio(req.media[0].url)
+        result = process_audio(media_item.url)
         
         # Extract transcription text
         transcription = result.get("text", "")
         language = result.get("language", "unknown")
         
         # Format the response with some metadata
-        response = f"Transcription of audio ({language}): {transcription}"
-        
-        # Save the audio transcription to ChromaDB
-        save_media_caption(req.chatId, "audio", response)
-        
-        return response
+        return f"Audio transcription ({media_item.name}, {language}): {transcription}"
     except Exception as e:
         logger.error(f"Error processing audio: {str(e)}")
-        save_media_caption(req.chatId, "audio", "Failed to process this audio")
-        return "I couldn't properly transcribe this audio 🥺"
+        return f"Audio transcription ({media_item.name}): [Failed to transcribe audio]"
 
 
-def handle_mixed_chat(req: ChatRequest) -> str:
+def process_all_media(req: ChatRequest) -> str:
     """
-    Process multiple media items (images, videos, and/or audio)
-    
-    Args:
-        req: Chat request containing multiple media items
-        
-    Returns:
-        Combined descriptions of all media items
-    """
-    replies = []
-    # Process each media item one by one
-    for index, media in enumerate(req.media):
-        try:
-            single_req = ChatRequest(
-                chatId=req.chatId,
-                message=f"{req.message} (media item {index+1})" if req.message else f"Describe this {media.type}",
-                media=[media]
-            )
-            if media.type == "image":
-                replies.append(handle_image_chat(single_req))
-            elif media.type == "video":
-                replies.append(handle_video_chat(single_req))
-            elif media.type == "audio":
-                replies.append(handle_audio_chat(single_req))
-            else:
-                logger.warning(f"Unsupported media type: {media.type}")
-                continue
-        except Exception as e:
-            logger.error(f"Error processing media item {index}: {str(e)}")
-            replies.append(f"Couldn't analyze media item {index+1}")
-    
-    # Combine all responses
-    if replies:
-        return "\n\n".join(replies)
-    else:
-        return "I couldn't process any of the media you shared 🥺"
-
-
-def handle_chat_request(req: ChatRequest) -> str:
-    """
-    Main entry point for handling chat requests with media
+    Process all media items in the request and return combined context
     
     Args:
         req: Chat request with message and media items
         
     Returns:
-        Generated description of media content
+        Combined results of all media processing
     """
     if not req.media:
         return ""
     
-    types = {m.type for m in req.media}
+    media_results = []
     
-    try:
-        if len(req.media) == 1:
-            if "image" in types:
-                return handle_image_chat(req)
-            elif "video" in types:
-                return handle_video_chat(req)
-            elif "audio" in types:
-                return handle_audio_chat(req)
-        else:
-            # Multiple media items
-            return handle_mixed_chat(req)
-    except Exception as e:
-        logger.error(f"Error in handle_chat_request: {str(e)}")
-        return f"Error processing media: {str(e)}"
+    for media_item in req.media:
+        try:
+            if media_item.type == "image":
+                result = process_image(media_item, req.message)
+            elif media_item.type == "video":
+                result = process_video(media_item, req.message)
+            elif media_item.type == "audio":
+                result = process_audio(media_item)
+            else:
+                logger.warning(f"Unsupported media type: {media_item.type}")
+                continue
+                
+            media_results.append(result)
+        except Exception as e:
+            logger.error(f"Error processing {media_item.type}: {str(e)}")
+            media_results.append(f"Failed to process {media_item.type} ({media_item.name})")
+    
+    return "\n\n".join(media_results) if media_results else ""
+
+
+# Keep backward compatibility for handle_chat_request
+def handle_chat_request(req: ChatRequest) -> str:
+    """
+    Legacy function for backward compatibility
+    
+    Args:
+        req: Chat request with message and media items
+        
+    Returns:
+        Combined results of all media processing
+    """
+    return process_all_media(req)
