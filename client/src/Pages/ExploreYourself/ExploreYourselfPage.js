@@ -125,15 +125,15 @@ const ExploreYourselfPage = () => {
     try {
       const payload = await getPayLoad();
       const now = new Date();
-      const sendDateTime = now.toISOString(); // Use the exact current date and time
+      const sendDateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`; // Đảm bảo ngày gửi luôn là ngày hiện tại với định dạng YYYY-MM-DD
 
       const newMail = {
         id: Date.now(),
         title:
           mailContent.substring(0, 30) + (mailContent.length > 30 ? "..." : ""),
         content: mailContent,
-        sendDate: sendDateTime, // Updated to use the exact current time
-        receiveDate: sendDate,
+        sendDate: sendDateTime, // Ngày gửi được đặt chính xác là ngày hiện tại
+        receiveDate: sendDate, // Ngày nhận là ngày được chọn trong lịch
         notified: false,
         read: false,
       };
