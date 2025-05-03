@@ -135,8 +135,11 @@ const TodayMailsPage = () => {
             Bạn có thể gửi thư cho mình trong tương lai từ trang Explore
             Yourself
           </p>
-          <button onClick={() => navigate("/")} className="back-button">
-            Quay về trang chủ
+          <button
+            onClick={() => navigate("/explore-yourself")}
+            className="back-button"
+          >
+            Quay về trang Explore Yourself
           </button>
         </div>
       </div>

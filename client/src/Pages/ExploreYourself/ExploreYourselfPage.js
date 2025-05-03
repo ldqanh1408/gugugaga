@@ -54,8 +54,11 @@ const ExploreYourselfPage = () => {
       // Update to show a detailed alert for past mails
       if (pendingMails.length > 0) {
         const firstMail = pendingMails[0];
+        const formattedSendDate = firstMail.sendDate.split("T")[0]; // Extract only the date part
+        const formattedReceiveDate = firstMail.receiveDate; // Already in YYYY-MM-DD format
+
         const userConfirmed = window.confirm(
-          `📨 Thư từ quá khứ đã đến!\n\nTiêu đề: ${firstMail.title}\nNgày gửi: ${firstMail.sendDate}\n\nBạn có muốn xem nội dung ngay bây giờ?`
+          `📨 Thư từ quá khứ đã đến!\n\nNội dung: ${firstMail.title}\nNgày gửi: ${formattedSendDate}\nNgày nhận: ${formattedReceiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
         );
         if (userConfirmed) {
           navigate("/today-mails", { state: { mail: firstMail } });
@@ -110,12 +113,15 @@ const ExploreYourselfPage = () => {
 
     try {
       const payload = await getPayLoad();
+      const now = new Date();
+      const sendDateTime = now.toISOString(); // Use the exact current date and time
+
       const newMail = {
         id: Date.now(),
         title:
           mailContent.substring(0, 30) + (mailContent.length > 30 ? "..." : ""),
         content: mailContent,
-        sendDate: todayString,
+        sendDate: sendDateTime, // Updated to use the exact current time
         receiveDate: sendDate,
         notified: false,
         read: false,
@@ -137,9 +143,11 @@ const ExploreYourselfPage = () => {
       setSendDate("");
 
       // Hiển thị thông báo trước khi chuyển hướng
+      const formattedSendDate = newMail.sendDate.split("T")[0]; // Extract only the date part
+
       if (sendDate === todayString) {
         alert(
-          `📨 Thư vừa được gửi thành công!\n\nTiêu đề: ${newMail.title}\nNgày gửi: ${newMail.sendDate}`
+          `📨 Thư vừa được gửi thành công!\n\nNội dung: ${newMail.title}\nNgày gửi: ${formattedSendDate}\nNgày nhận: ${newMail.receiveDate}`
         );
         navigate("/today-mails", {
           state: { mail: newMail, fromExplore: true },
