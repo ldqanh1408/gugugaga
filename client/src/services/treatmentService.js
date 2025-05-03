@@ -84,6 +84,7 @@ export const getAverageRating = async (payload) => {
         Authorization: `Bearer ${token}`, // Gửi token trong header
       },
     });
+    console.warn(response)
     return response.data;
   } catch (error) {
     console.error(
