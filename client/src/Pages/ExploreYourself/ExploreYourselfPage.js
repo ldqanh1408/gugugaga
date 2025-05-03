@@ -51,17 +51,17 @@ const ExploreYourselfPage = () => {
         (mail) => mail.receiveDate === now && !mail.notified
       );
 
+      // Update to show a detailed alert for past mails
       if (pendingMails.length > 0) {
         const firstMail = pendingMails[0];
-        if (
-          window.confirm(
-            `Bạn có ${pendingMails.length} thư từ quá khứ đến! Bạn muốn xem ngay bây giờ không?`
-          )
-        ) {
+        const userConfirmed = window.confirm(
+          `📨 Thư từ quá khứ đã đến!\n\nTiêu đề: ${firstMail.title}\nNgày gửi: ${firstMail.sendDate}\n\nBạn có muốn xem nội dung ngay bây giờ?`
+        );
+        if (userConfirmed) {
           navigate("/today-mails", { state: { mail: firstMail } });
         }
 
-        // Đánh dấu tất cả thư đã thông báo
+        // Mark all mails as notified
         const updatedMails = futureMails.map((mail) =>
           pendingMails.find((m) => m.id === mail.id)
             ? { ...mail, notified: true }
@@ -136,9 +136,14 @@ const ExploreYourselfPage = () => {
       setMailContent("");
       setSendDate("");
 
-      // Nếu gửi thư cho ngày hiện tại, chuyển đến TodayMailsPage
+      // Hiển thị thông báo trước khi chuyển hướng
       if (sendDate === todayString) {
-        navigate("/today-mails", { state: { mail: newMail } });
+        alert(
+          `📨 Thư vừa được gửi thành công!\n\nTiêu đề: ${newMail.title}\nNgày gửi: ${newMail.sendDate}`
+        );
+        navigate("/today-mails", {
+          state: { mail: newMail, fromExplore: true },
+        });
       } else {
         alert(
           "Thư đã được gửi thành công! Bạn sẽ nhận được thông báo khi đến ngày nhận."
@@ -200,11 +205,20 @@ const ExploreYourselfPage = () => {
               </select>
             </h4>
 
-            <div className="horizontal-bar-chart" style={{ marginLeft: "40px" }}> {/* Nhích biểu đồ qua phải thêm nữa */}
+            <div
+              className="horizontal-bar-chart"
+              style={{ marginLeft: "40px" }}
+            >
+              {" "}
+              {/* Nhích biểu đồ qua phải thêm nữa */}
               {emotionData[timeRange].pieChart.map((value, index) => (
                 <div
                   key={index}
-                  style={{ display: "flex", alignItems: "center", margin: "10px 0" }} // Tăng khoảng cách giữa các thanh
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    margin: "10px 0",
+                  }} // Tăng khoảng cách giữa các thanh
                 >
                   <div
                     className="bar"
@@ -220,7 +234,8 @@ const ExploreYourselfPage = () => {
                       height: "30px", // Tăng chiều rộng thanh ngang
                     }}
                   ></div>
-                  <span style={{ marginLeft: "10px" }}>{value}%</span> {/* Hiển thị phần trăm */}
+                  <span style={{ marginLeft: "10px" }}>{value}%</span>{" "}
+                  {/* Hiển thị phần trăm */}
                 </div>
               ))}
             </div>

@@ -62,6 +62,44 @@ const TodayMailsPage = () => {
     }
   }, [error]);
 
+  // Ensure currentMail is set correctly when navigating from ExploreYourselfPage
+  useEffect(() => {
+    if (location.state?.mail) {
+      setCurrentMail(location.state.mail);
+      setShowEntranceAnimation(location.state.fromExplore || false);
+    } else if (todayMails.length > 0) {
+      setCurrentMail(todayMails[0]);
+    } else {
+      setCurrentMail(null); // Clear currentMail if no mails are available
+    }
+  }, [location.state, todayMails]);
+
+  // Add logic to handle notifications for future mails
+  useEffect(() => {
+    const checkFutureMails = () => {
+      const now = new Date().toISOString().split("T")[0];
+      const futureMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+      const dueMails = futureMails.filter(
+        (mail) => mail.receiveDate === now && !mail.notified
+      );
+
+      if (dueMails.length > 0) {
+        toast.info(`Bạn có ${dueMails.length} thư từ quá khứ đến!`);
+        const updatedMails = futureMails.map((mail) =>
+          dueMails.find((m) => m.id === mail.id)
+            ? { ...mail, notified: true }
+            : mail
+        );
+        localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+        setCurrentMail(dueMails[0]);
+      }
+    };
+
+    checkFutureMails();
+    const interval = setInterval(checkFutureMails, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleMailClick = async (mail) => {
     setCurrentMail(mail);
     if (!mail.notified) {
@@ -92,7 +130,7 @@ const TodayMailsPage = () => {
     return (
       <div className="today-mails-page">
         <div className="no-mail-container">
-          <h2>📭 Không có thư nào hôm nay</h2>
+          <h2>📭 Thư từ quá khứ</h2>
           <p>
             Bạn có thể gửi thư cho mình trong tương lai từ trang Explore
             Yourself

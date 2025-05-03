@@ -56,13 +56,35 @@ const entity = (() => {
   }
 })();
 
+// Ensure token is refreshed or cleared if invalid
 const accessToken = (() => {
   const token = localStorage.getItem("accessToken");
   if (!token || token === "undefined" || token === "null") {
     console.warn("Access token is missing, invalid, or null in localStorage.");
+    localStorage.removeItem("accessToken");
     return null;
   }
-  return token;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      console.error("Invalid token format.");
+      localStorage.removeItem("accessToken");
+      return null;
+    }
+
+    const payload = JSON.parse(atob(parts[1]));
+    if (payload.exp && Date.now() >= payload.exp * 1000) {
+      console.warn("Access token has expired.");
+      localStorage.removeItem("accessToken");
+      return null;
+    }
+
+    return token;
+  } catch (error) {
+    console.error("Error validating token:", error);
+    localStorage.removeItem("accessToken");
+    return null;
+  }
 })();
 
 const authSlice = createSlice({

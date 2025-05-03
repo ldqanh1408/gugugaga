@@ -3,7 +3,7 @@ import { getToken, getPayLoad } from "./authService";
 const API_URL = "http://localhost:5000/api/v1";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_URL.replace(/\/v1\/v1/, "/v1"), // Fix duplicate /v1
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
@@ -89,6 +89,7 @@ const loadProfile = async () => {
     });
     return response.data;
   } catch (error) {
+    console.error("Error loading profile:", error);
     return { success: false, message: error.message };
   }
 };
@@ -308,7 +309,7 @@ const getTodayMails = async (userId) => {
       return [];
     }
 
-    const response = await api.get(`/v1/users/${userId}/today-mails`, {
+    const response = await api.get(`/users/${userId}/today-mails`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
