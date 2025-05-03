@@ -133,23 +133,31 @@ function ChatBox() {
 
     try {
       const { chatId } = await getPayLoad();
+      
+      // Create proper request payload
+      const requestData = {
+        chatId: chatId,
+        message: userInput,
+        media: userMedia.map(m => ({
+          type: m.type,
+          url: m.url,
+          name: m.name
+        }))
+      };
+      
+      console.log("Sending request to AI:", requestData);
+      
       const response = await axios.post(
         "http://localhost:4000/api/chats/ai",
-        {
-          chatId: chatId,
-          message: userInput,
-          media: userMedia.map(m => ({
-            type: m.type,
-            url: m.url,
-            name: m.name
-          }))
-        },
+        requestData,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
+
+      console.log("AI response received:", response.data);
 
       if (response.data && response.data.success) {
         const botText = response.data.response || "No response";
@@ -159,10 +167,25 @@ function ChatBox() {
         setMessages((prev) => [...prev, botMessage]);
       } else {
         console.error("AI response error:", response.data);
-        throw new Error(response.data?.error || "AI response error");
+        // Add a user-friendly error message
+        const errorMessage = { 
+          text: "Sorry, I couldn't process your message. Please try again later. 🥺", 
+          role: "ai", 
+          media: [] 
+        };
+        await addMessage({ message: errorMessage });
+        setMessages((prev) => [...prev, errorMessage]);
       }
     } catch (error) {
-      console.error("Gửi message không thành công:", error.message);
+      console.error("Failed to send message:", error.message);
+      // Add a user-friendly error message on exception
+      const errorMessage = { 
+        text: "Sorry, there was a problem connecting to the AI. Please check your connection and try again. 🥺", 
+        role: "ai", 
+        media: [] 
+      };
+      await addMessage({ message: errorMessage });
+      setMessages((prev) => [...prev, errorMessage]);
     }
   };
 
