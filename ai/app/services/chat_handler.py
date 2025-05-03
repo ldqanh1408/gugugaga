@@ -52,6 +52,11 @@ def handle_image_chat(req: ChatRequest) -> str:
         Text description of the image
     """
     try:
+        # Validate media exists
+        if not req.media or len(req.media) == 0:
+            logger.error("No media provided for image handling")
+            return "No image provided to analyze"
+            
         # Build prompt and prepare input
         builder = _get_prompt_builder()
         data = builder.build(req)
@@ -87,6 +92,11 @@ def handle_video_chat(req: ChatRequest) -> str:
         Text description of the video
     """
     try:
+        # Validate media exists
+        if not req.media or len(req.media) == 0:
+            logger.error("No media provided for video handling")
+            return "No video provided to analyze"
+            
         # Build prompt and prepare input
         builder = _get_prompt_builder()
         data = builder.build(req)
@@ -122,6 +132,11 @@ def handle_audio_chat(req: ChatRequest) -> str:
         Text transcription of the audio
     """
     try:
+        # Validate media exists
+        if not req.media or len(req.media) == 0:
+            logger.error("No media provided for audio handling")
+            return "No audio provided to transcribe"
+            
         # Process audio using the audio processor
         result = process_audio(req.media[0].url)
         
@@ -196,13 +211,17 @@ def handle_chat_request(req: ChatRequest) -> str:
     
     types = {m.type for m in req.media}
     
-    if len(req.media) == 1:
-        if "image" in types:
-            return handle_image_chat(req)
-        elif "video" in types:
-            return handle_video_chat(req)
-        elif "audio" in types:
-            return handle_audio_chat(req)
-    else:
-        # Multiple media items
-        return handle_mixed_chat(req)
+    try:
+        if len(req.media) == 1:
+            if "image" in types:
+                return handle_image_chat(req)
+            elif "video" in types:
+                return handle_video_chat(req)
+            elif "audio" in types:
+                return handle_audio_chat(req)
+        else:
+            # Multiple media items
+            return handle_mixed_chat(req)
+    except Exception as e:
+        logger.error(f"Error in handle_chat_request: {str(e)}")
+        return f"Error processing media: {str(e)}"

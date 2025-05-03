@@ -115,29 +115,37 @@ function ChatBox() {
     textarea.style.height = `${newHeight}px`;
   };
 
+  // Modified sendMessage function for ChatBox.js
   const sendMessage = async () => {
+    // Don't send if both input and media are empty
     if (input.trim() === "" && selectedMedia.length === 0) return;
 
+    // Create user message for display
     const userMessage = { 
       text: input || "Sent media", 
       role: "user",
       media: selectedMedia
     };
     
+    // Add user message to chat history
     await addMessage({ message: userMessage });
     setMessages((prev) => [...prev, userMessage]);
+    
+    // Store current input and media before clearing
     const userInput = input;
     const userMedia = selectedMedia;
+    
+    // Clear input fields
     setInput("");
-    setSelectedMedia([]); // Clear selected media after sending
+    setSelectedMedia([]);
 
     try {
       const { chatId } = await getPayLoad();
       
-      // Create proper request payload
+      // Create proper request payload for API
       const requestData = {
         chatId: chatId,
-        message: userInput,
+        message: userInput || "", // Ensure message is never undefined
         media: userMedia.map(m => ({
           type: m.type,
           url: m.url,
@@ -147,6 +155,7 @@ function ChatBox() {
       
       console.log("Sending request to AI:", requestData);
       
+      // Send request to API endpoint
       const response = await axios.post(
         "http://localhost:4000/api/chats/ai",
         requestData,
@@ -159,6 +168,7 @@ function ChatBox() {
 
       console.log("AI response received:", response.data);
 
+      // Handle successful response
       if (response.data && response.data.success) {
         const botText = response.data.response || "No response";
         const botMessage = { text: botText, role: "ai", media: [] };

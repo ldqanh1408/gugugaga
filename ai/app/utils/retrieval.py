@@ -1,6 +1,9 @@
 import time
 from app.db.chromadb_client import chat_vectors
 from app.services.embedding_service import get_embedding
+import logging
+
+logger = logging.getLogger(__name__)
 
 def save_message(chatId: str, user_message: str, ai_response: str) -> None:
     """
@@ -57,15 +60,21 @@ def retrieve_context(chatId: str, message: str, n_results: int = 5) -> str:
         String containing context from previous messages
     """
     emb = get_embedding(message)
-    res = chat_vectors.query(
-        query_embeddings=[emb],
-        n_results=n_results*2,
-        where={"chatId": chatId}
-    )
+    try:
+        res = chat_vectors.query(
+            query_embeddings=[emb],
+            n_results=min(n_results*2, 20),  # Limit to reasonable number
+            where={"chatId": chatId}
+        )
+        
+        # Remove duplicates while preserving order
+        if res and "documents" in res and res["documents"]:
+            texts = list(dict.fromkeys(res.get("documents", [[]])[0]))
+            return "\n".join(texts[-n_results:])
+    except Exception as e:
+        logger.warning(f"Error retrieving context: {str(e)}")
     
-    # Remove duplicates while preserving order
-    texts = list(dict.fromkeys(res.get("documents", [[]])[0]))
-    return "\n".join(texts[-n_results:])
+    return ""
 
 def retrieve_media_context(chatId: str, n_results: int = 3) -> str:
     """
@@ -78,19 +87,38 @@ def retrieve_media_context(chatId: str, n_results: int = 3) -> str:
     Returns:
         String containing context from media captions/descriptions
     """
-    res = chat_vectors.query(
-        query_embeddings=None,  # No query embedding, just filter by metadata
-        where={"$and": [
-            {"chatId": chatId},
-            {"role": "media"}
-        ]},
-        n_results=n_results,
-        include=["documents", "metadatas"]
-    )
+    try:
+        # First check if there are any media records for this chat
+        count_result = chat_vectors.count(
+            where={"$and": [
+                {"chatId": chatId},
+                {"role": "media"}
+            ]}
+        )
+        
+        # If no media records exist, return empty string
+        if count_result == 0:
+            return ""
+        
+        # If media records exist, query them with a dummy embedding
+        # This solves the "embeddings, documents, images, uris must be provided" error
+        dummy_emb = get_embedding("media context")
+        res = chat_vectors.query(
+            query_embeddings=[dummy_emb],
+            where={"$and": [
+                {"chatId": chatId},
+                {"role": "media"}
+            ]},
+            n_results=min(n_results, count_result),
+            include=["documents", "metadatas"]
+        )
+        
+        # Get the documents returned
+        if res and "documents" in res and res["documents"]:
+            return "\n".join(res["documents"][0])
+    except Exception as e:
+        logger.warning(f"Error retrieving media context: {str(e)}")
     
-    # Get the documents returned
-    if res and "documents" in res and res["documents"]:
-        return "\n".join(res["documents"][0])
     return ""
 
 def create_prompt(chatId: str, message: str) -> str:
@@ -104,35 +132,46 @@ def create_prompt(chatId: str, message: str) -> str:
     Returns:
         Formatted prompt ready for the LLM
     """
-    # Retrieve context from previous messages
-    conversation_context = retrieve_context(chatId, message)
+    try:
+        # Retrieve context from previous messages
+        conversation_context = retrieve_context(chatId, message)
+        
+        # Retrieve recent media context
+        media_context = retrieve_media_context(chatId)
+        
+        # Build system prompt with guidelines
+        system_prompt = (
+            "🌟 You are an emotional support AI. Provide empathetic, constructive responses with lots of emojis. 🌟\n"
+            "You must comply with the following rules:\n"
+            "1. 💖 Always show empathy and emotional understanding **before** offering any advice or suggestions.\n"
+            "2. 🔍 If the user asks about something personal, check history. If not found, say: 'I don't know that yet 🥺 Could you tell me more?'\n"
+            "3. 🎉 Use **lots of emojis** to keep your tone cheerful, comforting, and expressive.\n"
+            "4. 🚫 Do **not** solve math, physics, or technical problems. Gently refuse and redirect to emotional support 🥹💗\n"
+            "5. 👂 If the user shares media (images, videos, audio), respond to it and incorporate what you understand from it.\n"
+        )
+
+        # Add conversation context if available
+        if conversation_context.strip():
+            system_prompt += "\nPrevious messages (for context only):\n" + conversation_context.strip()
+
+        # Add media context if available
+        if media_context.strip():
+            system_prompt += "\nPrevious media shared (for context only):\n" + media_context.strip()
+
+        # Format the final prompt with special tokens
+        final_prompt = (
+            f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
+            f"<|im_start|>user\n{message}<|im_end|>\n"
+        )
+
+        return final_prompt
     
-    # Retrieve recent media context
-    media_context = retrieve_media_context(chatId)
-    
-    # Build system prompt with guidelines
-    system_prompt = (
-        "🌟 You are an emotional support AI. Provide empathetic, constructive responses with lots of emojis. 🌟\n"
-        "You must comply with the following rules:\n"
-        "1. 💖 Always show empathy and emotional understanding **before** offering any advice or suggestions.\n"
-        "2. 🔍 If the user asks about something personal, check history. If not found, say: 'I don't know that yet 🥺 Could you tell me more?'\n"
-        "3. 🎉 Use **lots of emojis** to keep your tone cheerful, comforting, and expressive.\n"
-        "4. 🚫 Do **not** solve math, physics, or technical problems. Gently refuse and redirect to emotional support 🥹💗\n"
-        "5. 👂 If the user shares media (images, videos, audio), respond to it and incorporate what you understand from it.\n"
-    )
-
-    # Add conversation context if available
-    if conversation_context.strip():
-        system_prompt += "\nPrevious messages (for context only):\n" + conversation_context.strip()
-
-    # Add media context if available
-    if media_context.strip():
-        system_prompt += "\nPrevious media shared (for context only):\n" + media_context.strip()
-
-    # Format the final prompt with special tokens
-    final_prompt = (
-        f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
-        f"<|im_start|>user\n{message}<|im_end|>\n"
-    )
-
-    return final_prompt
+    except Exception as e:
+        logger.error(f"Error creating prompt: {str(e)}")
+        # Return a basic prompt if context retrieval fails
+        return (
+            f"<|im_start|>system\n"
+            f"🌟 You are an emotional support AI. Provide empathetic responses with emojis. 🌟\n"
+            f"<|im_end|>\n"
+            f"<|im_start|>user\n{message}<|im_end|>\n"
+        )
