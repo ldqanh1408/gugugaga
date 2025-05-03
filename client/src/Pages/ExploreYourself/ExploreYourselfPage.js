@@ -155,19 +155,16 @@ const ExploreYourselfPage = () => {
 
       // Hiển thị thông báo trước khi chuyển hướng
       const formattedSendDate = newMail.sendDate.split("T")[0]; // Extract only the date part
+      const formattedReceiveDate = newMail.receiveDate; // Already in YYYY-MM-DD format
 
-      if (sendDate === todayString) {
-        alert(
-          `📨 Thư vừa được gửi thành công!\n\nNội dung: ${newMail.title}\nNgày gửi: ${formattedSendDate}\nNgày nhận: ${newMail.receiveDate}`
-        );
-        navigate("/today-mails", {
-          state: { mail: newMail, fromExplore: true },
-        });
-      } else {
-        alert(
-          "Thư đã được gửi thành công! Bạn sẽ nhận được thông báo khi đến ngày nhận."
-        );
-      }
+      alert(
+        `📨 Thư từ quá khứ đã đến!\n\nNội dung: ${newMail.content}\nNgày gửi: ${formattedSendDate}\nNgày nhận: ${formattedReceiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
+      );
+
+      // Chuyển hướng sang trang today-mails
+      navigate("/today-mails", {
+        state: { mail: newMail, fromExplore: true },
+      });
     } catch (error) {
       console.error("Lỗi khi gửi thư:", error);
       alert("Có lỗi xảy ra khi gửi thư. Vui lòng thử lại.");
