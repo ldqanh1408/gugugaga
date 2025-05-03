@@ -1,8 +1,8 @@
-from pydantic import BaseModel, AnyHttpUrl
+from pydantic import BaseModel, AnyHttpUrl, Field
 from typing import List, Optional
 
 class MediaItem(BaseModel):
-    type: str  # "image" or "audio"
+    type: str  # "image", "audio", or "video"
     url: AnyHttpUrl
     name: str
 
@@ -10,3 +10,8 @@ class ChatRequest(BaseModel):
     chatId: str
     message: str
     media: Optional[List[MediaItem]] = []
+    
+class ChatResponse(BaseModel):
+    success: bool = True
+    response: Optional[str] = None
+    error: Optional[str] = None

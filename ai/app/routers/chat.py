@@ -1,6 +1,6 @@
 import re
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from app.models.chat_models import ChatRequest
+from app.models.chat_models import ChatRequest, ChatResponse
 from app.services.llama_service import call_llama
 from app.utils.retrieval import save_message, create_prompt, save_media_caption
 from app.services.chat_handler import handle_chat_request
@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-@router.post("/api/chats/ai")
+@router.post("/api/chats/ai", response_model=ChatResponse)
 async def chat_api(req: ChatRequest, background_tasks: BackgroundTasks):
     """
     Main API endpoint for chat processing
@@ -66,10 +66,12 @@ async def chat_api(req: ChatRequest, background_tasks: BackgroundTasks):
             
         # Clean up extra newlines for readability
         cleaned = re.sub(r'\n\s*\n+', '\n\n', reply)
-        return {"response": cleaned}
+        
+        # Return standardized response format
+        return {"success": True, "response": cleaned}
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Unexpected error in chat API: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        return {"success": False, "error": str(e)}
