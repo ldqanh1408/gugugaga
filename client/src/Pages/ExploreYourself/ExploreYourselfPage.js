@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getPayLoad } from "../../services/authService";
 import { addFutureMail } from "../../services/userService";
 import "./ExploreYourselfPage.css";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const ExploreYourselfPage = () => {
   const [activeTab, setActiveTab] = useState("statistics");
@@ -13,26 +14,28 @@ const ExploreYourselfPage = () => {
   const [selectedDuration, setSelectedDuration] = useState("3 months");
   const navigate = useNavigate();
 
-  // Mock data for statistics
+  const generateMinuteData = (minutes) => {
+    return Array.from({ length: minutes }, (_, index) => ({
+      name: `${index} phút`,
+      value: Math.floor(Math.random() * 5) + 1, // Random value between 1 and 5
+    }));
+  };
+
   const emotionData = {
     today: {
-      lineChart: [3, 4, 2, 5, 4, 3, 4],
+      lineChart: generateMinuteData(60), // 60 minutes of data
       pieChart: [30, 10, 20, 25, 15],
     },
     week: {
-      lineChart: [3, 4, 2, 5, 4, 3, 4, 2, 3, 4, 3, 5, 4, 3],
+      lineChart: generateMinuteData(60 * 7), // 7 days of minute data
       pieChart: [35, 15, 15, 20, 15],
     },
     month: {
-      lineChart: Array(30)
-        .fill()
-        .map(() => Math.floor(Math.random() * 5)),
+      lineChart: generateMinuteData(60 * 30), // 30 days of minute data
       pieChart: [40, 10, 10, 25, 15],
     },
     year: {
-      lineChart: Array(12)
-        .fill()
-        .map(() => Math.floor(Math.random() * 5)),
+      lineChart: generateMinuteData(60 * 24 * 365), // 1 year of minute data
       pieChart: [45, 5, 10, 25, 15],
     },
   };
@@ -178,6 +181,20 @@ const ExploreYourselfPage = () => {
     });
   };
 
+  const renderLineChart = (data) => {
+    return (
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+        </LineChart>
+      </ResponsiveContainer>
+    );
+  };
+
   return (
     <div className="explore-container">
       <h2 className="explore-title">Yourself</h2>
@@ -213,40 +230,12 @@ const ExploreYourselfPage = () => {
               </select>
             </h4>
 
-            <div
-              className="horizontal-bar-chart"
-              style={{ marginLeft: "40px" }}
-            >
-              {" "}
-              {/* Nhích biểu đồ qua phải thêm nữa */}
-              {emotionData[timeRange].pieChart.map((value, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    margin: "10px 0",
-                  }} // Tăng khoảng cách giữa các thanh
-                >
-                  <div
-                    className="bar"
-                    style={{
-                      width: `${value * 12}px`,
-                      backgroundColor: [
-                        "#7ed957", // Màu xanh lá
-                        "#67c6e3", // Màu xanh dương
-                        "#f15b2a", // Màu cam
-                        "#f891c5", // Màu hồng
-                        "#ffd966", // Màu vàng
-                      ][index % 5],
-                      height: "30px", // Tăng chiều rộng thanh ngang
-                    }}
-                  ></div>
-                  <span style={{ marginLeft: "10px" }}>{value}%</span>{" "}
-                  {/* Hiển thị phần trăm */}
-                </div>
-              ))}
-            </div>
+            {renderLineChart(
+              emotionData[timeRange].lineChart.map((item, index) => ({
+                name: item.name, // Ensure name is passed correctly
+                value: item.value, // Ensure value is passed correctly
+              }))
+            )}
 
             <div className="pie-chart">
               <div
