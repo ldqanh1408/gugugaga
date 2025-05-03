@@ -20,6 +20,7 @@ const ExploreYourselfPage = () => {
   const [timeRange, setTimeRange] = useState("today");
   const [futureMails, setFutureMails] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("3 months");
+  const [showSentMails, setShowSentMails] = useState(false); // State để điều khiển hiển thị danh sách thư
   const navigate = useNavigate();
 
   const generateMinuteData = (minutes) => {
@@ -114,14 +115,6 @@ const ExploreYourselfPage = () => {
       return;
     }
 
-    // Kiểm tra giới hạn 30 ngày
-    const maxDate = new Date(today);
-    maxDate.setDate(today.getDate() + 30);
-    if (selectedDate > maxDate) {
-      alert("Bạn chỉ có thể gửi thư trong vòng 30 ngày kể từ hôm nay.");
-      return;
-    }
-
     try {
       const payload = await getPayLoad();
       const now = new Date();
@@ -169,6 +162,10 @@ const ExploreYourselfPage = () => {
       console.error("Lỗi khi gửi thư:", error);
       alert("Có lỗi xảy ra khi gửi thư. Vui lòng thử lại.");
     }
+  };
+
+  const toggleSentMails = () => {
+    setShowSentMails(!showSentMails);
   };
 
   const renderEmotionDots = (data) => {
@@ -310,47 +307,71 @@ const ExploreYourselfPage = () => {
                 </div>
               </div>
 
+              <div
+                style={{
+                  height: "1px",
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  margin: "20px 0",
+                }}
+              ></div>
+
               <div style={{ flex: 1 }}>
                 <h4>Thư đã gửi</h4>
-                <div
+                <button
                   style={{
-                    maxHeight: "300px",
-                    overflowY: "auto",
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    padding: "10px",
+                    backgroundColor: "pink",
+                    padding: "10px 20px",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    marginBottom: "10px",
                   }}
+                  onClick={toggleSentMails}
                 >
-                  {futureMails.length === 0 ? (
-                    <p>Chưa có thư nào được gửi</p>
-                  ) : (
-                    futureMails.map((mail) => (
-                      <div
-                        key={mail.id}
-                        style={{
-                          padding: "10px",
-                          borderBottom: "1px solid #eee",
-                          cursor: "pointer",
-                          backgroundColor:
-                            selectedDuration === mail.duration
-                              ? "#f0f0f0"
-                              : "transparent",
-                        }}
-                        onClick={() => {
-                          setSelectedDuration(mail.duration);
-                          alert(
-                            `Nội dung thư:\n\n${mail.content || "Không có nội dung"}`
-                          );
-                        }}
-                      >
-                        <div style={{ fontWeight: "bold" }}>{mail.title}</div>
-                        <div style={{ fontSize: "0.9em", color: "#666" }}>
-                          Gửi đến: {mail.receiveDate} ({mail.duration})
+                  {showSentMails ? "Ẩn thư" : "Xem thư"}
+                </button>
+
+                {showSentMails && (
+                  <div
+                    style={{
+                      maxHeight: "300px",
+                      overflowY: "auto",
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      padding: "10px",
+                    }}
+                  >
+                    {futureMails.length === 0 ? (
+                      <p>Chưa có thư nào được gửi</p>
+                    ) : (
+                      futureMails.map((mail) => (
+                        <div
+                          key={mail.id}
+                          style={{
+                            padding: "10px",
+                            borderBottom: "1px solid #eee",
+                            cursor: "pointer",
+                            backgroundColor:
+                              selectedDuration === mail.duration
+                                ? "#f0f0f0"
+                                : "transparent",
+                          }}
+                          onClick={() => {
+                            setSelectedDuration(mail.duration);
+                            alert(
+                              `Nội dung thư:\n\n${mail.content || "Không có nội dung"}`
+                            );
+                          }}
+                        >
+                          <div style={{ fontWeight: "bold" }}>{mail.title}</div>
+                          <div style={{ fontSize: "0.9em", color: "#666" }}>
+                            Gửi đến: {mail.receiveDate} ({mail.duration})
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -396,7 +417,9 @@ const ExploreYourselfPage = () => {
                     const futureDate = new Date();
                     futureDate.setMonth(futureDate.getMonth() + 6);
                     setSelectedDuration("6 months");
-                    setMailContent("Nóng số: the day");
+                    setMailContent(
+                      "liệu 6 tháng nữa có còn sống không mà đòi viết thư , à thoai cứ viết đuy"
+                    );
                     setSendDate(futureDate.toISOString().split("T")[0]);
                   }}
                 >

@@ -15,6 +15,8 @@ const TodayMailsPage = () => {
   const [showEntranceAnimation, setShowEntranceAnimation] = useState(true);
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { todayMails, error } = useSelector((state) => state.user);
+  const [futureMails, setFutureMails] = useState([]);
+  const [selectedDuration, setSelectedDuration] = useState(null);
 
   useEffect(() => {
     const fetchMails = async () => {
@@ -100,6 +102,11 @@ const TodayMailsPage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+    setFutureMails(savedMails);
+  }, []);
+
   const handleMailClick = async (mail) => {
     setCurrentMail(mail);
     if (!mail.notified) {
@@ -113,6 +120,53 @@ const TodayMailsPage = () => {
         toast.error("Lỗi khi đánh dấu thư đã đọc");
       }
     }
+  };
+
+  const renderSentMails = () => {
+    return (
+      <div style={{ flex: 1 }}>
+        <h4>Thư đã gửi</h4>
+        <div
+          style={{
+            maxHeight: "300px",
+            overflowY: "auto",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "10px",
+          }}
+        >
+          {futureMails.length === 0 ? (
+            <p>Chưa có thư nào được gửi</p>
+          ) : (
+            futureMails.map((mail) => (
+              <div
+                key={mail.id}
+                style={{
+                  padding: "10px",
+                  borderBottom: "1px solid #eee",
+                  cursor: "pointer",
+                  backgroundColor:
+                    selectedDuration === mail.duration
+                      ? "#f0f0f0"
+                      : "transparent",
+                }}
+                onClick={() => {
+                  setSelectedDuration(mail.duration);
+                  alert(
+                    `Nội dung thư:\n\n${mail.content || "Không có nội dung"}`
+                  );
+                }}
+              >
+                <div style={{ fontWeight: "bold" }}>{mail.title}</div>
+                <div style={{ fontSize: "0.9em", color: "#666" }}>
+                  Gửi đến: {mail.receiveDate} ({mail.duration})
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
@@ -142,6 +196,7 @@ const TodayMailsPage = () => {
             Quay về trang Explore Yourself
           </button>
         </div>
+        {renderSentMails()}
       </div>
     );
   }
@@ -206,6 +261,7 @@ const TodayMailsPage = () => {
           </div>
         )}
       </div>
+      {renderSentMails()}
     </div>
   );
 };
