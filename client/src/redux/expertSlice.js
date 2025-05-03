@@ -4,14 +4,13 @@ import {
   getTreaments,
   receiveBooking,
 } from "../services/expertService";
-import { acceptTreatment, rejectTreatment } from "../services/treatmentService";
+import { acceptTreatment, getAverageRating, rejectTreatment } from "../services/treatmentService";
 import { updateTreatment } from "../services/expertService";
 
 export const getTreatmentsThunk = createAsyncThunk(
   "experts/getTreaments",
   async (payload) => {
     const data = await getTreaments(payload);
-    console.log(data.data)
     return data?.data;
   }
 );
@@ -65,10 +64,23 @@ export const receiveBookingThunk = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await receiveBooking(payload);
-      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
+export const getAverageRatingThunk = createAsyncThunk(
+  "expert/getAverageRating",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await getAverageRating(payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue( 
         error.response ? error.response.data : error.message
       );
     }
@@ -92,6 +104,7 @@ const expertSlice = createSlice({
     isViewing: false,
     bookings: [],
     status: "pending",
+    averageRating: 0,
   },
   reducers: {
     setSelectedTreatment: (state, action) => {
@@ -103,7 +116,11 @@ const expertSlice = createSlice({
     setStatus: (state, action) => {
       state.status = action.payload;
     },
+    setAverageRating: (state, action) => {
+      state.averageRating = action.payload;
+    }
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(getTreatmentsThunk.pending, (state) => {
@@ -244,6 +261,18 @@ const expertSlice = createSlice({
         }
       })
       .addCase(receiveBookingThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(getAverageRatingThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAverageRatingThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.averageRating = action.payload?.average_rating || 0;
+      })
+      .addCase(getAverageRatingThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });
