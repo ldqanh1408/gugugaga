@@ -3,7 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { getPayLoad } from "../../services/authService";
 import { addFutureMail } from "../../services/userService";
 import "./ExploreYourselfPage.css";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const ExploreYourselfPage = () => {
   const [activeTab, setActiveTab] = useState("statistics");
@@ -189,7 +197,12 @@ const ExploreYourselfPage = () => {
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
-          <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     );
