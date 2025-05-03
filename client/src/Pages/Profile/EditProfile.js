@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Modal } from 'react-bootstrap';
 import './EditProfile.css';
 import avatarPlaceholder from "../../assets/imgs/userDefault.svg";import { updateAvatar, updateProfile, uploadProfileAsync } from '../../redux/userSlice'; // Redux action
 import {Loading} from "../../components/Common/Loading"
@@ -11,6 +11,8 @@ function EditProfile({ setIsEditing }) {
     const [isChanged, setIsChanged] = useState(false);
     const [loading, setLoading] = useState(false);
     const [avatarFile, setAvatarFile] = useState(null);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProfile({ ...profile, [name]: value });
@@ -32,12 +34,51 @@ function EditProfile({ setIsEditing }) {
             reader.readAsDataURL(file);
         }
     };
-
+    const isValidAccount = (account) => {
+        const accountRegex = /^[a-zA-Z0-9._]{5,20}$/;
+        return accountRegex.test(account);
+      };
+    
+      const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      };
+    
+      const isValidPassword = (password) => {
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%,?&#])[A-Za-z\d@$!%,?&#]{8,32}$/;
+        return passwordRegex.test(password) && !/\s/.test(password);
+      };
+    
+      const isValidPhoneNumber = (phone) => {
+        const phoneRegex = /^(0|\+84)(\d{9})$/;
+        return phoneRegex.test(phone);
+      };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
+        // Validation checks
+        if (!isValidAccount(profile?.userName)) {
+            setErrorMessage("Invalid account. Please ensure it is 5-20 characters long and contains only letters, numbers, dots, or underscores.");
+            setShowErrorModal(true);
+            setLoading(false);
+            return;
+        }
+    
+        if (!isValidEmail(profile?.email)) {
+            setErrorMessage("Invalid email format. Please enter a valid email.");
+            setShowErrorModal(true);
+            setLoading(false);
+            return;
+        }
+    
+        if (!isValidPhoneNumber(profile?.phone)) {
+            setErrorMessage("Invalid phone number. Please enter a valid phone number starting with 0 or +84.");
+            setShowErrorModal(true);
+            setLoading(false);
+            return;
+        }
 
+        // Proceed with profile update
         try {
             const newProfile = await dispatch(uploadProfileAsync({ profile, avatarFile })); // Cập nhật qua Redux action
             await dispatch(updateAvatar(newProfile.avatar));
@@ -45,11 +86,18 @@ function EditProfile({ setIsEditing }) {
             window.location.reload();
         } catch (error) {
             console.error('Error updating profile:', error);
-
+            setErrorMessage("Failed to update profile. Please try again.");
+            setShowErrorModal(true);
         } finally {
             setLoading(false);
         }
     };
+
+    const closeErrorModal = () => {
+        setShowErrorModal(false);
+        setIsEditing(false);
+    };
+
     return (
         <div className="container edit-profile-container wrapper">
             <h1 className="edit-profile-header">Edit Profile</h1>
@@ -197,6 +245,18 @@ function EditProfile({ setIsEditing }) {
                     </Button>
                 </div>
             </Form>
+
+            <Modal show={showErrorModal} onHide={closeErrorModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Update Failed</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{errorMessage}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeErrorModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
