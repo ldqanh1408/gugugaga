@@ -104,7 +104,7 @@ const ExploreYourselfPage = () => {
     // Đặt giờ về 00:00:00 để so sánh chính xác ngày
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayString = today.toISOString().split("T")[0];
+    const todayString = today.toISOString().split("T")[0]; // Khôi phục dòng mã đã bị xóa
 
     const selectedDate = new Date(sendDate);
     selectedDate.setHours(0, 0, 0, 0);
@@ -146,18 +146,22 @@ const ExploreYourselfPage = () => {
       setMailContent("");
       setSendDate("");
 
-      // Hiển thị thông báo trước khi chuyển hướng
-      const formattedSendDate = newMail.sendDate.split("T")[0]; // Extract only the date part
-      const formattedReceiveDate = newMail.receiveDate; // Already in YYYY-MM-DD format
+      if (newMail.receiveDate > todayString) {
+        // Thông báo khi gửi thư cho tương lai
+        alert(
+          `📨 Thư đã được gửi thành công cho tương lai!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
+        );
+      } else {
+        // Thông báo khi gửi thư cho ngày hiện tại
+        alert(
+          `📨 Thư từ quá khứ đã đến!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
+        );
 
-      alert(
-        `📨 Thư từ quá khứ đã đến!\n\nNội dung: ${newMail.content}\nNgày gửi: ${formattedSendDate}\nNgày nhận: ${formattedReceiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
-      );
-
-      // Chuyển hướng sang trang today-mails
-      navigate("/today-mails", {
-        state: { mail: newMail, fromExplore: true },
-      });
+        // Chuyển hướng sang trang today-mails
+        navigate("/today-mails", {
+          state: { mail: newMail, fromExplore: true },
+        });
+      }
     } catch (error) {
       console.error("Lỗi khi gửi thư:", error);
       alert("Có lỗi xảy ra khi gửi thư. Vui lòng thử lại.");

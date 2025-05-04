@@ -56,7 +56,7 @@ const TodayMailsPage = () => {
     };
 
     fetchMails();
-  }, [location.state, navigate, isAuthenticated, dispatch]);
+  }, [location.state, navigate, isAuthenticated, dispatch, todayMails]); // Thêm todayMails vào dependency
 
   useEffect(() => {
     if (error) {
@@ -94,13 +94,19 @@ const TodayMailsPage = () => {
         );
         localStorage.setItem("futureMails", JSON.stringify(updatedMails));
         setCurrentMail(dueMails[0]);
+        // Cập nhật trạng thái chuyển trang khi hiển thị thư
+        if (dueMails.length > 0) {
+          navigate("/today-mails", {
+            state: { mail: dueMails[0], fromExplore: false },
+          });
+        }
       }
     };
 
     checkFutureMails();
     const interval = setInterval(checkFutureMails, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [navigate]); // Thêm navigate vào dependency
 
   useEffect(() => {
     const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
