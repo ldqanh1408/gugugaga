@@ -20,7 +20,7 @@ def get_llm():
             logger.info(f"Initializing LLM with model path: {settings.LLAMA_MODEL_PATH}")
             _llm = Llama(
                 model_path=settings.LLAMA_MODEL_PATH,
-                n_ctx=2048,                    # Context window size
+                n_ctx=1 << 11,                    # Context window size
                 n_gpu_layers=settings.LLAMA_N_GPU_LAYERS,
                 n_threads=settings.LLAMA_N_THREADS,
                 temperature=0.6,
@@ -54,7 +54,7 @@ def call_llama(prompt: str, max_tokens: int = 256) -> str:
             max_tokens=max_tokens
             # stop=["<|im_end|>"]
         )
-        return response["choices"][0]["text"].strip()
+        return response["choices"][0]["text"].strip()   
     
     except Exception as e:
         logger.error(f"LLAMA ERROR: {str(e)}")

@@ -4,35 +4,54 @@ import tempfile
 import requests
 import logging
 import numpy as np
+import torch
 from pathlib import Path
 from typing import Dict, Union, Tuple, List
 from faster_whisper import WhisperModel
 
 logger = logging.getLogger(__name__)
 
-# Initialize the Whisper model - optimized for RTX 4050
+# Check if CUDA is available
+CUDA_AVAILABLE = torch.cuda.is_available()
+if CUDA_AVAILABLE:
+    logger.info("CUDA is available for audio processing")
+else:
+    logger.warning("CUDA is not available for audio processing, falling back to CPU")
+
+# Initialize the Whisper model
 _whisper_model = None
 
 def get_whisper_model() -> WhisperModel:
     """
-    Lazy-load the Whisper model with settings optimized for RTX 4050
+    Lazy-load the Whisper model with settings optimized for available hardware
     """
     global _whisper_model
     if _whisper_model is None:
         try:
             # Model size options: "tiny", "base", "small", "medium", "large-v1", "large-v2", "large-v3"
-            # Choose "medium" for a good balance of accuracy and performance on RTX 4050
+            # Choose appropriate model based on available resources
             model_size = "medium"
             
-            # RTX 4050 has 6GB VRAM, so we'll use mixed precision to optimize memory usage
-            _whisper_model = WhisperModel(
-                model_size,
-                device="cuda",
-                compute_type="float16",  # Use float16 for better performance on RTX 4050
-                cpu_threads=4,
-                num_workers=2,           # Adjust based on CPU cores
-            )
-            logger.info(f"Loaded Faster Whisper {model_size} model")
+            if CUDA_AVAILABLE:
+                # GPU configuration
+                _whisper_model = WhisperModel(
+                    model_size,
+                    device="cuda",
+                    compute_type="float16",  # Use float16 for better performance on GPU
+                    cpu_threads=4,
+                    num_workers=2,  
+                )
+                logger.info(f"Loaded Faster Whisper {model_size} model on GPU")
+            else:
+                # CPU configuration
+                _whisper_model = WhisperModel(
+                    model_size,
+                    device="cpu",
+                    compute_type="int8",  # Use int8 quantization for CPU to improve performance
+                    cpu_threads=4,
+                    num_workers=1,
+                )
+                logger.info(f"Loaded Faster Whisper {model_size} model on CPU")
         except Exception as e:
             logger.error(f"Failed to load Whisper model: {str(e)}")
             raise
@@ -88,10 +107,12 @@ def transcribe_audio(file_path: str) -> Dict[str, Union[str, float]]:
     try:
         model = get_whisper_model()
         
-        # Run the transcription
+        # Run the transcription with appropriate settings based on device
+        beam_size = 5 if CUDA_AVAILABLE else 3  # Lower beam size on CPU for performance
+        
         segments, info = model.transcribe(
             file_path,
-            beam_size=5,
+            beam_size=beam_size,
             language="auto",  # Auto-detect language
             vad_filter=True,  # Voice activity detection to skip silence
             vad_parameters=dict(min_silence_duration_ms=500),  # Adjust silence threshold

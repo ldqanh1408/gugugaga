@@ -79,29 +79,9 @@ def retrieve_context(chatId: str, message: str, n_results: int = 5) -> str:
 def retrieve_media_context(chatId: str, n_results: int = 3) -> str:
     """
     Retrieve recent media context from the current chat session
-    
-    Args:
-        chatId: Unique identifier for the chat session
-        n_results: Number of media items to retrieve
-        
-    Returns:
-        String containing context from media captions/descriptions
     """
     try:
-        # First check if there are any media records for this chat
-        count_result = chat_vectors.count(
-            where={"$and": [
-                {"chatId": chatId},
-                {"role": "media"}
-            ]}
-        )
-        
-        # If no media records exist, return empty string
-        if count_result == 0:
-            return ""
-        
-        # If media records exist, query them with a dummy embedding
-        # This solves the "embeddings, documents, images, uris must be provided" error
+        # Use query to check if there are media records instead of count with where
         dummy_emb = get_embedding("media context")
         res = chat_vectors.query(
             query_embeddings=[dummy_emb],
@@ -109,13 +89,16 @@ def retrieve_media_context(chatId: str, n_results: int = 3) -> str:
                 {"chatId": chatId},
                 {"role": "media"}
             ]},
-            n_results=min(n_results, count_result),
+            n_results=100,  # Use a large number that won't exceed your data
             include=["documents", "metadatas"]
         )
         
-        # Get the documents returned
-        if res and "documents" in res and res["documents"]:
-            return "\n".join(res["documents"][0])
+        # If no results, return empty string
+        if not res["documents"] or not res["documents"][0]:
+            return ""
+            
+        # Otherwise, return up to n_results documents
+        return "\n".join(res["documents"][0][:n_results])
     except Exception as e:
         logger.warning(f"Error retrieving media context: {str(e)}")
     

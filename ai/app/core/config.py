@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 class Settings(BaseSettings):
     """Application configuration settings using Pydantic"""
     # Model paths
-    LLAMA_MODEL_PATH: str = "E:/Repos/gugugaga/ai/zephyr-7b-alpha.Q5_K_M.gguf"
-    MODEL_IMAGE_PATH: str = "../LLaVA-NeXT-Video-7B-hf"
+    LLAMA_MODEL_PATH: str = "./zephyr-7b-alpha.Q5_K_M.gguf"
+    MODEL_IMAGE_PATH: str = "./LLaVA-NeXT-Video-7B-hf"
     
     # Performance settings
     LLAMA_N_THREADS: int = 1           # CPU threads for inference

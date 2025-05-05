@@ -1,3 +1,7 @@
+
+
+sentencepiece>=0.1.99
+
 # Web framework
 fastapi>=0.100.0
 uvicorn>=0.23.0
@@ -12,6 +16,7 @@ chromadb>=0.4.15
 transformers>=4.35.0
 sentence-transformers>=2.2.2
 llama-cpp-python>=0.2.0
+# llama-cpp-python-cuda
 torch>=2.0.0
 torchvision>=0.15.0
 av>=10.0.0
@@ -19,12 +24,14 @@ accelerate>=0.21.0
 pillow>=10.0.0
 faster-whisper
 
-
 # Utils
 numpy>=1.24.0
 requests>=2.31.0
 python-multipart>=0.0.6
 
-# Optional: For better performance with LLaMA-cpp
-# llama-cpp-python-cuda
-# llama-cpp-python-cudann
+# CUDA Support - Uncomment these lines if you have CUDA available
+# torch>=2.0.0+cu118  # For CUDA 11.8 compatibility
+# torchvision>=0.15.0+cu118  # For CUDA 11.8 compatibility
+# llama-cpp-python-cuda  # CUDA version of llama-cpp-python
+# Install with specific CUDA version:
+# pip install llama-cpp-python-cuda==0.2.0 --no-cache-dir -f https://wheelhouse.mosaicml.io/wheels/llama-cpp-python-cuda/

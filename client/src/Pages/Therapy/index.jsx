@@ -47,7 +47,7 @@ function Therapy() {
   const [isFilterActive, setIsFilterActive] = useState(false);
 
   const handleProvinceChange = (e) => {
-    const selectedProvinceCode = parseInt(e.target.value);
+    const selectedProvinceCode = e.target.value ? parseInt(e.target.value) : "";
     setProvince(selectedProvinceCode);
     const selectedProvince = vietnamProvinces.find(
       (province) => province.code === selectedProvinceCode
@@ -57,15 +57,16 @@ function Therapy() {
   };
   const [currentPage, setCurrentPage] = useState(1);
   const expertsPerPage = 10;
-  const expertListToShow = isFilterActive ? filteredExperts : experts;
+  const expertListToShow = isFilterActive ? filteredExperts : experts || [];
 
   const indexOfLastExpert = currentPage * expertsPerPage;
   const indexOfFirstExpert = indexOfLastExpert - expertsPerPage;
-  const currentExperts = expertListToShow.slice(
+  const currentExperts = expertListToShow?.slice(
     indexOfFirstExpert,
     indexOfLastExpert
   );
-  const totalPages = Math.ceil(expertListToShow.length / expertsPerPage);
+  const totalPages = Math.floor((expertListToShow?.length - 1 + expertsPerPage) / expertsPerPage);
+
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const dispatch = useDispatch();
@@ -87,7 +88,7 @@ function Therapy() {
     };
     getAvarageAll();
   }, [experts]);
-  
+
   const getVisiblePages = () => {
     const pages = [];
     const maxVisible = 5;
@@ -123,35 +124,37 @@ function Therapy() {
   };
   const filterExperts = () => {
     if (!province && !district) {
-        alert("Please select a province or district before filtering.");
-        return;
+      alert("Please select a province or district before filtering.");
+      return;
     }
 
     if (isFilterActive) {
-        // Clear filter
-        setFilteredExperts([]);
-        setIsFilterActive(false);
+      // Clear filter
+      setFilteredExperts([]);
+      setIsFilterActive(false);
     } else {
-        // Apply filter
-        const filtered = experts.filter((expert) => {
-            const business = expert?.business_id;
-            if (!business) return false;
+      // Apply filter
+      const filtered = experts.filter((expert) => {
+        const business = expert?.business_id;
+        if (!business) return false;
 
-            const matchProvince = province
-                ? Number(business?.province) === Number(province)
-                : true;
-            const matchDistrict = district
-                ? Number(business?.district) === Number(district)
-                : true;
+        const matchProvince =
+          province !== ""
+            ? Number(business?.province) === Number(province)
+            : true;
+        const matchDistrict =
+          district !== ""
+            ? Number(business?.district) === Number(district)
+            : true;
 
-            return matchProvince && matchDistrict;
-        });
+        return matchProvince && matchDistrict;
+      });
 
-        setFilteredExperts(filtered);
-        setIsFilterActive(true);
-        setCurrentPage(1); // Reset to the first page
+      setFilteredExperts(filtered);
+      setIsFilterActive(true);
+      setCurrentPage(1); // Reset to the first page
     }
-};
+  };
   return (
     <Container className="wrapper fade-in">
       <h1 className="mt-4 fw-bolder fs-2 gradient-text  text-center animate__animated animate__fadeInDown">
@@ -214,7 +217,9 @@ function Therapy() {
       </Form.Group>
 
       <Form.Group className="mb-4">
-        <Form.Label className="custom-h2-label">Description (Gồm mô tả bệnh và địa điểm đang sinh sống)</Form.Label>
+        <Form.Label className="custom-h2-label">
+          Description (Gồm mô tả bệnh và địa điểm đang sinh sống)
+        </Form.Label>
         <Form.Control
           as="textarea"
           rows={4}
@@ -326,7 +331,10 @@ function Therapy() {
                   </div>
                   <div className="text-muted mb-2 fw-bold">
                     Average rating:{" "}
-                    {averageRatings[expert?._id]?.average_rating?.toFixed(2)}
+                    {typeof averageRatings[expert?._id]?.average_rating ===
+                    "number"
+                      ? averageRatings[expert?._id]?.average_rating.toFixed(2)
+                      : "N/A"}{" "}
                   </div>
                   <div className="text-muted mb-2">
                     Business name: {expert?.business_id?.business_name}

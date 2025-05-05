@@ -10,16 +10,20 @@ class PromptBuilder:
     Creates and formats prompts for multimodal models like LLaVA-Next
     """
     
-    def __init__(self, model_id: str):
+    def __init__(self, model_id: str, trust_remote_code: bool = False):
         """
         Initialize the prompt builder with the specified model ID
         
         Args:
             model_id: Path or HuggingFace ID for the LLaVA model
+            trust_remote_code: Whether to trust custom code in the model repo
         """
         logger.info(f"Initializing PromptBuilder with model: {model_id}")
         try:
-            self.processor = LlavaNextProcessor.from_pretrained(model_id)
+            self.processor = LlavaNextProcessor.from_pretrained(
+                model_id,
+                trust_remote_code=trust_remote_code
+            )
             logger.info(f"Successfully loaded processor from {model_id}")
         except Exception as e:
             logger.error(f"Failed to load processor: {str(e)}")

@@ -16,6 +16,13 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 _llava_model = None
 _llava_processor = None
 
+# Check if CUDA is available
+CUDA_AVAILABLE = torch.cuda.is_available()
+if CUDA_AVAILABLE:
+    logger.info("CUDA is available, using GPU for inference")
+else:
+    logger.warning("CUDA is not available, falling back to CPU (this will be much slower)")
+
 def _get_model_path() -> str:
     """Get the appropriate model path, checking local directory first"""
     local_dir = ROOT_DIR / MODEL_NAME
@@ -28,8 +35,12 @@ def _get_llava_model():
         try:
             model_path = _get_model_path()
             logger.info(f"Loading LLaVA model from: {model_path}")
+            # Use trust_remote_code=True to handle different model architectures properly
             _llava_model = LlavaNextForConditionalGeneration.from_pretrained(
-                model_path, torch_dtype=torch.float16, low_cpu_mem_usage=True
+                model_path, 
+                torch_dtype=torch.int8, 
+                low_cpu_mem_usage=True,
+                trust_remote_code=True  # This allows proper loading of LLaVA-Next-Video
             ).to("cuda")
         except Exception as e:
             logger.error(f"Error loading LLaVA model: {str(e)}")
@@ -67,7 +78,8 @@ def process_image(media_item: MediaItem, message_context: str = "") -> str:
         img = load_image(media_item.url)
 
         # Process with model
-        inputs = proc(text=data["text"], images=img, return_tensors="pt").to("cuda")
+        device = "cuda" if CUDA_AVAILABLE else "cpu"
+        inputs = proc(text=data["text"], images=img, return_tensors="pt").to(device)
         model = _get_llava_model()
 
         # Generate response
@@ -106,7 +118,8 @@ def process_video(media_item: MediaItem, message_context: str = "") -> str:
         clip = load_video_frames(media_item.url)
 
         # Process with model
-        inputs = proc(text=data["text"], videos=clip, padding=True, return_tensors="pt").to("cuda")
+        device = "cuda" if CUDA_AVAILABLE else "cpu"
+        inputs = proc(text=data["text"], videos=clip, padding=True, return_tensors="pt").to(device)
         model = _get_llava_model()
 
         # Generate response
