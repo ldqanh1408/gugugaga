@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     """Application configuration settings using Pydantic"""
     # Model paths
     LLAMA_MODEL_PATH: str = "./zephyr-7b-alpha.Q5_K_M.gguf"
-    MODEL_IMAGE_PATH: str = "./LLaVA-NeXT-Video-7B-hf"
+    MODEL_IMAGE_PATH: str = "./blip-image-captioning-base"
     
     # Performance settings
     LLAMA_N_THREADS: int = 1           # CPU threads for inference
@@ -46,7 +46,7 @@ else:
     logger.warning(f"No .env file found at {env_path}, using defaults")
 
 # Get model name from environment or use default
-MODEL_NAME = os.getenv('MODEL_NAME', 'LLaVA-Next-Video-7B-hf')
+MODEL_NAME = os.getenv('MODEL_NAME', 'blip-image-captioning-base')
 logger.info(f"Using model: {MODEL_NAME}")
 
 # Create settings instance
