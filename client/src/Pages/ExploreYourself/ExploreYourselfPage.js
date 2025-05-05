@@ -21,6 +21,7 @@ const ExploreYourselfPage = () => {
   const [futureMails, setFutureMails] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("3 months");
   const [showSentMails, setShowSentMails] = useState(false); // State để điều khiển hiển thị danh sách thư
+  const [zoomLevel, setZoomLevel] = useState("year"); // State to track zoom level
   const navigate = useNavigate();
 
   const generateMinuteData = (minutes) => {
@@ -168,6 +169,32 @@ const ExploreYourselfPage = () => {
     }
   };
 
+  const handleZoomIn = () => {
+    if (zoomLevel === "year") {
+      setZoomLevel("month");
+    } else if (zoomLevel === "month") {
+      setZoomLevel("minute");
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (zoomLevel === "minute") {
+      setZoomLevel("month");
+    } else if (zoomLevel === "month") {
+      setZoomLevel("year");
+    }
+  };
+
+  const getZoomedData = () => {
+    if (zoomLevel === "year") {
+      return emotionData.year.lineChart;
+    } else if (zoomLevel === "month") {
+      return emotionData.month.lineChart;
+    } else if (zoomLevel === "minute") {
+      return emotionData.today.lineChart;
+    }
+  };
+
   const toggleSentMails = () => {
     setShowSentMails(!showSentMails);
   };
@@ -241,8 +268,13 @@ const ExploreYourselfPage = () => {
               </select>
             </h4>
 
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button onClick={handleZoomOut}>-</button>
+              <button onClick={handleZoomIn}>+</button>
+            </div>
+
             {renderLineChart(
-              emotionData[timeRange].lineChart.map((item, index) => ({
+              getZoomedData().map((item, index) => ({
                 name: item.name, // Ensure name is passed correctly
                 value: item.value, // Ensure value is passed correctly
               }))
