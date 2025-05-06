@@ -13,6 +13,36 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const generateMinuteData = (minutes) => {
+  const data = [];
+  for (let i = 0; i < minutes; i++) {
+    data.push({
+      name: `${i} min`,
+      value: Math.floor(Math.random() * 100),
+    });
+  }
+  return data;
+};
+
+const emotionData = {
+  today: {
+    lineChart: generateMinuteData(60), // 60 minutes of data
+    pieChart: [30, 10, 20, 25, 15],
+  },
+  week: {
+    lineChart: generateMinuteData(60 * 7), // 7 days of minute data
+    pieChart: [35, 15, 15, 20, 15],
+  },
+  month: {
+    lineChart: generateMinuteData(60 * 30), // 30 days of minute data
+    pieChart: [40, 10, 10, 25, 15],
+  },
+  year: {
+    lineChart: generateMinuteData(60 * 24 * 365), // 1 year of minute data
+    pieChart: [45, 5, 10, 25, 15],
+  },
+};
+
 const ExploreYourselfPage = () => {
   const [activeTab, setActiveTab] = useState("statistics");
   const [mailContent, setMailContent] = useState("");
@@ -21,33 +51,9 @@ const ExploreYourselfPage = () => {
   const [futureMails, setFutureMails] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("3 months");
   const [showSentMails, setShowSentMails] = useState(false); // State để điều khiển hiển thị danh sách thư
+  const [zoomLevel, setZoomLevel] = useState("day"); // State to manage zoom level, default to 'day'
+  const [zoomData, setZoomData] = useState(emotionData.today.lineChart); // State to manage data for the current zoom level, default to 'day'
   const navigate = useNavigate();
-
-  const generateMinuteData = (minutes) => {
-    return Array.from({ length: minutes }, (_, index) => ({
-      name: `${index} phút`,
-      value: Math.floor(Math.random() * 5) + 1, // Random value between 1 and 5
-    }));
-  };
-
-  const emotionData = {
-    today: {
-      lineChart: generateMinuteData(60), // 60 minutes of data
-      pieChart: [30, 10, 20, 25, 15],
-    },
-    week: {
-      lineChart: generateMinuteData(60 * 7), // 7 days of minute data
-      pieChart: [35, 15, 15, 20, 15],
-    },
-    month: {
-      lineChart: generateMinuteData(60 * 30), // 30 days of minute data
-      pieChart: [40, 10, 10, 25, 15],
-    },
-    year: {
-      lineChart: generateMinuteData(60 * 24 * 365), // 1 year of minute data
-      pieChart: [45, 5, 10, 25, 15],
-    },
-  };
 
   // Load saved mails from localStorage
   useEffect(() => {
@@ -95,6 +101,34 @@ const ExploreYourselfPage = () => {
     return () => clearInterval(interval);
   }, [futureMails, navigate]);
 
+  useEffect(() => {
+    const storedMails = JSON.parse(localStorage.getItem("mailList")) || [];
+    const today = new Date();
+
+    // Lọc thư có ngày nhận đúng hôm nay
+    const mailsForToday = storedMails.filter((mail) => {
+      const receiveDate = new Date(mail.receiveDate);
+      return (
+        receiveDate.getFullYear() === today.getFullYear() &&
+        receiveDate.getMonth() === today.getMonth() &&
+        receiveDate.getDate() === today.getDate()
+      );
+    });
+
+    if (mailsForToday.length > 0) {
+      mailsForToday.forEach((mail) => {
+        alert(
+          `📬 Bạn có thư từ quá khứ!\n\nNội dung: ${mail.content}\nNgày gửi: ${mail.sendDate}\nNgày nhận: ${mail.receiveDate}`
+        );
+      });
+
+      // Nếu muốn hiển thị thư đầu tiên trong danh sách (tùy ý)
+      navigate("/today-mails", {
+        state: { mail: mailsForToday[0], fromExplore: true },
+      });
+    }
+  }, []);
+
   const handleSendMail = async () => {
     if (!mailContent || !sendDate) {
       alert("Vui lòng nhập nội dung và chọn ngày gửi");
@@ -104,7 +138,11 @@ const ExploreYourselfPage = () => {
     // Đặt giờ về 00:00:00 để so sánh chính xác ngày
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayString = today.toISOString().split("T")[0]; // Khôi phục dòng mã đã bị xóa
+    const todayString = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(today); // Đảm bảo todayString luôn phản ánh ngày hiện tại chính xác
 
     const selectedDate = new Date(sendDate);
     selectedDate.setHours(0, 0, 0, 0);
@@ -131,6 +169,9 @@ const ExploreYourselfPage = () => {
         read: false,
       };
 
+      console.log("Debug: newMail.receiveDate =", newMail.receiveDate);
+      console.log("Debug: todayString =", todayString);
+
       // Lưu vào backend
       if (payload?.userId) {
         await addFutureMail(payload.userId, newMail);
@@ -146,21 +187,58 @@ const ExploreYourselfPage = () => {
       setMailContent("");
       setSendDate("");
 
-      if (newMail.receiveDate > todayString) {
-        // Thông báo khi gửi thư cho tương lai
-        alert(
-          `📨 Thư đã được gửi thành công cho tương lai!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
-        );
-      } else {
-        // Thông báo khi gửi thư cho ngày hiện tại
+      console.log("Debug: Checking if newMail.receiveDate matches todayString");
+      console.log("Debug: newMail.receiveDate =", newMail.receiveDate);
+      console.log("Debug: todayString =", todayString);
+      console.log(
+        "Debug: Condition newMail.receiveDate === todayString =",
+        newMail.receiveDate === todayString
+      );
+
+      console.log("Debug: Starting handleSendMail");
+      console.log("Debug: newMail.receiveDate =", newMail.receiveDate);
+      console.log("Debug: todayString =", todayString);
+      console.log(
+        "Debug: typeof newMail.receiveDate =",
+        typeof newMail.receiveDate
+      );
+      console.log("Debug: typeof todayString =", typeof todayString);
+      console.log(
+        "Debug: newMail.receiveDate === todayString =",
+        newMail.receiveDate === todayString
+      );
+      console.log(
+        "Debug: newMail.receiveDate.trim() === todayString.trim() =",
+        newMail.receiveDate.trim() === todayString.trim()
+      );
+
+      const normalizedReceiveDate = new Date(newMail.receiveDate)
+        .toISOString()
+        .split("T")[0];
+      const normalizedTodayString = new Date(todayString)
+        .toISOString()
+        .split("T")[0];
+
+      const receiveDate = new Date(newMail.receiveDate);
+      const isToday =
+        receiveDate.getFullYear() === today.getFullYear() &&
+        receiveDate.getMonth() === today.getMonth() &&
+        receiveDate.getDate() === today.getDate();
+
+      if (isToday) {
         alert(
           `📨 Thư từ quá khứ đã đến!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
         );
 
-        // Chuyển hướng sang trang today-mails
-        navigate("/today-mails", {
-          state: { mail: newMail, fromExplore: true },
-        });
+        setTimeout(() => {
+          navigate("/today-mails", {
+            state: { mail: newMail, fromExplore: true },
+          });
+        }, 1000);
+      } else if (receiveDate > today) {
+        alert(
+          `📨 Thư đã được gửi thành công cho tương lai!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
+        );
       }
     } catch (error) {
       console.error("Lỗi khi gửi thư:", error);
@@ -170,6 +248,64 @@ const ExploreYourselfPage = () => {
 
   const toggleSentMails = () => {
     setShowSentMails(!showSentMails);
+  };
+
+  const handleZoom = (level, data) => {
+    setZoomLevel(level);
+    setZoomData(data);
+  };
+
+  const renderZoomControls = () => {
+    return (
+      <div style={{ marginBottom: "10px" }}>
+        <button
+          onClick={() => handleZoom("year", emotionData.year.lineChart)}
+          disabled={zoomLevel === "year"}
+        >
+          Year
+        </button>
+        <button
+          onClick={() => handleZoom("month", emotionData.month.lineChart)}
+          disabled={zoomLevel === "month"}
+        >
+          Month
+        </button>
+        <button
+          onClick={() => handleZoom("week", emotionData.week.lineChart)}
+          disabled={zoomLevel === "week"}
+        >
+          Week
+        </button>
+        <button
+          onClick={() => handleZoom("today", emotionData.today.lineChart)}
+          disabled={zoomLevel === "today"}
+        >
+          Day
+        </button>
+      </div>
+    );
+  };
+
+  const renderLineChartWithZoom = () => {
+    return (
+      <div>
+        {renderZoomControls()}
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={zoomData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="#8884d8"
+              activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    );
   };
 
   const renderEmotionDots = (data) => {
@@ -241,12 +377,7 @@ const ExploreYourselfPage = () => {
               </select>
             </h4>
 
-            {renderLineChart(
-              emotionData[timeRange].lineChart.map((item, index) => ({
-                name: item.name, // Ensure name is passed correctly
-                value: item.value, // Ensure value is passed correctly
-              }))
-            )}
+            {renderLineChartWithZoom()}
 
             <div className="pie-chart">
               <div
