@@ -127,7 +127,10 @@ def process_all_media(req: ChatRequest) -> str:
             if media_item.type == "image":
                 result = process_image(media_item, req.message)
             elif media_item.type == "audio":
-                result = process_audio(media_item)
+                # Pass the URL string and name explicitly
+                audio_result = process_audio(str(media_item.url), media_item.name)
+                # Format the audio transcription result
+                result = f"Audio transcription ({audio_result.get('audio_name', 'unknown')}): {audio_result.get('text', '[Failed to transcribe audio]')}"
             else:
                 logger.warning(f"Unsupported media type: {media_item.type}")
                 continue

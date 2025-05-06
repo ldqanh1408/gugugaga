@@ -30,7 +30,7 @@ def get_whisper_model() -> WhisperModel:
         try:
             # Model size options: "tiny", "base", "small", "medium", "large-v1", "large-v2", "large-v3"
             # Choose appropriate model based on available resources
-            model_size = "medium"
+            model_size = "base"
             
             if CUDA_AVAILABLE:
                 # GPU configuration
@@ -69,7 +69,7 @@ def download_audio(url: str) -> str:
     """
     try:
         if url.startswith(('http://', 'https://')):
-            resp = requests.get(url, stream=True, timeout=30)
+            resp = requests.get(url, stream=True, timeout=60)
             resp.raise_for_status()
             
             # Create a temporary file with the appropriate extension
@@ -150,12 +150,13 @@ def transcribe_audio(file_path: str) -> Dict[str, Union[str, float]]:
             os.unlink(file_path)
         raise
 
-def process_audio(url: str) -> Dict[str, Union[str, float]]:
+def process_audio(url: str, audio_name: str = "audio") -> Dict[str, Union[str, float]]:
     """
     Process audio from URL and return transcription
     
     Args:
         url: URL or file path to the audio
+        audio_name: Name of the audio file (for reference)
         
     Returns:
         Dictionary with transcription text and metadata
@@ -166,6 +167,9 @@ def process_audio(url: str) -> Dict[str, Union[str, float]]:
         
         # Transcribe the audio file
         result = transcribe_audio(file_path)
+        
+        # Add audio name to the result
+        result["audio_name"] = audio_name
         
         # Save the full transcript text to a file
         try:
@@ -190,5 +194,6 @@ def process_audio(url: str) -> Dict[str, Union[str, float]]:
         logger.error(f"Error processing audio from {url}: {str(e)}")
         return {
             "text": f"Failed to process audio: {str(e)}",
-            "error": str(e)
+            "error": str(e),
+            "audio_name": audio_name
         }

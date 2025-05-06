@@ -82,6 +82,12 @@ router.get(
 
 // Route for uploading audio files
 router.post(
+  "/v1/media",
+  jwt.authenticateAndAuthorize(["USER"]),
+  uploadAudio.single("file"),
+  uploadAudioFile
+);
+router.post(
   "/v1/upload-audio",
   jwt.authenticateAndAuthorize(["USER"]),
   uploadAudio.single("audio"),

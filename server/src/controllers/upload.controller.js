@@ -84,45 +84,35 @@ const uploadAvatar = (req, res) => {
 };
 
 // API to handle audio upload
-const uploadAudioFile = (req, res) => {
+const uploadAudioFile = async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "No file uploaded or path missing" 
+    if (!req.file) {
+      console.error("No audio file uploaded. Request details:", req.body);
+      return res.status(400).json({
+        success: false,
+        message: "No audio file uploaded"
       });
     }
 
-    const fileType = req.file.mimetype.split('/')[0];
-    const isValidType = ['image', 'audio'].includes(fileType);
-
-    if (!isValidType) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid file type. Only images and audio files are allowed." 
+    if (!req.file.mimetype.startsWith('audio/')) {
+      console.error("Invalid file type for audio upload. File details:", req.file);
+      return res.status(400).json({
+        success: false,
+        message: "Invalid file type. Only audio files are allowed."
       });
     }
 
-    const response = {
+    res.status(200).json({
       success: true,
-      message: `${fileType} uploaded successfully!`,
-      url: req.file.path || req.file.secure_url
-    };
-
-    // Add type-specific URLs for backward compatibility
-    if (fileType === 'audio') {
-      response.audioUrl = response.url;
-    } else if (fileType === 'image') {
-      response.imageUrl = response.url;
-    }
-
-    res.status(200).json(response);
+      message: "Audio uploaded successfully",
+      url: req.file.path,
+      audioUrl: req.file.path // For backwards compatibility
+    });
   } catch (error) {
-    console.error("Error uploading file:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error during file upload",
-      error: error.message 
+    console.error("Error in uploadAudioFile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error uploading audio file: " + (error.message || "Unknown error")
     });
   }
 };
@@ -143,20 +133,36 @@ const uploadImg = (req, res) => {
 
 
 // API to handle image upload
-const uploadImageFile = (req, res) => {
+const uploadImageFile = async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ success: false, message: "No file uploaded or path missing" });
+    if (!req.file) {
+      console.error("No image file uploaded. Request details:", req.body);
+      return res.status(400).json({
+        success: false,
+        message: "No image file uploaded"
+      });
+    }
+
+    if (!req.file.mimetype.startsWith('image/')) {
+      console.error("Invalid file type for image upload. File details:", req.file);
+      return res.status(400).json({
+        success: false,
+        message: "Invalid file type. Only image files are allowed."
+      });
     }
 
     res.status(200).json({
       success: true,
-      message: "Image uploaded successfully!",
-      imageUrl: req.file.path || req.file.secure_url, // Return secure_url
+      message: "Image uploaded successfully",
+      url: req.file.path,
+      imageUrl: req.file.path // For backwards compatibility
     });
   } catch (error) {
-    console.error("Error uploading image:", error);
-    res.status(500).json({ success: false, message: "Server error during image upload" });
+    console.error("Error in uploadImageFile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error uploading image file: " + (error.message || "Unknown error")
+    });
   }
 };
 
