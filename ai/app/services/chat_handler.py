@@ -83,30 +83,6 @@ def process_image(media_item: MediaItem, message_context: str = "") -> str:
         logger.error(f"Error processing image: {str(e)}")
         return f"Image analysis ({media_item.name}): [Failed to analyze this image]"
 
-def process_audio(media_item: MediaItem) -> str:
-    """
-    Process audio and generate transcription
-    
-    Args:
-        media_item: Media item containing audio URL
-        
-    Returns:
-        Text transcription of the audio
-    """
-    try:
-        # Process audio using the audio processor
-        result = process_audio(media_item.url)
-        
-        # Extract transcription text
-        transcription = result.get("text", "")
-        language = result.get("language", "unknown")
-        
-        # Format the response with some metadata
-        return f"Audio transcription ({media_item.name}, {language}): {transcription}"
-    except Exception as e:
-        logger.error(f"Error processing audio: {str(e)}")
-        return f"Audio transcription ({media_item.name}): [Failed to transcribe audio]"
-
 def process_all_media(req: ChatRequest) -> str:
     """
     Process all media items in the request and return combined context
@@ -127,10 +103,10 @@ def process_all_media(req: ChatRequest) -> str:
             if media_item.type == "image":
                 result = process_image(media_item, req.message)
             elif media_item.type == "audio":
-                # Pass the URL string and name explicitly
-                audio_result = process_audio(str(media_item.url), media_item.name)
+                # Fix: Use process_audio with only the URL
+                result = process_audio(str(media_item.url))
                 # Format the audio transcription result
-                result = f"Audio transcription ({audio_result.get('audio_name', 'unknown')}): {audio_result.get('text', '[Failed to transcribe audio]')}"
+                result = f"Audio transcription ({media_item.name}): {result.get('text', '[Failed to transcribe audio]')}"
             else:
                 logger.warning(f"Unsupported media type: {media_item.type}")
                 continue
