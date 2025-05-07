@@ -135,19 +135,17 @@ const ExploreYourselfPage = () => {
       return;
     }
 
-    // Đặt giờ về 00:00:00 để so sánh chính xác ngày
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayString = new Intl.DateTimeFormat("en-CA", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
-    }).format(today); // Đảm bảo todayString luôn phản ánh ngày hiện tại chính xác
+    }).format(today);
 
     const selectedDate = new Date(sendDate);
     selectedDate.setHours(0, 0, 0, 0);
 
-    // Kiểm tra nếu chọn ngày trong quá khứ
     if (selectedDate < today) {
       alert("Không thể gửi thư cho ngày trong quá khứ!");
       return;
@@ -156,68 +154,32 @@ const ExploreYourselfPage = () => {
     try {
       const payload = await getPayLoad();
       const now = new Date();
-      const sendDateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`; // Đảm bảo ngày gửi luôn là ngày hiện tại với định dạng YYYY-MM-DD
+      const sendDateTime = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+      ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
       const newMail = {
         id: Date.now(),
         title:
           mailContent.substring(0, 30) + (mailContent.length > 30 ? "..." : ""),
         content: mailContent,
-        sendDate: sendDateTime, // Ngày gửi được đặt chính xác là ngày hiện tại
-        receiveDate: sendDate, // Ngày nhận là ngày được chọn trong lịch
+        sendDate: sendDateTime,
+        receiveDate: sendDate,
         notified: false,
         read: false,
       };
 
-      console.log("Debug: newMail.receiveDate =", newMail.receiveDate);
-      console.log("Debug: todayString =", todayString);
-
-      // Lưu vào backend
       if (payload?.userId) {
         await addFutureMail(payload.userId, newMail);
       }
 
-      // Lưu vào localStorage
       const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
       const updatedMails = [...savedMails, newMail];
       localStorage.setItem("futureMails", JSON.stringify(updatedMails));
       setFutureMails(updatedMails);
 
-      // Reset form
       setMailContent("");
       setSendDate("");
-
-      console.log("Debug: Checking if newMail.receiveDate matches todayString");
-      console.log("Debug: newMail.receiveDate =", newMail.receiveDate);
-      console.log("Debug: todayString =", todayString);
-      console.log(
-        "Debug: Condition newMail.receiveDate === todayString =",
-        newMail.receiveDate === todayString
-      );
-
-      console.log("Debug: Starting handleSendMail");
-      console.log("Debug: newMail.receiveDate =", newMail.receiveDate);
-      console.log("Debug: todayString =", todayString);
-      console.log(
-        "Debug: typeof newMail.receiveDate =",
-        typeof newMail.receiveDate
-      );
-      console.log("Debug: typeof todayString =", typeof todayString);
-      console.log(
-        "Debug: newMail.receiveDate === todayString =",
-        newMail.receiveDate === todayString
-      );
-      console.log(
-        "Debug: newMail.receiveDate.trim() === todayString.trim() =",
-        newMail.receiveDate.trim() === todayString.trim()
-      );
-
-      const normalizedReceiveDate = new Date(newMail.receiveDate)
-        .toISOString()
-        .split("T")[0];
-      const normalizedTodayString = new Date(todayString)
-        .toISOString()
-        .split("T")[0];
 
       const receiveDate = new Date(newMail.receiveDate);
       const isToday =
@@ -227,10 +189,14 @@ const ExploreYourselfPage = () => {
 
       if (isToday) {
         alert(
-          `📨 Thư từ quá khứ đã đến!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
+          `📨 Thư đã được gửi thành công cho tương lai!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
         );
 
         setTimeout(() => {
+          alert(
+            `📨 Thư từ quá khứ đã đến!\n\nNội dung: ${newMail.content}\nNgày gửi: ${newMail.sendDate}\nNgày nhận: ${newMail.receiveDate}\n\nChúc bạn trải nghiệm vui vẻ 🥰✨`
+          );
+
           navigate("/today-mails", {
             state: { mail: newMail, fromExplore: true },
           });
