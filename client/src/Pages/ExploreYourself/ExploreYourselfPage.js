@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Brush, // Import Brush for zoom functionality
 } from "recharts";
 
 const generateMinuteData = (minutes) => {
@@ -22,6 +23,28 @@ const generateMinuteData = (minutes) => {
     });
   }
   return data;
+};
+
+const generateDenseRatingData = (startYear, endYear) => {
+  const data = [];
+  for (let year = startYear; year <= endYear; year++) {
+    for (let month = 1; month <= 12; month++) {
+      for (let day = 1; day <= 30; day++) {
+        // Simulate daily data for each month
+        data.push({
+          name: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+          value: Math.floor(Math.random() * 1000),
+        });
+      }
+    }
+  }
+  return data;
+};
+
+const ratingData = {
+  allTime: generateDenseRatingData(2015, 2025),
+  year: generateDenseRatingData(2025, 2025),
+  month: generateDenseRatingData(2025, 2025).slice(0, 31), // Fake daily data for May 2025
 };
 
 const emotionData = {
@@ -51,8 +74,8 @@ const ExploreYourselfPage = () => {
   const [futureMails, setFutureMails] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("3 months");
   const [showSentMails, setShowSentMails] = useState(false); // State để điều khiển hiển thị danh sách thư
-  const [zoomLevel, setZoomLevel] = useState("day"); // State to manage zoom level, default to 'day'
-  const [zoomData, setZoomData] = useState(emotionData.today.lineChart); // State to manage data for the current zoom level, default to 'day'
+  const [zoomLevel, setZoomLevel] = useState("allTime");
+  const [zoomData, setZoomData] = useState(ratingData.allTime);
   const navigate = useNavigate();
 
   // Load saved mails from localStorage
@@ -216,78 +239,61 @@ const ExploreYourselfPage = () => {
     setShowSentMails(!showSentMails);
   };
 
-  const handleZoom = (level, data) => {
+  const handleZoom = (level) => {
     setZoomLevel(level);
-    setZoomData(data);
+    if (level === "allTime") {
+      setZoomData(ratingData.allTime);
+    } else if (level === "year") {
+      setZoomData(ratingData.year);
+    } else if (level === "month") {
+      setZoomData(ratingData.month);
+    }
   };
 
-  const renderZoomControls = () => {
-    return (
-      <div style={{ marginBottom: "10px" }}>
-        <button
-          onClick={() => handleZoom("year", emotionData.year.lineChart)}
-          disabled={zoomLevel === "year"}
-        >
-          Year
-        </button>
-        <button
-          onClick={() => handleZoom("month", emotionData.month.lineChart)}
-          disabled={zoomLevel === "month"}
-        >
-          Month
-        </button>
-        <button
-          onClick={() => handleZoom("week", emotionData.week.lineChart)}
-          disabled={zoomLevel === "week"}
-        >
-          Week
-        </button>
-        <button
-          onClick={() => handleZoom("today", emotionData.today.lineChart)}
-          disabled={zoomLevel === "today"}
-        >
-          Day
-        </button>
-      </div>
-    );
-  };
+  const renderZoomControls = () => (
+    <div style={{ marginBottom: "10px" }}>
+      <button
+        onClick={() => handleZoom("allTime")}
+        disabled={zoomLevel === "allTime"}
+      >
+        All Time
+      </button>
+      <button
+        onClick={() => handleZoom("year")}
+        disabled={zoomLevel === "year"}
+      >
+        Year
+      </button>
+      <button
+        onClick={() => handleZoom("month")}
+        disabled={zoomLevel === "month"}
+      >
+        Month
+      </button>
+    </div>
+  );
 
-  const renderLineChartWithZoom = () => {
-    return (
-      <div>
-        {renderZoomControls()}
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={zoomData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  };
-
-  const renderEmotionDots = (data) => {
-    return data.map((percent, index) => {
-      const className = ["happy", "sad", "angry", "excited", "neutral"][index];
-      return (
-        <div
-          key={index}
-          style={{ display: "flex", alignItems: "center", margin: "5px 0" }}
-        >
-          <span className={`dot ${className}`} />
-          <span style={{ marginLeft: "5px" }}>{percent}%</span>
-        </div>
-      );
-    });
-  };
+  const renderLineChartWithZoom = () => (
+    <div>
+      {renderZoomControls()}
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={zoomData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Brush dataKey="name" height={30} stroke="#8884d8" />{" "}
+          {/* Add Brush for zoom functionality */}
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
 
   const renderLineChart = (data) => {
     return (
@@ -344,40 +350,6 @@ const ExploreYourselfPage = () => {
             </h4>
 
             {renderLineChartWithZoom()}
-
-            <div className="pie-chart">
-              <div
-                style={{
-                  width: "200px",
-                  height: "200px",
-                  borderRadius: "50%",
-                  background: `conic-gradient(
-                  #7ed957 ${emotionData[timeRange].pieChart[0]}%,
-                  #67c6e3 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1]}%,
-                  #f15b2a 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1] + emotionData[timeRange].pieChart[2]}%,
-                  #f891c5 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1] + emotionData[timeRange].pieChart[2] + emotionData[timeRange].pieChart[3]}%,
-                  #ffd966 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1] + emotionData[timeRange].pieChart[2] + emotionData[timeRange].pieChart[3] + emotionData[timeRange].pieChart[4]}%
-                )`,
-                  margin: "0 auto",
-                }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginTop: "20px",
-                }}
-              >
-                <div>
-                  {renderEmotionDots(
-                    emotionData[timeRange].pieChart.slice(0, 3)
-                  )}
-                </div>
-                <div>
-                  {renderEmotionDots(emotionData[timeRange].pieChart.slice(3))}
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
