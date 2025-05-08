@@ -2,18 +2,19 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  getUsers,
-  deleteUser,
-  getUser,
-  loadProfile,
-  uploadProfile,
   addFutureMail,
   getFutureMails,
+  updateFutureMail,
+  getTodayMails,
+  markMailNotified,
   getTreatment,
   updateTreatment,
   getReceivers,
   getBooking,
+
 } = require("../controllers/user.controller");
+  
+
 
 const {
   upload,
@@ -26,16 +27,13 @@ const {
 
 const { authenticateJWT } = require("../middleware");
 const jwt = require("../middleware/authenticateJWT");
-
+const { authenticateAndAuthorize } = require("../middleware/authenticateJWT");
 // Định nghĩa route
-router.get("/v1/users", getUsers);
-router.delete("/v1/users/:userId", deleteUser);
-router.get("/v1/users/me", getUser);
+
 
 // Future mails (commented out)
 // router.post("/:userId/future-mails", authenticateJWT, addFutureMail);
 // router.get("/:userId/future-mails", authenticateJWT, getFutureMails);
-
 // Route upload avatar
 router.post(
   "/v1/users/upload",
@@ -49,17 +47,27 @@ router.get(
   jwt.authenticateAndAuthorize(["USER"]),
   getTreatment
 );
+router.post(
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  addFutureMail
+);
 
 router.get(
-  "/v1/users/load-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
-  loadProfile
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  getFutureMails
 );
 
 router.patch(
-  "/v1/users/upload-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
-  uploadProfile
+  "/v1/users/:userId/future-mails/:mailId",
+  authenticateAndAuthorize(["USER"]),
+  updateFutureMail
+);
+router.get(
+  "/v1/users/:userId/today-mails",
+  authenticateAndAuthorize(["USER"]),
+  getTodayMails
 );
 
 router.patch(
@@ -100,6 +108,12 @@ router.post(
   jwt.authenticateAndAuthorize(["USER"]),
   uploadImage.single("image"),
   uploadImageFile
+);
+
+router.patch(
+  "/v1/users/:userId/future-mails/:mailId/notify",
+  authenticateAndAuthorize(["USER"]),
+  markMailNotified
 );
 
 module.exports = router;
