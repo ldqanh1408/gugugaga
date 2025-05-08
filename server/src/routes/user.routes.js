@@ -2,17 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  getUsers,
-  deleteUser,
-  getUser,
-  loadProfile,
-  uploadProfile,
   addFutureMail,
   getFutureMails,
-  getTreatment,
-  updateTreatment,
-  getReceivers,
-  getBooking,
+  updateFutureMail,
+  getTodayMails,
+  markMailNotified,
 } = require("../controllers/user.controller");
 
 const {
@@ -49,17 +43,27 @@ router.get(
   jwt.authenticateAndAuthorize(["USER"]),
   getTreatment
 );
+router.post(
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  addFutureMail
+);
 
 router.get(
-  "/v1/users/load-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
-  loadProfile
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  getFutureMails
 );
 
 router.patch(
-  "/v1/users/upload-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
-  uploadProfile
+  "/v1/users/:userId/future-mails/:mailId",
+  authenticateAndAuthorize(["USER"]),
+  updateFutureMail
+);
+router.get(
+  "/v1/users/:userId/today-mails",
+  authenticateAndAuthorize(["USER"]),
+  getTodayMails
 );
 
 router.patch(
@@ -100,6 +104,12 @@ router.post(
   jwt.authenticateAndAuthorize(["USER"]),
   uploadImage.single("image"),
   uploadImageFile
+);
+
+router.patch(
+  "/v1/users/:userId/future-mails/:mailId/notify",
+  authenticateAndAuthorize(["USER"]),
+  markMailNotified
 );
 
 module.exports = router;

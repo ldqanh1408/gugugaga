@@ -1,31 +1,17 @@
-import axios from "axios";
+import api from "./api";
+import { jwtDecode } from "jwt-decode";
 
-const API_URL = "http://localhost:5000/api/v1";
-
-const api = axios.create({
-  baseURL: API_URL,
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
-
-const api_2 = axios.create({
-  baseURL: "http://localhost:5000/api/v2",
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
-
-const api_3 = axios.create({
-  baseURL: "http://localhost:5000/api/v3",
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
-export const register = async (payload) => {
+export const getPayLoad = async () => {
   try {
-    const response = await api_2.post("/register", payload);
-    return response?.data;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+    const decoded = jwtDecode(token);
+    return decoded;
   } catch (error) {
-    console.error("Error fetching:", error?.response?.data?.errors);
-    throw error;
+    console.error("Error decoding token:", error);
+    return null;
   }
 };
 
@@ -129,8 +115,46 @@ export async function changePassword({
     );
     return response.data;
   } catch (error) {
-    setError("Change password has failed");
-    console.error({ message: error.message });
-    return { success: false, message: error.message };
+    console.error("Login error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đăng nhập thất bại",
+    };
   }
-}
+};
+
+export const register = async (payload) => {
+  try {
+    const response = await api.post("/v1/auth/register", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Register error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đăng ký thất bại",
+    };
+  }
+};
+
+
+export const changePassword = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không tìm thấy token" };
+    }
+
+    const response = await api.post("/v1/auth/change-password", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Change password error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đổi mật khẩu thất bại",
+    };
+  }
+};

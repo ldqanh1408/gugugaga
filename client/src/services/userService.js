@@ -1,9 +1,9 @@
 import axios from "axios";
-import { getToken, getPayLoad } from "../services";
-const API_URL = "http://localhost:5000/api/v1/";
+import { getToken, getPayLoad } from "./authService";
+const API_URL = "http://localhost:5000/api/v1";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: API_URL.replace(/\/v1\/v1/, "/v1"), // Fix duplicate /v1
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
@@ -28,7 +28,7 @@ const getUser = async () => {
     const response = await axios.get(`${API_URL}users/me`);
     return response.data.user;
   } catch (error) {
-    console.error(`Error fetching user with id :`, error);
+    console.error(`Error fetching user with id:`, error);
     throw error;
   }
 };
@@ -38,7 +38,7 @@ const addUser = async (user) => {
     const response = await axios.post(`${API_URL}/users`, user);
     return response.data;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error adding user:", error);
     throw error;
   }
 };
@@ -52,15 +52,15 @@ const uploadAvatar = async (file) => {
     const formData = new FormData();
     formData.append("avatar", file);
 
-    const response = await axios.post(`${API_URL}users/upload`, formData, {
+    const response = await axios.post(`${API_URL}/users/upload`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
       withCredentials: true,
     });
 
-    return response.data; // Trả về fileId (GridFS)
+    return response.data;
   } catch (error) {
     return { success: false, message: error.message };
   }
@@ -68,7 +68,7 @@ const uploadAvatar = async (file) => {
 
 const getAvatar = async (fileId) => {
   try {
-    return `${API_URL}avatar/${fileId}`; // URL để fetch ảnh từ backend
+    return `${API_URL}/avatar/${fileId}`;
   } catch (error) {
     return { success: false, message: error.message };
   }
@@ -77,20 +77,19 @@ const getAvatar = async (fileId) => {
 const loadProfile = async () => {
   try {
     const token = await getToken();
-
     if (!token) {
       console.error("Token không tồn tại");
       return null;
     }
-    const response = await api.get(`${API_URL}users/load-profile`, {
+    const response = await api.get(`/users/load-profile`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
-    console.log("Error fetching user profile:", error);
-    return { message: true };
+    console.error("Error loading profile:", error);
+    return { success: false, message: error.message };
   }
 };
 
@@ -100,57 +99,52 @@ const uploadProfile = async ({ profile, avatarFile }) => {
     if (!token) {
       return { success: false, message: "Không có token" };
     }
-    let avatarUrl = profile.avatar; // Nếu không thay đổi ảnh thì giữ nguyên
+    let avatarUrl = profile.avatar;
 
-    // **Bước 1: Upload avatar lên Cloudinary (nếu có file mới được chọn)**
     if (avatarFile) {
       const formData = new FormData();
-      formData.append("avatar", avatarFile); // Thêm file avatar vào form data
+      formData.append("avatar", avatarFile);
       const uploadResponse = await axios.post(
-        `${API_URL}users/upload`,
+        `${API_URL}/users/upload`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`, // Gửi token trong header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      // Lấy URL ảnh từ response nếu upload thành công
       if (uploadResponse.data && uploadResponse.data.success) {
         avatarUrl = uploadResponse.data.imageUrl;
       } else {
         return { success: false, message: "❌ Upload avatar thất bại." };
       }
     }
-    // **Bước 2: Cập nhật profile (bao gồm avatar mới nếu có)**
+
     const updatedProfile = {
       ...profile,
-      avatar: avatarUrl, // Cập nhật avatar mới hoặc giữ nguyên nếu không đổi
+      avatar: avatarUrl,
     };
-    // Gửi thông tin profile đã cập nhật lên backend
     const data = await axios.patch(
-      `${API_URL}users/upload-profile`,
+      `${API_URL}/users/upload-profile`,
       updatedProfile,
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Gửi token để xác thực
+          Authorization: `Bearer ${token}`,
         },
-        withCredentials: true, // Đảm bảo cookie được gửi kèm
+        withCredentials: true,
       }
     );
-    
+
     return data.data;
   } catch (error) {
     console.error("❌ Lỗi khi cập nhật profile:", error);
-    alert("❌ Có lỗi xảy ra khi cập nhật profile.");
     return { success: false, message: "Lỗi khi cập nhật profile." };
   }
 };
 
-
-export const getTreaments = async () => {
+const getTreaments = async () => {
   try {
     const token = await getToken();
     if (!token) {
@@ -159,17 +153,16 @@ export const getTreaments = async () => {
     const url = "/v1/users/me/treatments";
     const response = await api.get(url, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response);
     return response.data;
   } catch (error) {
     return { success: false, message: error.message };
   }
 };
 
-export const updateTreatment = async (payload) => {
+const updateTreatment = async (payload) => {
   try {
     const token = await getToken();
     if (!token) {
@@ -178,7 +171,7 @@ export const updateTreatment = async (payload) => {
     const url = `/v1/users/me/treatments/${payload.treatment_id}`;
     const response = await api.patch(url, payload.data, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -187,7 +180,7 @@ export const updateTreatment = async (payload) => {
   }
 };
 
-export const getReceivers = async (payload) => {
+const getReceivers = async (payload) => {
   try {
     const token = await getToken();
     if (!token) {
@@ -196,7 +189,7 @@ export const getReceivers = async (payload) => {
     const url = `/v1/users/me/receivers`;
     const response = await api.get(url, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -205,7 +198,7 @@ export const getReceivers = async (payload) => {
   }
 };
 
-export const createBooking = async (payload) => {
+const createBooking = async (payload) => {
   try {
     const token = await getToken();
     if (!token) {
@@ -214,7 +207,7 @@ export const createBooking = async (payload) => {
     const url = `/v1/bookings`;
     const response = await api.post(url, payload, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -225,44 +218,162 @@ export const createBooking = async (payload) => {
 
 const addFutureMail = async (userId, mailData) => {
   try {
-    const token = await getToken();
-    const response = await axios.post(
-      `${API_URL}users/${userId}/future-mails`,
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+
+    const response = await api.post(
+      `/v1/users/${userId}/future-mails`,
       mailData,
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to add mail");
+    }
+
     return response.data;
   } catch (error) {
     console.error("Error adding future mail:", error);
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
     throw error;
   }
 };
 
 const getFutureMails = async (userId) => {
   try {
-    const token = await getToken();
-    const response = await axios.get(`${API_URL}users/${userId}/future-mails`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return [];
+    }
+
+    const response = await api.get(`/v1/users/${userId}/future-mails`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    return response.data.futureMails;
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch mails");
+    }
+
+    const mails = response.data.futureMails || [];
+    return mails.sort((a, b) => new Date(b.sendDate) - new Date(a.sendDate));
   } catch (error) {
     console.error("Error fetching future mails:", error);
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return [];
+  }
+};
+
+const updateFutureMail = async (userId, mailId, updates) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "No token found" };
+    }
+
+    const response = await axios.patch(
+      `${API_URL}/users/${userId}/future-mails/${mailId}`,
+      updates,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response.data.mail;
+  } catch (error) {
+    console.error("Error updating future mail:", error);
     throw error;
   }
-}
+};
 
-export const cancelBooking = async (payload) => {
+const getTodayMails = async (userId) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return [];
+    }
+
+    const response = await api.get(`/users/${userId}/today-mails`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch today's mails");
+    }
+
+    return response.data.todayMails || [];
+  } catch (error) {
+    console.error("Error fetching today's mails:", error);
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return [];
+  }
+};
+
+const markMailNotified = async (userId, mailId) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      throw new Error("No token found");
+    }
+
+    const response = await api.patch(
+      `/v1/users/${userId}/future-mails/${mailId}/notify`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to mark mail as notified"
+      );
+    }
+
+    return response.data.mail;
+  } catch (error) {
+    console.error("Error marking mail as notified:", error);
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    throw error;
+  }
+};
+
+const cancelBooking = async (payload) => {
   try {
     const token = await getToken();
     if (!token) {
       return { success: false, message: "Không có token" };
     }
-    const url = `v1/bookings/${payload.booking_id}`;
+    const url = `/v1/bookings/${payload.booking_id}`;
     const response = await api.delete(url, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -271,7 +382,7 @@ export const cancelBooking = async (payload) => {
   }
 };
 
-export const getMyBooking = async (payload) => {
+const getMyBooking = async (payload) => {
   try {
     const token = await getToken();
     if (!token) {
@@ -280,7 +391,7 @@ export const getMyBooking = async (payload) => {
     const url = `/v1/users/me/bookings`;
     const response = await api.get(url, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -289,17 +400,16 @@ export const getMyBooking = async (payload) => {
   }
 };
 
-export const acceptBooking = async (payload) => {
+const acceptBooking = async (payload) => {
   try {
     const token = await getToken();
     if (!token) {
       return { success: false, message: "Không có token" };
     }
-    console.log("Payload:", payload)
     const url = `/v1/bookings/${payload.booking_id}/accept`;
     const response = await api.post(url, payload, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -314,7 +424,6 @@ const uploadAudio = async (audioFile) => {
   try {
     const token = await getToken();
     if (!token) {
-      return { success: false, message: "Token not found" };
     }
 
     const formData = new FormData();
@@ -371,8 +480,6 @@ const uploadImage = async (imageFile) => {
 export {
   getUsers,
   getUser,
-  addUser,
-  getAvatar,
   uploadAvatar,
   loadProfile,
   uploadProfile,
@@ -380,4 +487,14 @@ export {
   addFutureMail,
   getFutureMails,
   uploadAudio,
+  updateFutureMail,
+  getTodayMails,
+  markMailNotified,
+  getTreaments,
+  updateTreatment,
+  getReceivers,
+  createBooking,
+  cancelBooking,
+  getMyBooking,
+  acceptBooking,
 };

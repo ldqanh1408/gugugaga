@@ -2,7 +2,61 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPayLoad } from "../../services/authService";
 import { addFutureMail } from "../../services/userService";
+import Swal from "sweetalert2";
 import "./ExploreYourselfPage.css";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Brush, // Import Brush for zoom functionality
+} from "recharts";
+
+const generateMinuteData = (minutes) => {
+  const data = [];
+  for (let i = 0; i < minutes; i++) {
+    data.push({
+      name: `${i} min`,
+      value: Math.floor(Math.random() * 100),
+    });
+  }
+  return data;
+};
+
+const generateDenseRatingData = (startYear, endYear) => {
+  const data = [];
+  for (let year = startYear; year <= endYear; year++) {
+    for (let month = 1; month <= 12; month++) {
+      for (let day = 1; day <= 30; day++) {
+        // Simulate daily data for each month
+        data.push({
+          name: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+          value: Math.floor(Math.random() * 1000),
+        });
+      }
+    }
+  }
+  return data;
+};
+
+const ratingData = {
+  allTime: generateDenseRatingData(2015, 2025),
+  year: generateDenseRatingData(2025, 2025),
+  month: generateDenseRatingData(2025, 2025).slice(0, 31), // Fake daily data for May 2025
+};
+
+const showCustomAlert = (title, content) => {
+  Swal.fire({
+    title: title,
+    html: content,
+    background: "#ffe4e1", // Light pink background
+    confirmButtonColor: "#ff69b4", // Pink confirm button
+    icon: "info",
+  });
+};
 
 const ExploreYourselfPage = () => {
   const [activeTab, setActiveTab] = useState("statistics");
@@ -11,31 +65,10 @@ const ExploreYourselfPage = () => {
   const [timeRange, setTimeRange] = useState("today");
   const [futureMails, setFutureMails] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("3 months");
+  const [showSentMails, setShowSentMails] = useState(false); // State để điều khiển hiển thị danh sách thư
+  const [zoomLevel, setZoomLevel] = useState("allTime");
+  const [zoomData, setZoomData] = useState(ratingData.allTime);
   const navigate = useNavigate();
-
-  // Mock data for statistics
-  const emotionData = {
-    today: {
-      lineChart: [3, 4, 2, 5, 4, 3, 4],
-      pieChart: [30, 10, 20, 25, 15],
-    },
-    week: {
-      lineChart: [3, 4, 2, 5, 4, 3, 4, 2, 3, 4, 3, 5, 4, 3],
-      pieChart: [35, 15, 15, 20, 15],
-    },
-    month: {
-      lineChart: Array(30)
-        .fill()
-        .map(() => Math.floor(Math.random() * 5)),
-      pieChart: [40, 10, 10, 25, 15],
-    },
-    year: {
-      lineChart: Array(12)
-        .fill()
-        .map(() => Math.floor(Math.random() * 5)),
-      pieChart: [45, 5, 10, 25, 15],
-    },
-  };
 
   // Load saved mails from localStorage
   useEffect(() => {
@@ -47,21 +80,26 @@ const ExploreYourselfPage = () => {
   useEffect(() => {
     const checkMails = () => {
       const now = new Date().toISOString().split("T")[0];
+      console.log("Debug: Current date (now) =", now);
+
       const pendingMails = futureMails.filter(
         (mail) => mail.receiveDate === now && !mail.notified
       );
 
       if (pendingMails.length > 0) {
+        console.log("Debug: Pending mails for today =", pendingMails);
         const firstMail = pendingMails[0];
-        if (
-          window.confirm(
-            `Bạn có ${pendingMails.length} thư từ quá khứ đến! Bạn muốn xem ngay bây giờ không?`
-          )
-        ) {
-          navigate("/today-mails", { state: { mail: firstMail } });
-        }
+        const formattedSendDate = firstMail.sendDate.split("T")[0];
+        const formattedReceiveDate = firstMail.receiveDate;
 
-        // Đánh dấu tất cả thư đã thông báo
+        showCustomAlert(
+          "📨 Thư từ quá khứ đã đến!",
+          `<p><strong>Nội dung:</strong> ${firstMail.title}</p>
+           <p><strong>Ngày gửi:</strong> ${formattedSendDate}</p>
+           <p><strong>Ngày nhận:</strong> ${formattedReceiveDate}</p>
+           <p>Chúc bạn trải nghiệm vui vẻ 🥰✨</p>`
+        );
+
         const updatedMails = futureMails.map((mail) =>
           pendingMails.find((m) => m.id === mail.id)
             ? { ...mail, notified: true }
@@ -69,16 +107,46 @@ const ExploreYourselfPage = () => {
         );
         setFutureMails(updatedMails);
         localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+      } else {
+        console.log("Debug: No pending mails for today.");
       }
     };
 
-    // Kiểm tra ngay khi component mount
     checkMails();
-
-    // Kiểm tra mỗi phút
     const interval = setInterval(checkMails, 60000);
     return () => clearInterval(interval);
-  }, [futureMails, navigate]);
+  }, [futureMails, navigate]); // Thêm `navigate` vào dependency
+
+  useEffect(() => {
+    const storedMails = JSON.parse(localStorage.getItem("mailList")) || [];
+    const today = new Date();
+
+    // Lọc thư có ngày nhận đúng hôm nay
+    const mailsForToday = storedMails.filter((mail) => {
+      const receiveDate = new Date(mail.receiveDate);
+      return (
+        receiveDate.getFullYear() === today.getFullYear() &&
+        receiveDate.getMonth() === today.getMonth() &&
+        receiveDate.getDate() === today.getDate()
+      );
+    });
+
+    if (mailsForToday.length > 0) {
+      mailsForToday.forEach((mail) => {
+        showCustomAlert(
+          "📬 Bạn có thư từ quá khứ!",
+          `<p><strong>Nội dung:</strong> ${mail.content}</p>
+           <p><strong>Ngày gửi:</strong> ${mail.sendDate}</p>
+           <p><strong>Ngày nhận:</strong> ${mail.receiveDate}</p>`
+        );
+      });
+
+      // Nếu muốn hiển thị thư đầu tiên trong danh sách (tùy ý)
+      navigate("/today-mails", {
+        state: { mail: mailsForToday[0], fromExplore: true },
+      });
+    }
+  }, []);
 
   const handleSendMail = async () => {
     if (!mailContent || !sendDate) {
@@ -86,63 +154,95 @@ const ExploreYourselfPage = () => {
       return;
     }
 
-    // Đặt giờ về 00:00:00 để so sánh chính xác ngày
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayString = today.toISOString().split("T")[0];
+    const todayString = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(today);
 
     const selectedDate = new Date(sendDate);
     selectedDate.setHours(0, 0, 0, 0);
 
-    // Kiểm tra nếu chọn ngày trong quá khứ
     if (selectedDate < today) {
       alert("Không thể gửi thư cho ngày trong quá khứ!");
       return;
     }
 
-    // Kiểm tra giới hạn 30 ngày
-    const maxDate = new Date(today);
-    maxDate.setDate(today.getDate() + 30);
-    if (selectedDate > maxDate) {
-      alert("Bạn chỉ có thể gửi thư trong vòng 30 ngày kể từ hôm nay.");
-      return;
-    }
-
     try {
       const payload = await getPayLoad();
+      const now = new Date();
+      const sendDateTime = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+      ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
       const newMail = {
         id: Date.now(),
         title:
           mailContent.substring(0, 30) + (mailContent.length > 30 ? "..." : ""),
         content: mailContent,
-        sendDate: todayString,
+        sendDate: sendDateTime,
         receiveDate: sendDate,
-        notified: false,
+        notified: selectedDate.getTime() === today.getTime(), // Mark as notified if today
         read: false,
       };
 
-      // Lưu vào backend
       if (payload?.userId) {
         await addFutureMail(payload.userId, newMail);
       }
 
-      // Lưu vào localStorage
       const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
       const updatedMails = [...savedMails, newMail];
       localStorage.setItem("futureMails", JSON.stringify(updatedMails));
       setFutureMails(updatedMails);
 
-      // Reset form
       setMailContent("");
       setSendDate("");
 
-      // Nếu gửi thư cho ngày hiện tại, chuyển đến TodayMailsPage
-      if (sendDate === todayString) {
-        navigate("/today-mails", { state: { mail: newMail } });
-      } else {
-        alert(
-          "Thư đã được gửi thành công! Bạn sẽ nhận được thông báo khi đến ngày nhận."
-        );
+      const isToday = selectedDate.getTime() === today.getTime();
+
+      if (isToday) {
+        // Thông báo đầu tiên
+        Swal.fire({
+          title: "📨 Thư đã được gửi thành công cho tương lai!",
+          html: `<p><strong>Nội dung:</strong> ${newMail.content}</p>
+                 <p><strong>Ngày gửi:</strong> ${newMail.sendDate}</p>
+                 <p><strong>Ngày nhận:</strong> ${newMail.receiveDate}</p>
+                 <p>Chúc bạn trải nghiệm vui vẻ 🥰✨</p>`,
+          background: "#ffe4e1",
+          confirmButtonColor: "#ff69b4",
+          icon: "info",
+        }).then(() => {
+          // Chuyển trang trước, sau đó hiển thị thông báo thứ hai
+          navigate("/today-mails", {
+            state: { mail: newMail, fromExplore: true },
+          });
+
+          setTimeout(() => {
+            Swal.fire({
+              title: "📨 Thư từ quá khứ đã đến!",
+              html: `<p><strong>Nội dung:</strong> ${newMail.content}</p>
+                     <p><strong>Ngày gửi:</strong> ${newMail.sendDate}</p>
+                     <p><strong>Ngày nhận:</strong> ${newMail.receiveDate}</p>
+                     <p>Chúc bạn trải nghiệm vui vẻ 🥰✨</p>`,
+              background: "#ffe4e1",
+              confirmButtonColor: "#ff69b4",
+              icon: "info",
+            });
+          }, 500); // Đợi 500ms sau khi chuyển trang
+        });
+      } else if (selectedDate > today) {
+        Swal.fire({
+          title: "📨 Thư đã được gửi thành công cho tương lai!",
+          html: `<p><strong>Nội dung:</strong> ${newMail.content}</p>
+                 <p><strong>Ngày gửi:</strong> ${newMail.sendDate}</p>
+                 <p><strong>Ngày nhận:</strong> ${newMail.receiveDate}</p>
+                 <p>Chúc bạn trải nghiệm vui vẻ 🥰✨</p>`,
+          background: "#ffe4e1",
+          confirmButtonColor: "#ff69b4",
+          icon: "info",
+        });
       }
     } catch (error) {
       console.error("Lỗi khi gửi thư:", error);
@@ -150,20 +250,65 @@ const ExploreYourselfPage = () => {
     }
   };
 
-  const renderEmotionDots = (data) => {
-    return data.map((percent, index) => {
-      const className = ["happy", "sad", "angry", "excited", "neutral"][index];
-      return (
-        <div
-          key={index}
-          style={{ display: "flex", alignItems: "center", margin: "5px 0" }}
-        >
-          <span className={`dot ${className}`} />
-          <span style={{ marginLeft: "5px" }}>{percent}%</span>
-        </div>
-      );
-    });
+  const toggleSentMails = () => {
+    setShowSentMails(!showSentMails);
   };
+
+  const handleZoom = (level) => {
+    setZoomLevel(level);
+    if (level === "allTime") {
+      setZoomData(ratingData.allTime);
+    } else if (level === "year") {
+      setZoomData(ratingData.year);
+    } else if (level === "month") {
+      setZoomData(ratingData.month);
+    }
+  };
+
+  const renderZoomControls = () => (
+    <div style={{ marginBottom: "10px" }}>
+      <button
+        onClick={() => handleZoom("allTime")}
+        disabled={zoomLevel === "allTime"}
+      >
+        All Time
+      </button>
+      <button
+        onClick={() => handleZoom("year")}
+        disabled={zoomLevel === "year"}
+      >
+        Year
+      </button>
+      <button
+        onClick={() => handleZoom("month")}
+        disabled={zoomLevel === "month"}
+      >
+        Month
+      </button>
+    </div>
+  );
+
+  const renderLineChartWithZoom = () => (
+    <div>
+      {renderZoomControls()}
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={zoomData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Brush dataKey="name" height={30} stroke="#8884d8" />{" "}
+          {/* Add Brush for zoom functionality */}
+          <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
 
   return (
     <div className="explore-container fade-in">
@@ -200,72 +345,7 @@ const ExploreYourselfPage = () => {
               </select>
             </h4>
 
-            <div className="line-chart">
-              <h5>Cảm xúc theo thời gian</h5>
-              <div
-                style={{
-                  height: "200px",
-                  border: "1px solid #ddd",
-                  margin: "20px 0",
-                  display: "flex",
-                  alignItems: "flex-end",
-                }}
-              >
-                {emotionData[timeRange].lineChart.map((value, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      flex: 1,
-                      height: `${(value + 1) * 20}%`,
-                      backgroundColor: [
-                        "#67c6e3",
-                        "#f15b2a",
-                        "#ffd966",
-                        "#7ed957",
-                        "#f891c5",
-                      ][value],
-                      margin: "0 2px",
-                      borderRadius: "3px 3px 0 0",
-                    }}
-                    title={`Ngày ${index + 1}: ${["Sad", "Angry", "Neutral", "Happy", "Excited"][value]}`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="pie-chart">
-              <div
-                style={{
-                  width: "200px",
-                  height: "200px",
-                  borderRadius: "50%",
-                  background: `conic-gradient(
-                  #7ed957 ${emotionData[timeRange].pieChart[0]}%,
-                  #67c6e3 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1]}%,
-                  #f15b2a 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1] + emotionData[timeRange].pieChart[2]}%,
-                  #f891c5 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1] + emotionData[timeRange].pieChart[2] + emotionData[timeRange].pieChart[3]}%,
-                  #ffd966 0 ${emotionData[timeRange].pieChart[0] + emotionData[timeRange].pieChart[1] + emotionData[timeRange].pieChart[2] + emotionData[timeRange].pieChart[3] + emotionData[timeRange].pieChart[4]}%
-                )`,
-                  margin: "0 auto",
-                }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginTop: "20px",
-                }}
-              >
-                <div>
-                  {renderEmotionDots(
-                    emotionData[timeRange].pieChart.slice(0, 3)
-                  )}
-                </div>
-                <div>
-                  {renderEmotionDots(emotionData[timeRange].pieChart.slice(3))}
-                </div>
-              </div>
-            </div>
+            {renderLineChartWithZoom()}
           </div>
         )}
 
@@ -296,47 +376,72 @@ const ExploreYourselfPage = () => {
                 </div>
               </div>
 
+              <div
+                style={{
+                  height: "1px",
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  margin: "20px 0",
+                }}
+              ></div>
+
               <div style={{ flex: 1 }}>
                 <h4>Thư đã gửi</h4>
-                <div
+                <button
                   style={{
-                    maxHeight: "300px",
-                    overflowY: "auto",
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    padding: "10px",
+                    backgroundColor: "pink",
+                    padding: "10px 20px",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    marginBottom: "10px",
                   }}
+                  onClick={toggleSentMails}
                 >
-                  {futureMails.length === 0 ? (
-                    <p>Chưa có thư nào được gửi</p>
-                  ) : (
-                    futureMails.map((mail) => (
-                      <div
-                        key={mail.id}
-                        style={{
-                          padding: "10px",
-                          borderBottom: "1px solid #eee",
-                          cursor: "pointer",
-                          backgroundColor:
-                            selectedDuration === mail.duration
-                              ? "#f0f0f0"
-                              : "transparent",
-                        }}
-                        onClick={() => {
-                          setSelectedDuration(mail.duration);
-                          alert(
-                            `Nội dung thư:\n\n${mail.content || "Không có nội dung"}`
-                          );
-                        }}
-                      >
-                        <div style={{ fontWeight: "bold" }}>{mail.title}</div>
-                        <div style={{ fontSize: "0.9em", color: "#666" }}>
-                          Gửi đến: {mail.receiveDate} ({mail.duration})
+                  {showSentMails ? "Ẩn thư" : "Xem thư"}
+                </button>
+
+                {showSentMails && (
+                  <div
+                    style={{
+                      maxHeight: "300px",
+                      overflowY: "auto",
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      padding: "10px",
+                    }}
+                  >
+                    {futureMails.length === 0 ? (
+                      <p>Chưa có thư nào được gửi</p>
+                    ) : (
+                      futureMails.map((mail) => (
+                        <div
+                          key={mail.id}
+                          style={{
+                            padding: "10px",
+                            borderBottom: "1px solid #eee",
+                            cursor: "pointer",
+                            backgroundColor:
+                              selectedDuration === mail.duration
+                                ? "#f0f0f0"
+                                : "transparent",
+                          }}
+                          onClick={() => {
+                            setSelectedDuration(mail.duration);
+                            showCustomAlert(
+                              "Nội dung thư",
+                              `<p>${mail.content || "Không có nội dung"}</p>`
+                            );
+                          }}
+                        >
+                          <div style={{ fontWeight: "bold" }}>{mail.title}</div>
+                          <div style={{ fontSize: "0.9em", color: "#666" }}>
+                            Gửi đến: {mail.receiveDate} ({mail.duration})
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -382,7 +487,9 @@ const ExploreYourselfPage = () => {
                     const futureDate = new Date();
                     futureDate.setMonth(futureDate.getMonth() + 6);
                     setSelectedDuration("6 months");
-                    setMailContent("Nóng số: the day");
+                    setMailContent(
+                      "liệu 6 tháng nữa có còn sống không mà đòi viết thư , à thoai cứ viết đuy"
+                    );
                     setSendDate(futureDate.toISOString().split("T")[0]);
                   }}
                 >

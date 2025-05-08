@@ -30,10 +30,14 @@
   cursor: pointer;
   transition: background-color 0.2s;
   margin-bottom: 10px;
+  animation: slideInFromRight 0.3s ease-out forwards;
+  opacity: 0;
 }
 
 .mail-item:hover {
   background-color: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mail-item.selected {
@@ -61,6 +65,7 @@
   flex: 1;
   padding: 40px;
   background: white;
+  transition: opacity 0.3s ease;
 }
 
 .mail-header {
@@ -104,10 +109,54 @@
   color: #333;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .back-button:hover {
   background: #e0e0e0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:active {
+  transform: translateY(0);
+}
+
+.back-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.back-button:active::after {
+  width: 200px;
+  height: 200px;
+  opacity: 0;
+}
+
+button.back-button {
+  background-color: pink; /* Set the background color to pink */
+  color: white; /* Ensure the text is readable */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Add padding for better appearance */
+  border-radius: 5px; /* Add rounded corners */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+button.back-button:hover {
+  background-color: #ff69b4; /* Slightly darker pink on hover */
 }
 
 .no-mail-container {
@@ -120,12 +169,18 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.today-mails-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 20px;
+}
+
 .today-mails-container {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   gap: 20px;
-  padding: 20px;
-  min-height: calc(100vh - 64px);
-  background: #f5f5f5;
+  height: calc(100vh - 40px);
 }
 
 .mails-list {
@@ -134,6 +189,8 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  overflow-y: auto;
 }
 
 .mails-list h3 {
@@ -150,14 +207,19 @@
   border-radius: 6px;
   margin-bottom: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
   border: 1px solid #eee;
+  animation: slideInFromRight 0.3s ease-out forwards;
+  opacity: 0;
 }
 
 .mail-item:hover {
   background: #f8f8ff;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mail-item.selected {
@@ -171,22 +233,26 @@
   margin-bottom: 5px;
 }
 
-.mail-details {
-  font-size: 0.9em;
+.mail-date {
+  font-size: 13px;
   color: #666;
 }
 
-.read-badge {
-  color: #888;
-  font-style: italic;
+.mail-content {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  transition: opacity 0.3s ease;
 }
 
 .mail-card {
-  flex: 1;
+  height: 100%;
   background: white;
   border-radius: 8px;
   padding: 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .mail-header {
@@ -201,47 +267,35 @@
   margin-bottom: 15px;
 }
 
-.mail-date {
+.mail-info {
   color: #666;
+  font-size: 14px;
   line-height: 1.6;
 }
 
-.mail-content {
+.mail-body {
+  flex: 1;
   font-size: 16px;
   line-height: 1.8;
   color: #333;
+  white-space: pre-wrap;
   margin: 30px 0;
   padding: 20px;
   background: #fafafa;
   border-radius: 8px;
-  min-height: 200px;
-  white-space: pre-wrap;
+  overflow-y: auto;
 }
 
 .mail-actions {
-  margin-top: 30px;
-  border-top: 1px solid #eee;
+  margin-top: auto;
   padding-top: 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-.reply-box {
-  width: 100%;
-  min-height: 120px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  line-height: 1.6;
-  resize: vertical;
-}
-
-.reply-box:focus {
-  outline: none;
-  border-color: #5e5df0;
-}
-
-.reply-button {
+.send-reply-button {
   padding: 10px 20px;
   background: #5e5df0;
   color: white;
@@ -249,27 +303,113 @@
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
-  margin-right: 10px;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.reply-button:hover {
+.send-reply-button:hover {
   background: #4b4acf;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.back-button {
-  padding: 10px 20px;
-  background: #f0f0f0;
-  border: none;
-  border-radius: 6px;
-  color: #333;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
+.send-reply-button:active {
+  transform: translateY(0);
 }
 
-.back-button:hover {
-  background: #e0e0e0;
+.send-reply-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.send-reply-button:active::after {
+  width: 200px;
+  height: 200px;
+  opacity: 0;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #666;
+  animation: fadeIn 0.3s ease;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top: 3px solid #5e5df0;
+  border-radius: 50%;
+  animation:
+    spin 1s linear infinite,
+    scaleIn 0.3s ease;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .no-mail-container {
@@ -282,18 +422,48 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.no-mail-container h2 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.no-mail-container p {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+/* Animations for page transitions */
+.entrance-animation {
+  animation: scaleIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInFromLeft 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .today-mails-container {
     flex-direction: column;
+    height: auto;
   }
 
   .mails-list {
     width: 100%;
-    margin-bottom: 20px;
+    height: auto;
+    max-height: 300px;
+  }
+
+  .mail-content {
+    height: auto;
   }
 
   .mail-card {
-    width: 100%;
+    height: auto;
+    min-height: calc(100vh - 380px);
   }
 }

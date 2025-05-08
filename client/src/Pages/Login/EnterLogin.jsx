@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -6,9 +6,12 @@ import { handleBlur, handleFocus } from "../../services";
 import { ACCOUNT, PASSWORD } from "../../constants";
 import { ClipLoader } from "react-spinners";
 import "./Login.css";
-import { loggingThunk, setIsAuthenticated } from "../../redux/authSlice.js";
+import { loggingThunk, setIsAuthenticated } from "../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../components/Common/Loading";
+import { toast } from "react-toastify";
+import { fetchTodayMails } from "../../redux/userSlice";
+import { getPayLoad } from "../../services/authService";
 
 function EnterLogin() {
   const [account, setAccount] = useState("");
@@ -28,13 +31,30 @@ function EnterLogin() {
         password,
         role: tempRole,
       };
-    
-      const data = await dispatch(loggingThunk(formData)).unwrap(); // sẽ throw nếu login thất bại
-    
-      await dispatch(setIsAuthenticated(true));
-      navigate("/");
-    } catch (error) {
-      console.error(error.message);
+      const response = await dispatch(loggingThunk(formData)).unwrap();
+
+      if (response.success) {
+        await dispatch(setIsAuthenticated(true));
+
+        // Kiểm tra thư đến hạn
+        const payload = await getPayLoad();
+        if (payload?._id) {
+          const result = await dispatch(fetchTodayMails(payload._id)).unwrap();
+          if (result?.length > 0) {
+            toast.info(`Bạn có ${result.length} thư từ quá khứ đến!`, {
+              autoClose: 2000,
+              onClose: () => navigate("/today-mails"),
+            });
+            return; // Return để không navigate đến trang chủ
+          }
+        }
+
+        navigate("/");
+      } else {
+        setShowErrorModal(true);
+      }
+    } catch (err) {
+      console.error(err.message);
       setShowErrorModal(true);
     }
     
@@ -43,8 +63,6 @@ function EnterLogin() {
   const closeErrorModal = () => {
     setShowErrorModal(false);
   };
-
-
 
   return (
     <div className="container">
@@ -58,7 +76,9 @@ function EnterLogin() {
         <div className="">
           <Form className="d-flex flex-column form-1 login">
             <Form.Group className="mt-4">
-              <Form.Label className="signup-custom-h2-label">Account:</Form.Label>
+              <Form.Label className="signup-custom-h2-label">
+                Account:
+              </Form.Label>
               <Form.Control
                 onChange={(e) => setAccount(e.target.value)}
                 placeholder="Enter your username..."
@@ -85,7 +105,9 @@ function EnterLogin() {
               <Form.Text className="text-danger">{accountError}</Form.Text>
             </Form.Group>
             <Form.Group className="mt-4">
-              <Form.Label className="signup-custom-h2-label">Password:</Form.Label>
+              <Form.Label className="signup-custom-h2-label">
+                Password:
+              </Form.Label>
               <Form.Control
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
@@ -128,7 +150,9 @@ function EnterLogin() {
         <Modal.Header closeButton>
           <Modal.Title>Login Failed</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{error || "An unknown error occurred. Please try again."}</Modal.Body>
+        <Modal.Body>
+          {error || "An unknown error occurred. Please try again."}
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeErrorModal}>
             Close
