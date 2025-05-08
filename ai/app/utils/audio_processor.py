@@ -113,7 +113,7 @@ def transcribe_audio(file_path: str) -> Dict[str, Union[str, float]]:
         segments, info = model.transcribe(
             file_path,
             beam_size=beam_size,
-            language="auto",  # Auto-detect language
+            language=None,  # None will auto-detect the language
             vad_filter=True,  # Voice activity detection to skip silence
             vad_parameters=dict(min_silence_duration_ms=500),  # Adjust silence threshold
             initial_prompt=None,  # Can provide context here if needed
