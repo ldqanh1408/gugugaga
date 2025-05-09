@@ -421,9 +421,7 @@ const ExploreYourselfPage = () => {
       <div className="explore-content">
         {activeTab === "statistics" && (
           <div className="statistics-section">
-            <h4>
-              Thống kê cảm xúc của bạn
-            </h4>
+            <h4>Thống kê cảm xúc của bạn</h4>
             {renderLineChartWithZoom()}
           </div>
         )}
