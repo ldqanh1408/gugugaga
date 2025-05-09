@@ -52,8 +52,8 @@ const showCustomAlert = (title, content) => {
   Swal.fire({
     title: title,
     html: content,
-    background: "#ffe4e1", // Light pink background
-    confirmButtonColor: "#ff69b4", // Pink confirm button
+    background: "#ffe4e1",
+    confirmButtonColor: "#ff69b4",
     icon: "info",
   });
 };
