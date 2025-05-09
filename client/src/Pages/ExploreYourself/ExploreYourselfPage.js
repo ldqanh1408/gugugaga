@@ -97,7 +97,10 @@ const ExploreYourselfPage = () => {
         return mail;
       });
       localStorage.setItem("futureMails", JSON.stringify(updatedMails));
-      console.log("[Debug] Reset notified status for mails with receiveDate 2025-05-09:", updatedMails);
+      console.log(
+        "[Debug] Reset notified status for mails with receiveDate 2025-05-09:",
+        updatedMails
+      );
     };
 
     resetNotifiedStatus();
@@ -122,7 +125,10 @@ const ExploreYourselfPage = () => {
       });
 
       localStorage.setItem("futureMails", JSON.stringify(updatedMails));
-      console.log("[Debug] Reset notified status for mails with receiveDate tomorrow:", updatedMails);
+      console.log(
+        "[Debug] Reset notified status for mails with receiveDate tomorrow:",
+        updatedMails
+      );
     };
 
     resetNotifiedForTomorrow();
@@ -164,7 +170,10 @@ const ExploreYourselfPage = () => {
         );
         setFutureMails(updatedMails);
         localStorage.setItem("futureMails", JSON.stringify(updatedMails));
-        console.log("[Debug] Updated futureMails in localStorage:", updatedMails);
+        console.log(
+          "[Debug] Updated futureMails in localStorage:",
+          updatedMails
+        );
       } else {
         console.log("[Debug] No pending mails for today.");
       }
