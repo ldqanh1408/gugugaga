@@ -30,8 +30,8 @@ const generateDenseRatingData = (startYear, endYear) => {
   const data = [];
   for (let year = startYear; year <= endYear; year++) {
     for (let month = 1; month <= 12; month++) {
-      for (let day = 1; day <= 30; day++) {
-        // Simulate daily data for each month
+      const daysInMonth = new Date(year, month, 0).getDate(); // Get actual days in the month
+      for (let day = 1; day <= daysInMonth; day++) {
         data.push({
           name: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
           value: Math.floor(Math.random() * 1000),
@@ -337,18 +337,41 @@ const ExploreYourselfPage = () => {
       <button
         onClick={() => handleZoom("allTime")}
         disabled={zoomLevel === "allTime"}
+        style={{
+          backgroundColor: zoomLevel === "allTime" ? "purple" : "white",
+          color: zoomLevel === "allTime" ? "white" : "black",
+          border: "1px solid black",
+          padding: "5px 10px",
+          marginRight: "5px",
+          cursor: "pointer",
+        }}
       >
         All Time
       </button>
       <button
         onClick={() => handleZoom("year")}
         disabled={zoomLevel === "year"}
+        style={{
+          backgroundColor: zoomLevel === "year" ? "purple" : "white",
+          color: zoomLevel === "year" ? "white" : "black",
+          border: "1px solid black",
+          padding: "5px 10px",
+          marginRight: "5px",
+          cursor: "pointer",
+        }}
       >
         Year
       </button>
       <button
         onClick={() => handleZoom("month")}
         disabled={zoomLevel === "month"}
+        style={{
+          backgroundColor: zoomLevel === "month" ? "purple" : "white",
+          color: zoomLevel === "month" ? "white" : "black",
+          border: "1px solid black",
+          padding: "5px 10px",
+          cursor: "pointer",
+        }}
       >
         Month
       </button>
@@ -399,19 +422,8 @@ const ExploreYourselfPage = () => {
         {activeTab === "statistics" && (
           <div className="statistics-section">
             <h4>
-              Thống kê cảm xúc của bạn trong
-              <select
-                value={timeRange}
-                onChange={(e) => setTimeRange(e.target.value)}
-                style={{ marginLeft: "10px", padding: "5px" }}
-              >
-                <option value="today">hôm nay</option>
-                <option value="week">1 tuần</option>
-                <option value="month">1 tháng</option>
-                <option value="year">1 năm</option>
-              </select>
+              Thống kê cảm xúc của bạn
             </h4>
-
             {renderLineChartWithZoom()}
           </div>
         )}
