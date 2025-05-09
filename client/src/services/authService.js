@@ -1,6 +1,9 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const API_URL = "http://localhost:5000/api/v1";
+const API_URL_V2 = "http://localhost:5000/api/v2";
+const API_URL_V3 = "http://localhost:5000/api/v3";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -8,37 +11,223 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const api_2 = axios.create({
-  baseURL: "http://localhost:5000/api/v2",
+const api_v2 = axios.create({
+  baseURL: API_URL_V2,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-const api_3 = axios.create({
-  baseURL: "http://localhost:5000/api/v3",
+const api_v3 = axios.create({
+  baseURL: API_URL_V3,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
-export const register = async (payload) => {
+
+export const getToken = () => {
+  // Ưu tiên accessToken nếu có
+  const accessToken = localStorage.getItem("accessToken");
+  if (accessToken) {
+    try {
+      return JSON.parse(accessToken);
+    } catch (error) {
+      console.error("Invalid accessToken format:", error);
+    }
+  }
+  
+  // Fallback về token thông thường
+  return localStorage.getItem("token");
+};
+
+export const refreshToken = async () => {
   try {
-    const response = await api_2.post("/register", payload);
-    return response?.data;
+    let accessToken = getToken();
+    const response = await api.get("/get-token", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    accessToken = response.data.accessToken;
+    localStorage.setItem("accessToken", JSON.stringify(accessToken));
+    return accessToken;
   } catch (error) {
-    console.error("Error fetching:", error?.response?.data?.errors);
-    throw error;
+    console.log("Error refreshing token:", error);
+    return null;
+  }
+};
+
+export const getPayLoad = async () => {
+  try {
+    // Đầu tiên thử decode token từ localStorage
+    const token = getToken();
+    if (!token) {
+      throw new Error("No token found");
+    }
+    
+    // Nếu token là JWT, thử decode nó
+    try {
+      const decoded = jwtDecode(token);
+      return decoded;
+    } catch (jwtError) {
+      console.log("Not a JWT token, trying API...");
+    }
+    
+    // Nếu không phải JWT, thử gọi API để lấy payload
+    const response = await api.get("/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting payload:", error);
+    return null;
   }
 };
 
 export const logging = async (payload) => {
   try {
-    const response = await api_3.post("/login", payload);
-    console.log(response);
-    return response;
+    // Thử đăng nhập với API v3 trước
+    try {
+      const response = await api_v3.post("/login", payload);
+      if (response.data) {
+        // Nếu response có token
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+          const decoded = jwtDecode(response.data.token);
+          return {
+            success: true,
+            decoded,
+            message: response.data.message || "Đăng nhập thành công",
+          };
+        }
+        // Nếu response có accessToken
+        else if (response.data.accessToken) {
+          localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+          return {
+            success: true,
+            data: response.data,
+            message: "Đăng nhập thành công",
+          };
+        }
+        return response.data;
+      }
+    } catch (v3Error) {
+      console.log("Failed to login with API v3, trying v1...");
+    }
+
+    // Fallback tới API v1
+    const response = await api.post("/v1/login", payload);
+    if (response.data.success) {
+      const { token } = response.data;
+      localStorage.setItem("token", token);
+      const decoded = jwtDecode(token);
+      return {
+        success: true,
+        decoded,
+        message: response.data.message,
+      };
+    }
+    return response.data;
   } catch (error) {
-    console.error("Error during login:", error);
-    throw new Error(
-      error.response?.data?.message || "Incorrect password or account."
-    );
+    console.error("Login error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đăng nhập thất bại",
+    };
+  }
+};
+
+export const register = async (payload) => {
+  try {
+    // Thử đăng ký với API v2 trước
+    try {
+      const response = await api_v2.post("/register", payload);
+      if (response && response.data) {
+        return response.data;
+      }
+    } catch (v2Error) {
+      console.log("Failed to register with API v2, trying v1...");
+    }
+
+    // Fallback tới API v1
+    const response = await api.post("/v1/auth/register", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Register error:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đăng ký thất bại",
+    };
+  }
+};
+
+export const logout = async () => {
+  try {
+    // Xóa token và accessToken từ localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("profile");
+    
+    // Thử gọi API để logout
+    try {
+      await api.post("/logout");
+    } catch (apiError) {
+      console.log("API logout error:", apiError);
+      // Tiếp tục xử lý logout dù có lỗi API
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Logout error:", error);
+    return false;
+  }
+};
+
+export const changePassword = async (payload) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { success: false, message: "Không tìm thấy token" };
+    }
+
+    // Phiên bản v1 thì payload là đối tượng trực tiếp
+    if (typeof payload === "object" && !payload.currentPassword) {
+      const response = await api.post("/v1/auth/change-password", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } 
+    // Phiên bản v2+ thì payload chứa các trường khác
+    else {
+      const { currentPassword, newPassword, confirmNewPassword, setError } = payload;
+      
+      if (newPassword !== confirmNewPassword) {
+        if (setError) setError("Mật khẩu mới không khớp");
+        return { success: false, message: "Mật khẩu mới không khớp" };
+      }
+      
+      const response = await api.post(
+        "change-password",
+        { currentPassword, newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Change password error:", error);
+    if (payload.setError) {
+      payload.setError("Change password has failed");
+    }
+    return {
+      success: false,
+      message: error.response?.data?.message || "Đổi mật khẩu thất bại",
+    };
   }
 };
 
@@ -61,76 +250,13 @@ export const checkAuth = async () => {
   }
 };
 
-export const getToken = async () => {
-  try {
-    let accessToken = JSON.parse(localStorage.getItem("accessToken")); // Hoặc chỗ bạn lưu token
-    const response = await api.get("/get-token", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    accessToken = response.data.accessToken;
-    localStorage.setItem("accessToken", JSON.stringify(accessToken));
-    return accessToken;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+export default {
+  getToken,
+  getPayLoad,
+  logging,
+  register,
+  logout,
+  changePassword,
+  checkAuth,
+  refreshToken
 };
-
-export const logout = async () => {
-  try {
-    localStorage.removeItem("accessToken");
-    await api.post("/logout");
-    // Không xóa profile từ localStorage khi đăng xuất
-    localStorage.removeItem("token");
-  } catch (error) {
-    console.error({ message: error.message });
-  }
-};
-
-export async function getPayLoad() {
-  try {
-    const accessToken = JSON.parse(localStorage.getItem("accessToken"));
-    const response = await api.get("/me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return response.data; // { userId, journalId }
-  } catch (error) {
-    console.error("Lỗi lấy payload:", error);
-    return {};
-  }
-}
-
-export async function changePassword({
-  currentPassword,
-  confirmNewPassword,
-  newPassword,
-  setError,
-}) {
-  try {
-    const token = await getToken();
-    if (!token) {
-      throw new Error("Không tìm thấy token");
-    }
-    if (newPassword !== confirmNewPassword) {
-      setError("Change password has failed");
-    }
-    const response = await api.post(
-      `change-password`,
-      { currentPassword, newPassword },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Gửi token trong header
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    setError("Change password has failed");
-    console.error({ message: error.message });
-    return { success: false, message: error.message };
-  }
-}

@@ -1,4 +1,3 @@
-
 import {
   Home,
   Calendar,
@@ -16,7 +15,7 @@ import {
   Therapy,
   MyTherapy,
   TodayMailsPage,
-  ExploreYourselfPage
+  ExploreYourselfPage,
 } from "../Pages";
 import NoteViewer from "../Pages/Note/NoteViewer";
 import SignUpBusiness from "../Pages/SignUpBusiness";
@@ -85,8 +84,8 @@ const routes = [
     path: "/today-mails",
     element: <TodayMailsPage></TodayMailsPage>,
     isPrivate: true,
+    standalone: true, // Đánh dấu route này là độc lập
   },
-
 ];
 
 export default routes;

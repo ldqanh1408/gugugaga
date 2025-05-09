@@ -9,6 +9,9 @@ const {
   uploadProfile,
   addFutureMail,
   getFutureMails,
+  updateFutureMail,
+  getTodayMails,
+  markMailNotified,
   getTreatment,
   updateTreatment,
   getReceivers,
@@ -25,71 +28,94 @@ const {
 } = require("../controllers/upload.controller");
 
 const { authenticateJWT } = require("../middleware");
-const jwt = require("../middleware/authenticateJWT");
+const { authenticateAndAuthorize } = require("../middleware/authenticateJWT");
 
 // Định nghĩa route
 router.get("/v1/users", getUsers);
 router.delete("/v1/users/:userId", deleteUser);
 router.get("/v1/users/me", getUser);
 
-// Future mails (commented out)
-// router.post("/:userId/future-mails", authenticateJWT, addFutureMail);
-// router.get("/:userId/future-mails", authenticateJWT, getFutureMails);
+// Future mails
+router.post(
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  addFutureMail
+);
+router.get(
+  "/v1/users/:userId/future-mails",
+  authenticateAndAuthorize(["USER"]),
+  getFutureMails
+);
+router.patch(
+  "/v1/users/:userId/future-mails/:mailId",
+  authenticateAndAuthorize(["USER"]),
+  updateFutureMail
+);
+router.get(
+  "/v1/users/:userId/today-mails",
+  authenticateAndAuthorize(["USER"]),
+  getTodayMails
+);
+router.patch(
+  "/v1/users/:userId/future-mails/:mailId/notify",
+  authenticateAndAuthorize(["USER"]),
+  markMailNotified
+);
 
 // Route upload avatar
 router.post(
   "/v1/users/upload",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   upload.single("avatar"),
   uploadAvatar
 );
 
 router.get(
   "/v1/users/me/treatments",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   getTreatment
 );
 
 router.get(
   "/v1/users/load-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   loadProfile
 );
 
 router.patch(
   "/v1/users/upload-profile",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   uploadProfile
 );
 
 router.patch(
   "/v1/users/me/treatments/:treatment_id",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   updateTreatment
 );
 
 router.get(
   "/v1/users/me/receivers",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   getReceivers
 );
 
 router.get(
   "/v1/users/me/bookings",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   getBooking
 );
 
 // Route for uploading audio files
 router.post(
   "/v1/media",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   uploadAudio.single("file"),
   uploadAudioFile
 );
 router.post(
   "/v1/upload-audio",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   uploadAudio.single("audio"),
   uploadAudioFile
 );
@@ -97,7 +123,7 @@ router.post(
 // Route for uploading image files
 router.post(
   "/v1/upload-image",
-  jwt.authenticateAndAuthorize(["USER"]),
+  authenticateAndAuthorize(["USER"]),
   uploadImage.single("image"),
   uploadImageFile
 );
