@@ -70,24 +70,81 @@ const ExploreYourselfPage = () => {
   const [zoomData, setZoomData] = useState(ratingData.allTime);
   const navigate = useNavigate();
 
-  // Load saved mails from localStorage
+  //   log chi tiết để kiểm tra lưu trữ trong localStorage
   useEffect(() => {
     const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+    console.log("[Debug] Loaded futureMails from localStorage:", savedMails);
+
+    // Kiểm tra định dạng receiveDate
+    savedMails.forEach((mail) => {
+      console.log(
+        `[Debug] Mail ID: ${mail.id}, receiveDate: ${mail.receiveDate}, Valid Format:`,
+        /^\d{4}-\d{2}-\d{2}$/.test(mail.receiveDate)
+      );
+    });
+
     setFutureMails(savedMails);
+  }, []);
+
+  // Thêm logic đặt lại trạng thái `notified` trong localStorage để kiểm tra hiển thị
+  useEffect(() => {
+    const resetNotifiedStatus = () => {
+      const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+      const updatedMails = savedMails.map((mail) => {
+        if (mail.receiveDate === "2025-05-09") {
+          return { ...mail, notified: false };
+        }
+        return mail;
+      });
+      localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+      console.log("[Debug] Reset notified status for mails with receiveDate 2025-05-09:", updatedMails);
+    };
+
+    resetNotifiedStatus();
+  }, []);
+
+  // Thêm logic kiểm tra và đặt lại trạng thái `notified` cho thư ngày mai
+  useEffect(() => {
+    const resetNotifiedForTomorrow = () => {
+      const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowString = tomorrow.toISOString().split("T")[0];
+
+      const updatedMails = savedMails.map((mail) => {
+        if (mail.receiveDate === tomorrowString) {
+          console.log(
+            `[Debug] Found mail for tomorrow: ID=${mail.id}, receiveDate=${mail.receiveDate}`
+          );
+          return { ...mail, notified: false };
+        }
+        return mail;
+      });
+
+      localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+      console.log("[Debug] Reset notified status for mails with receiveDate tomorrow:", updatedMails);
+    };
+
+    resetNotifiedForTomorrow();
   }, []);
 
   // Check for due mails periodically
   useEffect(() => {
     const checkMails = () => {
       const now = new Date().toISOString().split("T")[0];
-      console.log("Debug: Current date (now) =", now);
+      console.log("[Debug] Current date (now):", now);
 
-      const pendingMails = futureMails.filter(
-        (mail) => mail.receiveDate === now && !mail.notified
-      );
+      const pendingMails = futureMails.filter((mail) => {
+        const isPending = mail.receiveDate === now && !mail.notified;
+        console.log(
+          `[Debug] Checking mail ID: ${mail.id}, receiveDate: ${mail.receiveDate}, notified: ${mail.notified}, isPending: ${isPending}`
+        );
+        return isPending;
+      });
+
+      console.log("[Debug] Pending mails for today:", pendingMails);
 
       if (pendingMails.length > 0) {
-        console.log("Debug: Pending mails for today =", pendingMails);
         const firstMail = pendingMails[0];
         const formattedSendDate = firstMail.sendDate.split("T")[0];
         const formattedReceiveDate = firstMail.receiveDate;
@@ -107,8 +164,9 @@ const ExploreYourselfPage = () => {
         );
         setFutureMails(updatedMails);
         localStorage.setItem("futureMails", JSON.stringify(updatedMails));
+        console.log("[Debug] Updated futureMails in localStorage:", updatedMails);
       } else {
-        console.log("Debug: No pending mails for today.");
+        console.log("[Debug] No pending mails for today.");
       }
     };
 
