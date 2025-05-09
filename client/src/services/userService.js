@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getToken, getPayLoad } from "./authService";
+import { getToken } from "./authService";
 const API_URL = "http://localhost:5000/api/v1";
 
 const api = axios.create({
@@ -18,21 +18,7 @@ const getUsers = async () => {
   }
 };
 
-const getUser = async () => {
-  try {
-    const token = await getToken();
-    if (!token) {
-      console.error("Token không tồn tại");
-      return null;
-    }
-    const { userId } = await getPayLoad();
-    const response = await axios.get(`${API_URL}/users/${userId}`);
-    return response.data.user;
-  } catch (error) {
-    console.error(`Error fetching user with id:`, error);
-    throw error;
-  }
-};
+
 
 const addUser = async (user) => {
   try {
@@ -75,6 +61,21 @@ const getAvatar = async (fileId) => {
   }
 };
 
+const getUser = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      console.error("Token không tồn tại");
+      return null;
+    }
+    const response = await axios.get(`${API_URL}users/me`);
+    return response.data.user;
+  } catch (error) {
+    console.error(`Error fetching user with id :`, error);
+    throw error;
+  }
+};
+
 const loadProfile = async () => {
   try {
     const token = await getToken();
@@ -87,7 +88,7 @@ const loadProfile = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
+    return response?.data;
   } catch (error) {
     console.error("Error loading profile:", error);
     return { success: false, message: error.message };
@@ -481,7 +482,6 @@ const uploadImage = async (imageFile) => {
 
 export {
   getUsers,
-  getUser,
   addUser,
   getAvatar,
   uploadAvatar,
@@ -492,6 +492,7 @@ export {
   addFutureMail,
   getFutureMails,
   updateFutureMail,
+  getUser,
   getTodayMails,
   markMailNotified,
   getTreaments,

@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
+    "emoji-picker-react": "^4.12.2",
     "flatpickr": "^4.6.13",
     "framer-motion": "^12.9.4",
     "json-server": "^1.0.0-beta.3",
@@ -42,8 +43,8 @@
     "slate-history": "^0.113.1",
     "slate-react": "^0.112.1",
     "styled-components": "^6.1.17",
-    "web-vitals": "^2.1.4",
-    "emoji-picker-react": "^4.12.2"
+    "sweetalert2": "^11.21.0",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "concurrently \"react-scripts start\" \"npm run server \" ",

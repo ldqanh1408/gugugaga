@@ -24,15 +24,15 @@ function UserAvatar() {
   const navigate = useNavigate();
 
   // Lấy user, trạng thái loading, và logout từ Redux store
-  const { profile, logoutLoading } = useSelector((state) => state.user);
-  const { role } = useSelector((state) => state.auth); // Lấy role từ authSlice
-
+  const {  profile, logoutLoading } = useSelector((state) => state?.user);
+  const { role,  entity} = useSelector((state) => state.auth); // Lấy role từ authSlice
   // Gọi fetchUser khi component mount nếu chưa có user trong Redux store
   useEffect(() => {
     if (!profile) {
       dispatch(fetchProfile());
     }
   }, [dispatch, profile]);
+  console.log("profile", profile);
 
   // Hàm xử lý logout
   const handleLogout = async () => {

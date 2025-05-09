@@ -11,19 +11,12 @@ import {
   EnterLogin,
   SignUp,
 } from "./Pages/index";
+import { AppRouter } from "./Router";
 
 function App() {
   return (
-    <Router>
-      <Navigation />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/explore-yourself" element={<ExploreYourselfPage />} />
-        <Route path="/today-mails" element={<TodayMailsPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/login/enter" element={<EnterLogin />} />
-        <Route path="/sign-up" element={<SignUp />} />
-      </Routes>
+    <>
+      <AppRouter />
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -35,8 +28,8 @@ function App() {
         draggable
         pauseOnHover
         theme="light"
-      />
-    </Router>
+        />
+      </>
   );
 }
 

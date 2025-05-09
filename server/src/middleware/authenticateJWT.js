@@ -10,7 +10,6 @@ const jwtHelper = require("../utils/jwtHelper");
 const redisHelper = require("../utils/redisHelper");
 const dotenv = require("dotenv");
 dotenv.config();
-const jwt = require("jsonwebtoken");
 
 const authenticateJWT = async (req, res, next) => {
   const authHeader = req.header("Authorization");
@@ -108,11 +107,11 @@ exports.authenticateAndAuthorize = (allowedRoles) => {
       }
 
       const token = authHeader.split(" ")[1];
-
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwtHelper.verifyAccessToken(token, process.env.ACCESS_TOKEN_SECRET);
 
       // Kiểm tra role nếu có
+      console.log("Decoded token:", decoded);
       if (allowedRoles && allowedRoles.length > 0) {
         if (!allowedRoles.includes(decoded.role)) {
           return res.status(403).json({
@@ -121,7 +120,7 @@ exports.authenticateAndAuthorize = (allowedRoles) => {
           });
         }
       }
-
+      console.log(decoded)
       // Thêm thông tin user vào request
       req.payload = decoded;
       next();

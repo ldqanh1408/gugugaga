@@ -48,6 +48,8 @@ const verifyToken = (token) => {
 };
 
 const createAccessToken = (payload) => {
+  console.log("payload", payload);  
+  console.log("role", payload.role);  
   return jwt.sign(
     {
       _id: payload._id.toString(),
@@ -63,6 +65,7 @@ const createAccessToken = (payload) => {
 const verifyAccessToken = (token) => {
   try{
     const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    console.log("payload return", payload);
     return payload;
   }
   catch(error){

@@ -30,7 +30,8 @@ export const fetchProfile = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await loadProfile();
-      return res.data;
+      console.log("res", res);
+      return res;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }

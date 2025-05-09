@@ -12,9 +12,9 @@ const TodayMailsPage = () => {
   const dispatch = useDispatch();
   const [currentMail, setCurrentMail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, entity } = useSelector((state) => state.auth);
   const { todayMails, error } = useSelector((state) => state.user);
-
+  
   useEffect(() => {
     const fetchMails = async () => {
       try {
@@ -25,14 +25,13 @@ const TodayMailsPage = () => {
           return;
         }
 
-        const decoded = jwtDecode(token);
-        if (!decoded?._id) {
+        if (!entity?._id) {
           toast.error("Phiên đăng nhập không hợp lệ");
           navigate("/login");
           return;
         }
 
-        await dispatch(fetchTodayMails(decoded._id)).unwrap();
+        await dispatch(fetchTodayMails(entity._id)).unwrap();
 
         if (location.state?.mail) {
           const navigationMail = location.state.mail;
@@ -60,10 +59,8 @@ const TodayMailsPage = () => {
     setCurrentMail(mail);
     if (!mail.notified) {
       try {
-        const token = localStorage.getItem("token");
-        const decoded = jwtDecode(token);
         await dispatch(
-          markMailNotifiedAsync({ userId: decoded._id, mailId: mail._id })
+          markMailNotifiedAsync({ userId: entity._id, mailId: mail._id })
         ).unwrap();
       } catch (err) {
         toast.error("Lỗi khi đánh dấu thư đã thông báo");

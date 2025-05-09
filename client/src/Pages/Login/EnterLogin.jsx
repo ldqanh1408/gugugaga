@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../components/Common/Loading";
 import { toast } from "react-toastify";
 import { fetchTodayMails } from "../../redux/userSlice";
-import { getPayLoad } from "../../services/authService";
 
 function EnterLogin() {
   const [account, setAccount] = useState("");
@@ -19,7 +18,7 @@ function EnterLogin() {
   const [accountError, setAccountError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const { tempRole, error, loading } = useSelector((state) => state.auth);
+  const { tempRole, error, loading, entity } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -31,16 +30,15 @@ function EnterLogin() {
         password,
         role: tempRole,
       };
-      
+      console.log("formData", formData);
       const response = await dispatch(loggingThunk(formData)).unwrap();
       
       if (response.success) {
         await dispatch(setIsAuthenticated(true));
 
         // Kiểm tra thư đến hạn
-        const payload = await getPayLoad();
-        if (payload?._id) {
-          const result = await dispatch(fetchTodayMails(payload._id)).unwrap();
+        if (entity?._id) {
+          const result = await dispatch(fetchTodayMails(entity._id)).unwrap();
           if (result?.length > 0) {
             toast.info(`Bạn có ${result.length} thư từ quá khứ đến!`, {
               autoClose: 2000,

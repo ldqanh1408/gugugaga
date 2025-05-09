@@ -33,9 +33,8 @@ export const getToken = () => {
       console.error("Invalid accessToken format:", error);
     }
   }
+  else return null;
   
-  // Fallback về token thông thường
-  return localStorage.getItem("token");
 };
 
 export const refreshToken = async () => {
@@ -55,34 +54,6 @@ export const refreshToken = async () => {
   }
 };
 
-export const getPayLoad = async () => {
-  try {
-    // Đầu tiên thử decode token từ localStorage
-    const token = getToken();
-    if (!token) {
-      throw new Error("No token found");
-    }
-    
-    // Nếu token là JWT, thử decode nó
-    try {
-      const decoded = jwtDecode(token);
-      return decoded;
-    } catch (jwtError) {
-      console.log("Not a JWT token, trying API...");
-    }
-    
-    // Nếu không phải JWT, thử gọi API để lấy payload
-    const response = await api.get("/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error getting payload:", error);
-    return null;
-  }
-};
 
 export const logging = async (payload) => {
   try {
@@ -91,18 +62,12 @@ export const logging = async (payload) => {
       const response = await api_v3.post("/login", payload);
       if (response.data) {
         // Nếu response có token
-        if (response.data.token) {
-          localStorage.setItem("token", response.data.token);
-          const decoded = jwtDecode(response.data.token);
-          return {
-            success: true,
-            decoded,
-            message: response.data.message || "Đăng nhập thành công",
-          };
-        }
+       
         // Nếu response có accessToken
-        else if (response.data.accessToken) {
+        if (response.data.accessToken) {
           localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+          localStorage.setItem("token", JSON.stringify(response.data.accessToken));
+
           return {
             success: true,
             data: response.data,
@@ -114,20 +79,6 @@ export const logging = async (payload) => {
     } catch (v3Error) {
       console.log("Failed to login with API v3, trying v1...");
     }
-
-    // Fallback tới API v1
-    const response = await api.post("/v1/login", payload);
-    if (response.data.success) {
-      const { token } = response.data;
-      localStorage.setItem("token", token);
-      const decoded = jwtDecode(token);
-      return {
-        success: true,
-        decoded,
-        message: response.data.message,
-      };
-    }
-    return response.data;
   } catch (error) {
     console.error("Login error:", error);
     return {
@@ -252,7 +203,6 @@ export const checkAuth = async () => {
 
 export default {
   getToken,
-  getPayLoad,
   logging,
   register,
   logout,

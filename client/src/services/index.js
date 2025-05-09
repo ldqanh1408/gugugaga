@@ -19,7 +19,6 @@ import { getMessages, addMessage } from "./chatService.js";
 import {
   getToken,
   logout,
-  getPayLoad,
   logging,
   register,
   changePassword,
@@ -92,7 +91,6 @@ export const getFutureMails = async (userId) => {
 export {
   getNotes,
   getUsers,
-  getUser,
   addUser,
   handleFocus,
   handleBlur,
@@ -102,7 +100,6 @@ export {
   addMessage,
   getToken,
   logout,
-  getPayLoad,
   logging,
   register,
   changePassword,

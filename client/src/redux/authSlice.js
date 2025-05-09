@@ -34,7 +34,6 @@ export const loggingThunk = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await logging(data);
-
       return response;
     } catch (err) {
       console.log(err.message);
@@ -160,6 +159,7 @@ const authSlice = createSlice({
         state.accessToken = token;
         localStorage.setItem("entity", JSON.stringify(entity));
         localStorage.setItem("accessToken", JSON.stringify(token));
+        localStorage.setItem("token", JSON.stringify(token));
       })
       .addCase(loggingThunk.rejected, (state, action) => {
         state.loading = false;

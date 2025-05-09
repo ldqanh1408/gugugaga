@@ -16,6 +16,9 @@ import {
   MyTherapy,
   TodayMailsPage,
   ExploreYourselfPage,
+  Login,
+  SignUp,
+  Profile,
 } from "../Pages";
 import NoteViewer from "../Pages/Note/NoteViewer";
 import SignUpBusiness from "../Pages/SignUpBusiness";
@@ -55,6 +58,16 @@ const routes = [
     isPrivate: false,
   },
   {
+    path: "/login",
+    element: <Login></Login>,
+    isPrivate: false,
+  },
+  {
+    path: "/sign-up",
+    element: <SignUp></SignUp>,
+    isPrivate: false,
+  },
+  {
     path: "/business/expert-list",
     element: <ExpertManagement></ExpertManagement>,
     isPrivate: true,
@@ -83,6 +96,12 @@ const routes = [
   {
     path: "/today-mails",
     element: <TodayMailsPage></TodayMailsPage>,
+    isPrivate: true,
+    standalone: true, // Đánh dấu route này là độc lập
+  },
+  {
+    path: "/profile",
+    element: <Profile></Profile>,
     isPrivate: true,
     standalone: true, // Đánh dấu route này là độc lập
   },

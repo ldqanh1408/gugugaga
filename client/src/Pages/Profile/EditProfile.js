@@ -6,7 +6,8 @@ import avatarPlaceholder from "../../assets/imgs/userDefault.svg";import { updat
 import {Loading} from "../../components/Common/Loading"
 function EditProfile({ setIsEditing }) {
     const dispatch = useDispatch();
-    const profileData = useSelector((state) => state.user.profile); // Lấy profile từ Redux store
+    const profileData = useSelector((state) => state?.user?.profile); // Lấy profile từ Redux store
+    console.log("profileData", profileData)
     const [profile, setProfile] = useState(profileData);
     const [isChanged, setIsChanged] = useState(false);
     const [loading, setLoading] = useState(false);

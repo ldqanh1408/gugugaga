@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPayLoad } from "../../services/authService";
 import { addFutureMail } from "../../services/userService";
 import Swal from "sweetalert2";
 import "./ExploreYourselfPage.css";
@@ -14,6 +13,7 @@ import {
   ResponsiveContainer,
   Brush, // Import Brush for zoom functionality
 } from "recharts";
+import { useSelector } from "react-redux";
 
 const generateMinuteData = (minutes) => {
   const data = [];
@@ -69,6 +69,7 @@ const ExploreYourselfPage = () => {
   const [zoomLevel, setZoomLevel] = useState("allTime");
   const [zoomData, setZoomData] = useState(ratingData.allTime);
   const navigate = useNavigate();
+  const {entity} = useSelector((state) => state.auth);
 
   //   log chi tiết để kiểm tra lưu trữ trong localStorage
   useEffect(() => {
@@ -238,7 +239,6 @@ const ExploreYourselfPage = () => {
     }
 
     try {
-      const payload = await getPayLoad();
       const now = new Date();
       const sendDateTime = `${now.getFullYear()}-${String(
         now.getMonth() + 1
@@ -255,8 +255,8 @@ const ExploreYourselfPage = () => {
         read: false,
       };
 
-      if (payload?.userId) {
-        await addFutureMail(payload.userId, newMail);
+      if (entity?._id) {
+        await addFutureMail(entity._id, newMail);
       }
 
       const savedMails = JSON.parse(localStorage.getItem("futureMails")) || [];

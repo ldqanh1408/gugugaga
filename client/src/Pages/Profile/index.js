@@ -11,9 +11,10 @@ import Loading from "../../components/Common/Loading";
 
 function Profile() {
     const dispatch = useDispatch();
-    const { profile, loading, entries, consecutiveDays } = useSelector((state) => state.user);
-    const { role } = useSelector((state) => state.auth);
+    const { loading, entries, consecutiveDays } = useSelector((state) => state.user);
+    const { role, entity } = useSelector((state) => state.auth);
     const [isEditing, setIsEditing] = useState(false);
+    const profile = entity; // Lấy profile từ authSlice
     console.log(profile)
     useEffect(() => {
         if (!profile) {
@@ -26,7 +27,6 @@ function Profile() {
             dispatch(fetchConsecutiveDays());
         }
     }, [dispatch]);
-    console.log('profile', profile);
     if (loading) return <Loading />;
 
     if (isEditing) {

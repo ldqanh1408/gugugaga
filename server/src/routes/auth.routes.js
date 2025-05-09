@@ -393,6 +393,7 @@ router.post("/v2/login", async (req, res) => {
 
 router.post("/v3/login", async (req, res) => {
   const { account, password, role } = req.body;
+  console.log(role);
   try {
     if (!ROLE_MODELS[role]) {
       return res.status(400).json({ message: "Vai trò không hợp lệ" });
@@ -400,14 +401,13 @@ router.post("/v3/login", async (req, res) => {
 
     const { model } = ROLE_MODELS[role];
 
-    const roleModel = await model.findOne({ account });
+    const roleModel = await model.findOne({ account }).lean();
     if (!roleModel)
       return res.status(400).json({ message: "Người dùng không tồn tại" });
 
     const isMatch = await bcrypt.compare(password, roleModel.password);
     if (!isMatch)
       return res.status(400).json({ message: "Mật khẩu không hợp lệ" });
-
     const accessToken = jwtHelper.createAccessToken(roleModel);
     const refreshToken = jwtHelper.createRefreshToken(roleModel);
     console.log("Loggin accessTOken", accessToken);
@@ -423,7 +423,6 @@ router.post("/v3/login", async (req, res) => {
       secure: false,
       sameSite: "strict",
     });
-    console.log(accessToken);
 
     res.status(201).json({ success: true, accessToken, data: roleModel });
   } catch (error) {

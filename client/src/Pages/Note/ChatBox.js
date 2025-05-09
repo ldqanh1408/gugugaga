@@ -25,7 +25,7 @@ function ChatBox() {
   
   const {notes} = useSelector((state) => state.notes);
   const dispatch = useDispatch();
-
+const { entity } = useSelector((state) => state.auth);
   useEffect(() => {
     if(!notes) {
       dispatch(fetchNotes());
@@ -140,7 +140,8 @@ function ChatBox() {
     setSelectedMedia([]);
 
     try {
-      const { chatId } = await getPayLoad();
+      console.log(entity)
+      const { chatId } = entity.chatId;
       
       // Create proper request payload for API
       const requestData = {
