@@ -43,51 +43,8 @@ export const loggingThunk = createAsyncThunk(
   }
 );
 
-const entity = (() => {
-  const rawEntity = localStorage.getItem("entity");
-  if (!rawEntity || rawEntity === "undefined" || rawEntity === "null") {
-    console.warn("Entity is missing, invalid, or null in localStorage.");
-    return null;
-  }
-  try {
-    return JSON.parse(rawEntity);
-  } catch (error) {
-    console.error("Error parsing entity:", error);
-    return null;
-  }
-})();
-
-// Ensure token is refreshed or cleared if invalid
-const accessToken = (() => {
-  const token = localStorage.getItem("accessToken");
-  if (!token || token === "undefined" || token === "null") {
-    console.warn("Access token is missing, invalid, or null in localStorage.");
-    localStorage.removeItem("accessToken");
-    return null;
-  }
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      console.error("Invalid token format.");
-      localStorage.removeItem("accessToken");
-      return null;
-    }
-
-    const payload = JSON.parse(atob(parts[1]));
-    if (payload.exp && Date.now() >= payload.exp * 1000) {
-      console.warn("Access token has expired.");
-      localStorage.removeItem("accessToken");
-      return null;
-    }
-
-    return token;
-  } catch (error) {
-    console.error("Error validating token:", error);
-    localStorage.removeItem("accessToken");
-    return null;
-  }
-})();
-
+const entity = JSON.parse(localStorage.getItem("entity"));
+const accessToken = JSON.parse(localStorage.getItem("accessToken"))?.replace(/"/g, "");
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -151,7 +108,7 @@ const authSlice = createSlice({
       .addCase(loggingThunk.fulfilled, (state, action) => {
         const entity = action?.payload?.data?.data;
         const token = action?.payload?.data?.accessToken;
-        console.warn(entity);
+        console.warn(entity)
         state.loading = false;
         state.success = true;
         state.isAuthenticated = true;
@@ -169,6 +126,5 @@ const authSlice = createSlice({
       });
   },
 });
-export const { setRole, setIsAuthenticated, setTempRole, logout } =
-  authSlice.actions;
+export const { setRole, setIsAuthenticated, setTempRole, logout } = authSlice.actions;
 export default authSlice.reducer;

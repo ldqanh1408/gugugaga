@@ -1,148 +1,97 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchTodayMails, markMailNotifiedAsync } from "../../redux/userSlice";
-import { jwtDecode } from "jwt-decode";
-import { toast } from "react-toastify";
 import "./TodayMailsPage.css";
 
 const TodayMailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [currentMail, setCurrentMail] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { isAuthenticated } = useSelector((state) => state.auth);
-  const { todayMails, error } = useSelector((state) => state.user);
+  const [currentMail, setCurrentMail] = useState(location.state?.mail);
+  const [receivedMails, setReceivedMails] = useState([]);
 
   useEffect(() => {
-    const fetchMails = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token || !isAuthenticated) {
-          toast.error("Vui lòng đăng nhập để xem thư");
-          navigate("/login");
-          return;
-        }
+    // Lấy danh sách thư từ localStorage
+    const futureMails = JSON.parse(localStorage.getItem("futureMails")) || [];
+    const today = new Date().toISOString().split("T")[0];
 
-        const decoded = jwtDecode(token);
-        if (!decoded?._id) {
-          toast.error("Phiên đăng nhập không hợp lệ");
-          navigate("/login");
-          return;
-        }
+    // Lọc thư cho ngày hiện tại
+    const todayMails = futureMails.filter((mail) => mail.receiveDate === today);
+    setReceivedMails(todayMails);
 
-        await dispatch(fetchTodayMails(decoded._id)).unwrap();
-
-        if (location.state?.mail) {
-          const navigationMail = location.state.mail;
-          setCurrentMail(navigationMail);
-        } else if (todayMails.length > 0) {
-          setCurrentMail(todayMails[0]);
-        }
-      } catch (err) {
-        toast.error(err.message || "Lỗi khi tải thư");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMails();
-  }, [location.state, navigate, isAuthenticated, dispatch, todayMails.length]);
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
+    // Nếu không có thư từ state và không có thư nào cho ngày hôm nay
+    if (!location.state?.mail && todayMails.length === 0) {
+      navigate("/", { replace: true });
+      return;
     }
-  }, [error]);
 
-  const handleMailClick = async (mail) => {
+    // Nếu có thư từ state, thêm vào danh sách nếu chưa có
+    if (
+      location.state?.mail &&
+      !todayMails.find((m) => m.id === location.state.mail.id)
+    ) {
+      setReceivedMails([...todayMails, location.state.mail]);
+      setCurrentMail(location.state.mail);
+    }
+  }, [location.state, navigate]);
+
+  const handleMailClick = (mail) => {
     setCurrentMail(mail);
-    if (!mail.notified) {
-      try {
-        const token = localStorage.getItem("token");
-        const decoded = jwtDecode(token);
-        await dispatch(
-          markMailNotifiedAsync({ userId: decoded._id, mailId: mail._id })
-        ).unwrap();
-      } catch (err) {
-        toast.error("Lỗi khi đánh dấu thư đã thông báo");
-      }
-    }
   };
 
-  if (isLoading) {
+  if (!currentMail && receivedMails.length === 0) {
     return (
-      <div className="today-mails-page">
-        <div className="loading">Đang tải...</div>
-      </div>
-    );
-  }
-
-  if (!isLoading && todayMails.length === 0) {
-    return (
-      <div className="today-mails-page">
-        <div className="no-mail-container">
-          <h2>Không có thư nào để hiển thị</h2>
-          <button onClick={() => navigate("/")} className="back-button">
-            Quay về trang chủ
-          </button>
-        </div>
+      <div className="no-mail-container">
+        <h2>Không có thư nào để hiển thị</h2>
+        <button onClick={() => navigate("/")}>Quay về trang chủ</button>
       </div>
     );
   }
 
   return (
-    <div className="today-mails-page">
-      <div className="today-mails-container">
-        <div className="mails-list">
-          <h3>📬 Thư đã nhận</h3>
-          {todayMails.map((mail) => (
+    <div className="mail-page-container">
+      <aside className="mail-list">
+        <h3>📬 Thư đã nhận</h3>
+        <div className="mail-items">
+          {receivedMails.map((mail) => (
             <div
-              key={mail._id}
-              className={`mail-item ${
-                currentMail?._id === mail._id ? "selected" : ""
-              }`}
+              key={mail.id}
+              className={`mail-item ${currentMail?.id === mail.id ? "selected" : ""}`}
               onClick={() => handleMailClick(mail)}
             >
-              <div className="mail-title">{mail.title || "Thư từ quá khứ"}</div>
-              <div className="mail-date">
-                Ngày gửi: {new Date(mail.sendDate).toLocaleDateString("vi-VN")}
+              <div className="mail-preview">
+                <div className="mail-title">
+                  {mail.title || "Không có tiêu đề"}
+                </div>
+                <div className="mail-date">
+                  {new Date(mail.sendDate).toLocaleDateString()}
+                </div>
               </div>
             </div>
           ))}
         </div>
+      </aside>
 
-        {currentMail && (
-          <div className="mail-content">
-            <div className="mail-card">
-              <div className="mail-header">
-                <h2>📨 {currentMail.title || "Thư từ quá khứ"}</h2>
-                <div className="mail-info">
-                  <p>
-                    <strong>Ngày gửi:</strong>{" "}
-                    {new Date(currentMail.sendDate).toLocaleDateString("vi-VN")}
-                  </p>
-                  <p>
-                    <strong>Ngày nhận:</strong>{" "}
-                    {new Date(currentMail.receiveDate).toLocaleDateString(
-                      "vi-VN"
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mail-body">{currentMail.content}</div>
-
-              <div className="mail-actions">
-                <button className="back-button" onClick={() => navigate("/")}>
-                  Quay về trang chủ
-                </button>
-              </div>
+      {currentMail && (
+        <main className="mail-content">
+          <div className="mail-header">
+            <h2>📨 Thư từ quá khứ</h2>
+            <div className="mail-info">
+              <p>
+                Ngày gửi: {new Date(currentMail.sendDate).toLocaleDateString()}
+              </p>
+              <p>
+                Ngày nhận:{" "}
+                {new Date(currentMail.receiveDate).toLocaleDateString()}
+              </p>
             </div>
           </div>
-        )}
-      </div>
+          <div className="mail-body">{currentMail.content}</div>
+          <div className="mail-actions">
+            <button className="back-button" onClick={() => navigate("/")}>
+              Quay về trang chủ
+            </button>
+          </div>
+        </main>
+      )}
     </div>
   );
 };

@@ -1,42 +1,43 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getUser,
+  logout,
   loadProfile,
   uploadProfile,
+  getEntries,
+  getConsecutiveDays,
   addFutureMail,
   getFutureMails,
-  getTodayMails,
-  markMailNotified,
-  getTreaments,
-  updateTreatment,
-} from "../services/userService";
-import { logout } from "../services/authService";
-import { getEntries, getConsecutiveDays } from "../services/journalService";
+} from "../services"; // API services
+import { getTreaments, updateTreatment } from "../services/userService";
 
+// Thunk lấy user cơ bản (thông tin đăng nhập)
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (payload, thunkAPI) => {
     try {
       const response = await getUser();
-      return response;
+      return response; // Trả về dữ liệu user cơ bản
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
 
+// Thunk lấy thông tin profile chi tiết (nickName, bio, avatar)
 export const fetchProfile = createAsyncThunk(
   "user/fetchProfile",
   async (_, thunkAPI) => {
     try {
-      const res = await loadProfile();
-      return res.data;
+      const res = await loadProfile(); // Giả sử đây là API profile
+      return res.data; // Trả về dữ liệu profile chi tiết
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
 
+// Thunk xử lý logout
 export const logoutUserAsync = createAsyncThunk(
   "user/logout",
   async (_, thunkAPI) => {
@@ -49,14 +50,16 @@ export const logoutUserAsync = createAsyncThunk(
   }
 );
 
+// Thunk xử lý API upload profile (gửi dữ liệu lên server)
 export const uploadProfileAsync = createAsyncThunk(
   "user/uploadProfile",
   async ({ profile, avatarFile }, thunkAPI) => {
     try {
+      // Gửi request upload profile và file avatar
       const response = await uploadProfile({ profile, avatarFile });
-      return response.data;
+      return response.data; // Trả về profile từ server sau khi update thành công
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(error.message); // Xử lý lỗi khi upload thất bại
     }
   }
 );
@@ -94,7 +97,7 @@ export const addFutureMailAsync = createAsyncThunk(
   async ({ userId, mailData }, thunkAPI) => {
     try {
       const response = await addFutureMail(userId, mailData);
-      return response.futureMail;
+      return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -107,30 +110,6 @@ export const fetchFutureMailsAsync = createAsyncThunk(
     try {
       const futureMails = await getFutureMails(userId);
       return futureMails;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
-
-export const fetchTodayMails = createAsyncThunk(
-  "user/fetchTodayMails",
-  async (userId, thunkAPI) => {
-    try {
-      const todayMails = await getTodayMails(userId);
-      return todayMails;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
-
-export const markMailNotifiedAsync = createAsyncThunk(
-  "user/markMailNotified",
-  async ({ userId, mailId }, thunkAPI) => {
-    try {
-      const mail = await markMailNotified(userId, mailId);
-      return { mailId, mail };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -163,7 +142,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     user: null,
-    profile: JSON.parse(localStorage.getItem("profile")) || null,
+    profile: JSON.parse(localStorage.getItem("profile")) || null, // Khôi phục profile từ localStorage
     loading: false,
     error: null,
     logoutLoading: false,
@@ -171,7 +150,7 @@ const userSlice = createSlice({
     entries: 0,
     consecutiveDays: 0,
     futureMails: [],
-    todayMails: [],
+
     treatments: [],
     currentTreatments: [],
     pendingTreatments: [],
@@ -181,7 +160,7 @@ const userSlice = createSlice({
   reducers: {
     updateAvatar: (state, action) => {
       if (state.user) {
-        state.user.avatar = action.payload;
+        state.user.avatar = action.payload; // Cập nhật avatar đồng bộ
       }
       if (state.profile) {
         state.profile.avatar = action.payload;
@@ -198,6 +177,7 @@ const userSlice = createSlice({
       state.selectedTreatment = action.payload;
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchConsecutiveDays.pending, (state) => {
@@ -219,87 +199,71 @@ const userSlice = createSlice({
         state.entries = action.payload;
       })
       .addCase(fetchEntries.rejected, (state, action) => {
-        state.loading = false;
+        state.loading = "false";
         state.error = action.payload;
       })
+      // Fetch User (thông tin cơ bản)
       .addCase(fetchUser.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
-        state.user = action.payload;
+        state.user = action.payload; // Lưu thông tin user cơ bản
         state.loading = false;
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.error = action.payload || "Failed to fetch user";
         state.loading = false;
       })
+
+      // Fetch Profile (thông tin chi tiết)
       .addCase(fetchProfile.pending, (state) => {
         state.profileLoading = true;
         state.error = null;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.profile = action.payload;
+        state.profile = action.payload; // Lưu thông tin profile chi tiết
         state.profileLoading = false;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.error = action.payload;
         state.profileLoading = false;
       })
+
+      // Logout
       .addCase(logoutUserAsync.pending, (state) => {
         state.logoutLoading = true;
       })
       .addCase(logoutUserAsync.fulfilled, (state) => {
         state.user = null;
-        state.profile = null;
+        state.profile = null; // Xóa cả thông tin profile khi logout
         state.logoutLoading = false;
       })
       .addCase(logoutUserAsync.rejected, (state, action) => {
         state.logoutError = action.payload || "Failed to logout";
         state.logoutLoading = false;
       })
+
       .addCase(uploadProfileAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(uploadProfileAsync.fulfilled, (state, action) => {
-        state.profile = action.payload;
+        state.profile = action.payload; // Lưu dữ liệu profile trả về từ server
         state.user = { ...state.user, avatar: action.payload.avatar };
         state.loading = false;
       })
       .addCase(uploadProfileAsync.rejected, (state, action) => {
-        state.error = action.payload || "Failed to update profile";
+        state.error = action.payload || "Failed to update profile"; // Xử lý lỗi khi thất bại
         state.loading = false;
       })
+
       .addCase(addFutureMailAsync.fulfilled, (state, action) => {
         state.futureMails.push(action.payload);
       })
       .addCase(fetchFutureMailsAsync.fulfilled, (state, action) => {
         state.futureMails = action.payload;
       })
-      .addCase(fetchTodayMails.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchTodayMails.fulfilled, (state, action) => {
-        state.todayMails = action.payload;
-        state.loading = false;
-      })
-      .addCase(fetchTodayMails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Failed to fetch today's mails";
-      })
-      .addCase(markMailNotifiedAsync.fulfilled, (state, action) => {
-        const { mailId, mail } = action.payload;
-        state.todayMails = state.todayMails.map((m) =>
-          m._id === mailId ? { ...m, notified: mail.notified } : m
-        );
-        state.futureMails = state.futureMails.map((m) =>
-          m._id === mailId ? { ...m, notified: mail.notified } : m
-        );
-      })
-      .addCase(markMailNotifiedAsync.rejected, (state, action) => {
-        state.error = action.payload || "Failed to mark mail as notified";
-      })
+
       .addCase(getTreatmentsThunk.pending, (state) => {
         state.loading = true;
         state.treatments = [];
@@ -309,10 +273,10 @@ const userSlice = createSlice({
         state.loading = false;
         state.treatments = action.payload;
         state.currentTreatments = action.payload?.filter(
-          (treatment) => treatment.treatmentStatus !== "pending"
+          (treatment, index) => treatment.treatmentStatus !== "pending"
         );
         state.pendingTreatments = action.payload?.filter(
-          (treatment) => treatment.treatmentStatus === "pending"
+          (treatment, index) => treatment.treatmentStatus === "pending"
         );
         state.error = null;
       })
@@ -325,9 +289,10 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateTreatmentThunk.fulfilled, (state, action) => {
-        const { treatment_id, data } = action.meta.arg;
+        const { treatment_id, data } = action.meta.arg; // lấy từ payload truyền vào thunk
         state.loading = false;
 
+        // Cập nhật treatment đang xem
         if (
           state.selectedTreatment &&
           state.selectedTreatment._id === treatment_id
@@ -337,6 +302,7 @@ const userSlice = createSlice({
           state.selectedTreatment.complaint = data.complaint;
         }
 
+        // Cập nhật trong danh sách treatment
         state.treatments = state.treatments.map((t) =>
           t._id === treatment_id
             ? {
@@ -356,6 +322,7 @@ const userSlice = createSlice({
           (t) => t.treatmentStatus === "pending"
         );
       })
+
       .addCase(updateTreatmentThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to update treatment";
@@ -364,6 +331,6 @@ const userSlice = createSlice({
 });
 
 export const { updateAvatar, setIsViewing, setSelectedTreatment, setProfile } =
-  userSlice.actions;
+  userSlice.actions; // Action để đồng bộ avatar
 
 export default userSlice.reducer;

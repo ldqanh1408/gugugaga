@@ -6,12 +6,10 @@ const {
   createRefreshToken,
   verifyAccessToken,
 } = require("../utils/jwtHelper");
-const jwtHelper = require("../utils/jwtHelper");
+const jwtHelper = require("../utils/jwtHelper")
 const redisHelper = require("../utils/redisHelper");
 const dotenv = require("dotenv");
 dotenv.config();
-const jwt = require("jsonwebtoken");
-
 const authenticateJWT = async (req, res, next) => {
   const authHeader = req.header("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -95,48 +93,39 @@ const authenticateJWT_V2 = async (req, res, next) => {
   }
 };
 
-exports.authenticateAndAuthorize = (allowedRoles) => {
-  return (req, res, next) => {
+const authenticateAndAuthorize = (roles = []) => {
+  return async (req, res, next) => {
     try {
-      // Lấy token từ header
-      const authHeader = req.headers.authorization;
+      const authHeader = req.header("Authorization");
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({
-          success: false,
-          message: "No token provided",
-        });
+        return res
+        .status(401)  
+        .json({ message: "Unauthorized - No token provided" });
       }
-
-      const token = authHeader.split(" ")[1];
-
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Kiểm tra role nếu có
-      if (allowedRoles && allowedRoles.length > 0) {
-        if (!allowedRoles.includes(decoded.role)) {
-          return res.status(403).json({
-            success: false,
-            message: "Không có quyền truy cập",
-          });
-        }
+      const token = authHeader.split(" ")[1]?.trim(); // Lấy phần token sau "Bearer "
+      if (!token) {
+        return res.status(401).json("Access Denied");
       }
+      const decoded = await jwtHelper.verifyAccessToken(token);
 
-      // Thêm thông tin user vào request
+      if (roles.length && !roles.includes(decoded?.role)) {
+        return res.status(403).json({ message: "Forbidden - Insufficient role" });
+      }
       req.payload = decoded;
+      console.log(req.path)
       next();
     } catch (error) {
-      console.error("Auth error:", error);
-      if (error.name === "TokenExpiredError") {
-        return res.status(401).json({
-          success: false,
-          message: "Token đã hết hạn",
-        });
-      }
-      return res.status(401).json({
-        success: false,
-        message: "Token không hợp lệ",
-      });
+      return res
+        .status(403)
+        .json({ message: "Forbidden - Invalid token" + error.message });
     }
   };
+};
+
+module.exports = {
+  authenticateJWT,
+  authenticateBusinessJWT,
+  authenticateExpertJWT,
+  authenticateJWT_V2,
+  authenticateAndAuthorize
 };

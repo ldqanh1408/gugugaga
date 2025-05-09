@@ -1,25 +1,42 @@
-import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { getToken } from "../services/authService";
+import {Loading} from "../components"
+function PrivateRoutes() {
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // null: đang kiểm tra
 
-const PrivateRoutes = () => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  useEffect(() => {
+    let mounted = true;
 
-  // Kiểm tra token trong localStorage để đảm bảo người dùng vẫn đăng nhập
-  const token = localStorage.getItem("token");
+    const checkAuth = async () => {
+      try {
+        const token = await getToken()
+        console.log("Token nhận được:", token); // Debug giá trị token
+        if (mounted) {
+          setIsAuthenticated(!!token); // true nếu token tồn tại, false nếu null
+        }
+      } catch (error) {
+        console.error("Lỗi kiểm tra auth:", error);
+        if (mounted) setIsAuthenticated(false); // Xử lý lỗi
+      }
+    };
 
-  if (!isAuthenticated || !token) {
-    // Redirect to login page with return url
+    checkAuth();
+
+    return () => {
+      mounted = false; // Cleanup để tránh set state sau unmount
+    };
+  }, []);
+
+  // Đợi kiểm tra xong
+  if (isAuthenticated === null) {
     return (
-      <Navigate
-        to="/login"
-        replace
-        state={{ returnUrl: window.location.pathname }}
-      />
+      <Loading></Loading>
     );
   }
 
-  return <Outlet />;
-};
+  // Render dựa trên isAuthenticated
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+}
 
 export default PrivateRoutes;
