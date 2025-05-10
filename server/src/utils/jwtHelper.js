@@ -48,8 +48,7 @@ const verifyToken = (token) => {
 };
 
 const createAccessToken = (payload) => {
-   console.log("payload", payload)
-   console.log("payload", payload.role)
+  console.log("payload", payload);
   return jwt.sign(
     {
       _id: payload._id.toString(),
@@ -57,7 +56,7 @@ const createAccessToken = (payload) => {
       journalId: payload.journalId,
       chatId: payload.chatId
     },
-    process.env.JWT_SECRET, // Updated to use JWT_SECRET
+    process.env.ACCESS_TOKEN_SECRET, // Updated to use JWT_SECRET
     { expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRATION)  }
   );
 };

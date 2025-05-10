@@ -71,7 +71,7 @@ exports.addNote = async (req, res) => {
 
     // Add emotion tracking
     const emotionResponse = await Emotion.create({
-      userId: req.user._id,
+      userId: req.payload._id,
       emotion: emotion,
       emotionScore: emotionScore,
       source: 'note',
@@ -128,7 +128,7 @@ exports.updateNote = async (req, res) => {
 
     // Add emotion tracking
     const emotionResponse = await Emotion.create({
-      userId: req.user._id,
+      userId: req.payload._id,
       emotion: updateData.emotion,
       emotionScore: updateData.emotionScore,
       source: 'note',

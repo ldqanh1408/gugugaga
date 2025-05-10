@@ -404,7 +404,6 @@ router.post("/v3/login", async (req, res) => {
     const roleModel = await model.findOne({ account }).lean();
     if (!roleModel)
       return res.status(400).json({ message: "Người dùng không tồn tại" });
-
     const isMatch = await bcrypt.compare(password, roleModel.password);
     if (!isMatch)
       return res.status(400).json({ message: "Mật khẩu không hợp lệ" });
