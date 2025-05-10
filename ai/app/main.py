@@ -29,9 +29,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Consider changing to specific domains for production
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["Content-Type", "X-Content-Type-Options"]
 )
 
 # Include routers

@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchNotes } from "../../redux/notesSlice";
 import { Modal, Form } from "react-bootstrap";
 import { uploadAudio, uploadImage } from "../../services/userService";
-
+import {trackUserEmotion} from "../../services/emotion.service"
 function ChatBox() {
   const location = useLocation();
   const isChatPage = location.pathname === "/chat";
@@ -22,12 +22,14 @@ function ChatBox() {
   const [customFileName, setCustomFileName] = useState("");
   const [showNameModal, setShowNameModal] = useState(false);
   const chatReference = useRef(null);
-  
-  const {notes} = useSelector((state) => state.notes);
+  const {entity} = useSelector((state) => state?.auth)
+  const { notes } = useSelector((state) => state.notes);
+    const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!notes) {
+    if (!notes) {
       dispatch(fetchNotes());
     }
   }, [dispatch]);
@@ -64,14 +66,14 @@ function ChatBox() {
 
     try {
       let mediaItem = null;
-      
+
       if (selectedFile.type.startsWith("audio")) {
         const response = await uploadAudio(selectedFile);
         if (response.success) {
-          mediaItem = { 
-            type: "audio", 
-            url: response.audioUrl, 
-            name: customFileName 
+          mediaItem = {
+            type: "audio",
+            url: response.audioUrl,
+            name: customFileName,
           };
         } else {
           console.error("Audio upload failed:", response.message);
@@ -79,10 +81,10 @@ function ChatBox() {
       } else if (selectedFile.type.startsWith("image")) {
         const response = await uploadImage(selectedFile);
         if (response.success) {
-          mediaItem = { 
-            type: "image", 
-            url: response.imageUrl, 
-            name: customFileName 
+          mediaItem = {
+            type: "image",
+            url: response.imageUrl,
+            name: customFileName,
           };
         } else {
           console.error("Image upload failed:", response.message);
@@ -108,15 +110,15 @@ function ChatBox() {
   const handleInput = (e) => {
     const textarea = e.target;
     setInput(e.target.value);
-    
+
     // Reset height and limit it
-    textarea.style.height = 'auto';
+    textarea.style.height = "auto";
     const newHeight = Math.min(textarea.scrollHeight, 40);
     textarea.style.height = `${newHeight}px`;
   };
 
   // Modified sendMessage function for ChatBox.js
-  const sendMessage = async () => {
+ const sendMessage = async () => {
     // Don't send if both input and media are empty
     if (input.trim() === "" && selectedMedia.length === 0) return;
 
@@ -138,24 +140,23 @@ function ChatBox() {
     // Clear input fields
     setInput("");
     setSelectedMedia([]);
+    setIsLoading(true);
 
     try {
-      const { chatId } = await getPayLoad();
-      
-      // Create proper request payload for API
+      // Get chatId from entity
+      const chatId = entity?.chatId || "default-chat";
+      // Không gọi trackUserEmotion ở đây nữa
+      // Gửi message tới AI model
       const requestData = {
         chatId: chatId,
-        message: userInput || "", // Ensure message is never undefined
+        message: userInput || "",
         media: userMedia.map(m => ({
           type: m.type,
           url: m.url,
           name: m.name
         }))
       };
-      
-      console.log("Sending request to AI:", requestData);
-      
-      // Send request to API endpoint
+      // Make API request to backend
       const response = await axios.post(
         "http://localhost:4000/api/chats/ai",
         requestData,
@@ -165,37 +166,58 @@ function ChatBox() {
           },
         }
       );
-
       console.log("AI response received:", response.data);
-
-      // Handle successful response
+      // Check if response contains expected properties
       if (response.data && response.data.success) {
         const botText = response.data.response || "No response";
-        const botMessage = { text: botText, role: "ai", media: [] };
+        const botMessage = {
+          text: botText,
+          role: "ai",
+          media: [],
+          sentiment: response.data.sentiment,
+          sentiment_label: response.data.sentiment_label
+        };
 
+        // Add message to chat history
         await addMessage({ message: botMessage });
         setMessages((prev) => [...prev, botMessage]);
+
+        // Track AI's emotion response
+        if (response.data.sentiment !== undefined && response.data.sentiment_label) {
+          try {
+            console.log("Tracking AI emotion:", {
+              sentiment: response.data.sentiment,
+              label: response.data.sentiment_label
+            });
+            
+            await trackUserEmotion(
+              userInput,
+              'chat',
+              chatId,
+              response.data.sentiment_label,
+              response.data.sentiment
+            );
+          } catch (emotionError) {
+            console.error("Error tracking AI emotion:", emotionError);
+          }
+        }
       } else {
-        console.error("AI response error:", response.data);
-        // Add a user-friendly error message
-        const errorMessage = { 
-          text: "Sorry, I couldn't process your message. Please try again later. 🥺", 
-          role: "ai", 
-          media: [] 
-        };
-        await addMessage({ message: errorMessage });
-        setMessages((prev) => [...prev, errorMessage]);
+        throw new Error(response.data?.error || "Invalid response from server");
       }
     } catch (error) {
-      console.error("Failed to send message:", error.message);
+      console.error("Failed to send message:", error);
+      
       // Add a user-friendly error message on exception
       const errorMessage = { 
         text: "Sorry, there was a problem connecting to the AI. Please check your connection and try again. 🥺", 
         role: "ai", 
         media: [] 
       };
+      
       await addMessage({ message: errorMessage });
       setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -210,22 +232,23 @@ function ChatBox() {
           {messages.map((msg, index) => (
             <div key={index} className={`message ${msg.role}`}>
               <div className="message-text">{msg.text}</div>
-              {msg.media && msg.media.map((m, idx) => (
-                <div key={idx} className="message-media">
-                  {m.type === "image" && (
-                    <div className="media-content">
-                      <img src={m.url} alt={m.name} />
-                      <span className="media-filename">{m.name}</span>
-                    </div>
-                  )}
-                  {m.type === "audio" && (
-                    <div className="audio-container">
-                      <span className="audio-filename">{m.name}</span>
-                      <audio src={m.url} controls className="audio-player" />
-                    </div>
-                  )}
-                </div>
-              ))}
+              {msg.media &&
+                msg.media.map((m, idx) => (
+                  <div key={idx} className="message-media">
+                    {m.type === "image" && (
+                      <div className="media-content">
+                        <img src={m.url} alt={m.name} />
+                        <span className="media-filename">{m.name}</span>
+                      </div>
+                    )}
+                    {m.type === "audio" && (
+                      <div className="audio-container">
+                        <span className="audio-filename">{m.name}</span>
+                        <audio src={m.url} controls className="audio-player" />
+                      </div>
+                    )}
+                  </div>
+                ))}
             </div>
           ))}
         </div>
@@ -236,11 +259,13 @@ function ChatBox() {
               <div className="selected-media-preview">
                 {selectedMedia.map((m, idx) => (
                   <div key={idx} className="media-item">
-                    <button 
+                    <button
                       className="delete-media-btn"
                       onClick={() => handleDeleteMedia(idx)}
                       title="Remove"
-                    >×</button>
+                    >
+                      ×
+                    </button>
                     {m.type === "image" && (
                       <div className="media-content">
                         <img src={m.url} alt={m.name} />
@@ -257,20 +282,30 @@ function ChatBox() {
                 ))}
               </div>
             )}
-            
+
             <div className="input-row">
               <div className="media-buttons">
                 <label title="Add Image">
                   <img src={ImageButton} alt="Add" />
-                  <input type="file" accept="image/*" hidden onChange={handleFileSelect} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleFileSelect}
+                  />
                 </label>
                 <label title="Add Audio">
                   <img src={RecordButton} alt="Add" />
-                  <input type="file" accept="audio/*" hidden onChange={handleFileSelect} />
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    hidden
+                    onChange={handleFileSelect}
+                  />
                 </label>
               </div>
 
-              <textarea 
+              <textarea
                 className="chat-input"
                 placeholder="Enter message..."
                 value={input}
@@ -283,8 +318,8 @@ function ChatBox() {
                 }}
               />
 
-              <button 
-                className="send-btn" 
+              <button
+                className="send-btn"
                 onClick={sendMessage}
                 title="Send message"
               >
@@ -296,7 +331,11 @@ function ChatBox() {
       </div>
 
       {/* File Name Modal */}
-      <Modal show={showNameModal} onHide={() => setShowNameModal(false)} centered>
+      <Modal
+        show={showNameModal}
+        onHide={() => setShowNameModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Name your file</Modal.Title>
         </Modal.Header>
@@ -312,7 +351,10 @@ function ChatBox() {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-secondary" onClick={() => setShowNameModal(false)}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowNameModal(false)}
+          >
             Cancel
           </button>
           <button className="btn btn-primary" onClick={handleUploadWithName}>

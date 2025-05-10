@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def save_message(chatId: str, user_message: str, ai_response: str) -> None:
+def save_message(chatId: str, user_message: str, ai_response: str, sentiment_data: dict = None) -> None:
     """
     Save user message and AI response to ChromaDB with embeddings
     
@@ -13,16 +13,38 @@ def save_message(chatId: str, user_message: str, ai_response: str) -> None:
         chatId: Unique identifier for the chat session
         user_message: User's input message 
         ai_response: AI's generated response
+        sentiment_data: Optional sentiment analysis data
     """
     timestamp = int(time.time() * 1000)
-    for role, text in [("user", f"User: {user_message}"), ("ai", f"Bot: {ai_response}")]:
-        emb = get_embedding(text)
-        chat_vectors.add(
-            ids=[f"{chatId}-{role}-{timestamp}"],
-            embeddings=[emb],
-            documents=[text],
-            metadatas=[{"chatId": chatId, "role": role, "timestamp": timestamp}]
-        )
+    
+    # Save user message
+    user_metadata = {"chatId": chatId, "role": "user", "timestamp": timestamp}
+    
+    # Add sentiment data to metadata if available
+    if sentiment_data and isinstance(sentiment_data, dict):
+        user_metadata["sentiment_score"] = sentiment_data.get("score", 0.5)
+        user_metadata["sentiment_label"] = sentiment_data.get("label", "neutral")
+    
+    user_text = f"User: {user_message}"
+    user_emb = get_embedding(user_text)
+    
+    chat_vectors.add(
+        ids=[f"{chatId}-user-{timestamp}"],
+        embeddings=[user_emb],
+        documents=[user_text],
+        metadatas=[user_metadata]
+    )
+    
+    # Save AI response
+    ai_text = f"Bot: {ai_response}"
+    ai_emb = get_embedding(ai_text)
+    
+    chat_vectors.add(
+        ids=[f"{chatId}-ai-{timestamp}"],
+        embeddings=[ai_emb],
+        documents=[ai_text],
+        metadatas=[{"chatId": chatId, "role": "ai", "timestamp": timestamp}]
+    )
 
 def save_media_caption(chatId: str, media_type: str, caption: str) -> None:
     """
@@ -146,7 +168,6 @@ def create_prompt(chatId: str, message: str) -> str:
             f"<|system|>\n{system_prompt}</s>\n"
             f"<|user|>\n{message}</s>\n"
         )
-        print(final_prompt)
         return final_prompt
     
     except Exception as e:
