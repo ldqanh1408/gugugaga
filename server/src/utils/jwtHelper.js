@@ -57,7 +57,7 @@ const createAccessToken = (payload) => {
       journalId: payload.journalId,
       chatId: payload.chatId
     },
-    process.env.JWT_SECRET, // Updated to use JWT_SECRET
+    process.env.ACCESS_TOKEN_SECRET, // Updated to use JWT_SECRET
     { expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRATION)  }
   );
 };

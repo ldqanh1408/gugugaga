@@ -29,6 +29,7 @@ function Note() {
   }, [currentIndex, notes, dispatch]);
   
   const handleSave = async (newNote) => {
+    console.log("---------------------")
     try {
       const trimmedContent = newNote.content.trim();
       if (!trimmedContent) return;
@@ -67,7 +68,6 @@ function Note() {
     }
   };
   if (!currentNote) return <div>Loading...</div>;  // Hoặc xử lý lỗi khác
-
   return (
     <div className="fade-in">
       {currentIndex === null ? (
