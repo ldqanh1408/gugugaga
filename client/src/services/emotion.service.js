@@ -133,7 +133,6 @@ export const trackUserEmotion = async (
 ) => {
   try {
     const token = await getToken();
-    console.log("Token sent in Authorization header:", token);
     // If AI emotion data is provided, use it; otherwise analyze the text
     const emotionData =
       aiEmotion && aiEmotionScore
@@ -151,6 +150,7 @@ export const trackUserEmotion = async (
       },
       token ? { headers: { Authorization: `Bearer ${token}` } } : {}
     );
+    console.log("track res", response)
     return response.data;
   } catch (error) {
     console.error("Error tracking emotion:", error);

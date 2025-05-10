@@ -1,14 +1,22 @@
 import "./NoteEditor.css";
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { DropdownToggle, Dropdown, DropdownMenu, Modal, Form } from "react-bootstrap";
+import {
+  DropdownToggle,
+  Dropdown,
+  DropdownMenu,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import ImageButton from "../../assets/imgs/ImageButton.svg";
 import RecordButton from "../../assets/imgs/RecordButton.svg";
 import VideoButton from "../../assets/imgs/VideoButton.svg";
 import { useDispatch, useSelector } from "react-redux";
-import { getPayLoad } from "../../services/authService"; 
+import { getPayLoad } from "../../services/authService";
 import { addMessage } from "../../services";
+import { trackUserEmotion } from '../../services/emotion.service';
+
 import axios from "axios";
 import {
   setCurrentIndex,
@@ -21,9 +29,7 @@ import {
 } from "../../redux/notesSlice";
 import { uploadAudio, uploadImage } from "../../services/userService"; // Import the uploadAudio and uploadImage functions
 
-function NoteEditor({
-  isFromViewer = false,
-}) {
+function NoteEditor({ isFromViewer = false }) {
   const { isEditing, currentIndex, notes, currentNote } = useSelector(
     (state) => state.notes
   );
@@ -36,7 +42,7 @@ function NoteEditor({
   const [selectedFile, setSelectedFile] = useState(null);
   const [customFileName, setCustomFileName] = useState("");
   const dispatch = useDispatch();
-  console.error(currentNote); 
+  console.error(currentNote);
 
   function formatDateForInput(dateString) {
     if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
@@ -45,7 +51,16 @@ function NoteEditor({
   }
 
   useEffect(() => {
-    dispatch(setCurrentNote({ _id: currentNote?._id, header, date, text, mood, media: currentNote.media }));
+    dispatch(
+      setCurrentNote({
+        _id: currentNote?._id,
+        header,
+        date,
+        text,
+        mood,
+        media: currentNote.media,
+      })
+    );
   }, [header, date, text, mood]);
 
   const handleSubmit = async () => {
@@ -54,13 +69,13 @@ function NoteEditor({
       return;
     }
 
-    const updatedNote = { 
+    const updatedNote = {
       _id: currentNote?._id || undefined, // Đảm bảo `_id` không bị undefined
       header: header.trim(),
       date: date.trim(),
       text: text.trim(),
       mood: mood.trim(),
-      media: currentNote.media || [] // Use media directly from Redux store
+      media: currentNote.media || [], // Use media directly from Redux store
     };
 
     console.log("Payload being sent to backend:", updatedNote); // Log payload để kiểm tra
@@ -72,7 +87,29 @@ function NoteEditor({
         await dispatch(updateExistingNote(updatedNote));
         dispatch(setIsEditing(false));
       } else {
-        await dispatch(saveNewNote(updatedNote)); // Gửi payload để lưu note mới
+        try {
+          const trimmedContent = currentNote.text.trim();
+          if (!trimmedContent) return;
+
+          // First analyze emotion from note content
+          const { emotion, emotionScore } = await trackUserEmotion(
+            trimmedContent,
+            "note",
+            currentNote._id
+          );
+
+          // Save note with emotion data
+          dispatch(
+            saveNewNote({
+              ...currentNote,
+              text: trimmedContent,
+              emotion,
+              emotionScore,
+            })
+          );
+        } catch (error) {
+          console.error("Error saving note:", error);
+        }
         dispatch(fetchNotes()); // Fetch danh sách notes mới nhất
       }
     } catch (error) {
@@ -95,13 +132,13 @@ function NoteEditor({
 
     try {
       let response;
-      if (selectedFile.type.startsWith('audio')) {
+      if (selectedFile.type.startsWith("audio")) {
         response = await uploadAudio(selectedFile);
         if (response.success) {
-          const mediaItem = { 
-            type: "audio", 
-            url: response.audioUrl, 
-            name: customFileName 
+          const mediaItem = {
+            type: "audio",
+            url: response.audioUrl,
+            name: customFileName,
           };
           dispatch(addMediaToCurrentNote(mediaItem));
           alert("Audio uploaded successfully!");
@@ -109,13 +146,13 @@ function NoteEditor({
           alert(`Failed to upload audio: ${response.message}`);
           console.error("Audio upload failed:", response.message);
         }
-      } else if (selectedFile.type.startsWith('image')) {
+      } else if (selectedFile.type.startsWith("image")) {
         response = await uploadImage(selectedFile);
         if (response.success) {
-          const mediaItem = { 
-            type: "image", 
-            url: response.imageUrl, 
-            name: customFileName 
+          const mediaItem = {
+            type: "image",
+            url: response.imageUrl,
+            name: customFileName,
           };
           dispatch(addMediaToCurrentNote(mediaItem));
           alert("Image uploaded successfully!");
@@ -164,11 +201,7 @@ function NoteEditor({
       <hr className="note-line"></hr>
 
       <div className="date-container">
-        <input
-          className="note-date"
-          type=""
-          value={formatDateForInput(date)}
-        />
+        <input className="note-date" type="" value={formatDateForInput(date)} />
       </div>
       <Dropdown className="d-none d-lg-block">
         <DropdownToggle as="div" className="p-0 border-0 bg-transparent">
@@ -196,23 +229,45 @@ function NoteEditor({
         }}
         placeholder="Enter content"
       ></textarea>
-      <div className="media-toolbar" style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+      <div
+        className="media-toolbar"
+        style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
+      >
         <label className="btn p-0">
           <img src={ImageButton} alt="Add Image" width="24" />
-          <input type="file" accept="image/*" hidden onChange={handleFileSelect} />
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFileSelect}
+          />
         </label>
         <label className="btn p-0">
           <img src={VideoButton} alt="Add Video" width="24" />
-          <input type="file" accept="video/*" hidden onChange={handleFileSelect} />
+          <input
+            type="file"
+            accept="video/*"
+            hidden
+            onChange={handleFileSelect}
+          />
         </label>
         <label className="btn p-0">
           <img src={RecordButton} alt="Add Audio" width="24" />
-          <input type="file" accept="audio/*" hidden onChange={handleFileSelect} />
+          <input
+            type="file"
+            accept="audio/*"
+            hidden
+            onChange={handleFileSelect}
+          />
         </label>
       </div>
-      
+
       {/* File Name Modal */}
-      <Modal show={showNameModal} onHide={() => setShowNameModal(false)} centered>
+      <Modal
+        show={showNameModal}
+        onHide={() => setShowNameModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Name your file</Modal.Title>
         </Modal.Header>
@@ -228,7 +283,10 @@ function NoteEditor({
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-secondary" onClick={() => setShowNameModal(false)}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowNameModal(false)}
+          >
             Cancel
           </button>
           <button className="btn btn-primary" onClick={handleUploadWithName}>
@@ -243,7 +301,7 @@ function NoteEditor({
           if (!m || !m.type) return null;
           return (
             <div key={idx} className="media-item">
-              <button 
+              <button
                 className="delete-media-btn"
                 onClick={() => handleDeleteMedia(idx)}
                 title="Remove"
@@ -253,12 +311,16 @@ function NoteEditor({
               {m.type === "image" && (
                 <div className="media-content">
                   <img src={m.url} alt={m.name} />
-                  <span className="media-filename" title={m.name}>{m.name}</span>
+                  <span className="media-filename" title={m.name}>
+                    {m.name}
+                  </span>
                 </div>
               )}
               {m.type === "audio" && (
                 <div className="audio-container">
-                  <span className="audio-filename" title={m.name}>{m.name}</span>
+                  <span className="audio-filename" title={m.name}>
+                    {m.name}
+                  </span>
                   <audio src={m.url} controls className="audio-player" />
                 </div>
               )}
