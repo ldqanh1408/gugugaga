@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { getPayLoad } from "../../services/authService";
+import { useDispatch, useSelector } from "react-redux";
 import { addFutureMailAsync } from "../../redux/userSlice";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
@@ -16,7 +15,7 @@ const ExploreYourselfPage = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const entity = useSelector((state) => state.auth)
   const handleSendMail = async (e) => {
     e.preventDefault();
 
@@ -53,8 +52,7 @@ const ExploreYourselfPage = () => {
 
       setIsLoading(true);
 
-      const payload = await getPayLoad();
-      if (!payload?._id) {
+      if (!entity?._id) {
         throw new Error("Không thể xác thực người dùng");
       }
 
@@ -66,7 +64,7 @@ const ExploreYourselfPage = () => {
       };
 
       const result = await dispatch(
-        addFutureMailAsync({ userId: payload._id, mailData })
+        addFutureMailAsync({ userId: entity._id, mailData })
       ).unwrap();
 
       // Nếu ngày nhận là ngày hiện tại

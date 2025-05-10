@@ -1,22 +1,28 @@
 const EmotionTracking = require('../models/emotionTracking.model');
 
-// Map text emotions to numerical scores between 0 and 1
-const emotionScores = {
-  'angry': 0.1,
-  'sad': 0.25,
-  'neutral': 0.5,
-  'happy': 0.75,
-  'excited': 0.9
-};
-
-// Track emotion from any source (note/chat/therapy)
+// Track a new emotion
 exports.trackEmotion = async (req, res) => {
   try {
-    const { emotion, source, sourceId, notes } = req.body;
-    const userId = req.user._id;
+    const userId = req.payload._id;
+    const { emotion, emotionScore, source, sourceId, notes } = req.body;
 
-    const emotionScore = emotionScores[emotion] || 0.5;
+    // Check if there's an existing record for this source
+    const existingTrack = await EmotionTracking.findOne({ userId, source, sourceId });
 
+    if (existingTrack) {
+      // Update the existing record
+      existingTrack.emotion = emotion;
+      existingTrack.emotionScore = emotionScore;
+      existingTrack.notes = notes;
+      await existingTrack.save();
+
+      return res.status(200).json({
+        message: "Emotion updated successfully",
+        data: existingTrack
+      });
+    }
+
+    // Create a new record if none exists
     const emotionTrack = new EmotionTracking({
       userId,
       emotionScore,
@@ -25,7 +31,6 @@ exports.trackEmotion = async (req, res) => {
       sourceId,
       notes
     });
-
     await emotionTrack.save();
 
     res.status(201).json({
@@ -33,7 +38,7 @@ exports.trackEmotion = async (req, res) => {
       data: emotionTrack
     });
 
-  } catch (error) {
+  } catch (error) { 
     res.status(500).json({
       message: "Error tracking emotion",
       error: error.message
@@ -44,7 +49,7 @@ exports.trackEmotion = async (req, res) => {
 // Get emotion history for a user
 exports.getEmotionHistory = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.payload._id;
     const { startDate, endDate } = req.query;
 
     const query = { userId };
@@ -57,7 +62,7 @@ exports.getEmotionHistory = async (req, res) => {
     const emotions = await EmotionTracking.find(query)
       .sort({ timestamp: -1 })
       .limit(1000); // Reasonable limit for data points
-
+    
     res.json({
       message: "Emotion history retrieved successfully",
       data: emotions
@@ -71,12 +76,12 @@ exports.getEmotionHistory = async (req, res) => {
   }
 };
 
-// Get emotion stats
+// Get emotion statistics
 exports.getEmotionStats = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const { timeRange } = req.query; // 'day', 'week', 'month', 'year'
-    
+    const userId = req.payload._id;
+    const { timeRange } = req.query;
+
     const startDate = new Date();
     switch (timeRange) {
       case 'day':
@@ -84,7 +89,7 @@ exports.getEmotionStats = async (req, res) => {
         break;
       case 'week':
         startDate.setDate(startDate.getDate() - 7);
-        break;  
+        break;
       case 'month':
         startDate.setMonth(startDate.getMonth() - 1);
         break;
@@ -92,34 +97,59 @@ exports.getEmotionStats = async (req, res) => {
         startDate.setFullYear(startDate.getFullYear() - 1);
         break;
       default:
-        startDate.setMonth(startDate.getMonth() - 1); // Default to 1 month
+        startDate.setMonth(startDate.getMonth() - 1);
     }
 
-    const stats = await EmotionTracking.aggregate([
-      {
-        $match: {
-          userId: userId,
-          timestamp: { $gte: startDate }
-        }
-      },
-      {
-        $group: {
-          _id: "$emotion",
-          count: { $sum: 1 },
-          avgScore: { $avg: "$emotionScore" }
-        }
+    // Get emotion records from EmotionTracking collection
+    const records = await EmotionTracking.find({
+      userId,
+      timestamp: { $gte: startDate }
+    }).sort({ timestamp: -1 });
+
+    // Calculate statistics for each emotion
+    const statsMap = {};
+    for (const record of records) {
+      const emotion = record.emotion;
+      const score = parseFloat(record.emotionScore) || 0;
+
+      if (!statsMap[emotion]) {
+        statsMap[emotion] = {
+          count: 0,
+          totalScore: 0,
+          data: []
+        };
       }
-    ]);
+
+      statsMap[emotion].count += 1;
+      statsMap[emotion].totalScore += score;
+      statsMap[emotion].data.push({
+        timestamp: record.timestamp,
+        score: score,
+        source: record.source,
+        notes: record.notes
+      });
+    }
+
+    // Format statistics for response
+    const stats = Object.entries(statsMap).map(([emotion, { count, totalScore, data }]) => ({
+      emotion,
+      count,
+      avgScore: Number((totalScore / count).toFixed(2)),
+      trend: data.sort((a, b) => a.timestamp - b.timestamp)
+    }));
+
+    console.log('Emotion stats calculated:', stats);
 
     res.json({
-      message: "Emotion stats retrieved successfully", 
+      message: "Emotion stats retrieved successfully",
       data: stats
     });
 
   } catch (error) {
+    console.error('Error getting emotion stats:', error);
     res.status(500).json({
       message: "Error retrieving emotion stats",
-      error: error.message  
+      error: error.message
     });
   }
 };

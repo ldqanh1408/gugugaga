@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const emotionController = require('../controllers/emotion.controller');
-const { authToken } = require('../middleware/auth');
+const {authenticateAndAuthorize} = require('../middleware//authenticateJWT');
 
 // All routes require authentication
-router.use(authToken);
 
 // Track a new emotion data point
-router.post('/track', emotionController.trackEmotion);
+router.post('/track',authenticateAndAuthorize(["USER"]), emotionController.trackEmotion);
 
 // Get emotion history with optional date range
-router.get('/history', emotionController.getEmotionHistory);
+router.get('/history',authenticateAndAuthorize(["USER"]), emotionController.getEmotionHistory);
 
 // Get emotion statistics
-router.get('/stats', emotionController.getEmotionStats);
+router.get('/stats',authenticateAndAuthorize(["USER"]), emotionController.getEmotionStats);
 
 module.exports = router;

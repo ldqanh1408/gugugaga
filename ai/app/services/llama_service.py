@@ -36,7 +36,7 @@ def get_llm():
             raise
     return _llm
 
-def call_llama(prompt: str, max_tokens: int = 256) -> str:
+def call_llama(prompt: str, max_tokens: int = 100) -> str:
     """
     Generate a response from the LLama model
     

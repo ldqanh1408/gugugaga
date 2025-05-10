@@ -118,7 +118,6 @@ exports.authenticateAndAuthorize = (allowedRoles) => {
           });
         }
       }
-      console.log(decoded)
       // Thêm thông tin user vào request
       req.payload = decoded;
       next();

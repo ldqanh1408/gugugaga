@@ -30,7 +30,7 @@ const emotionTrackingSchema = new mongoose.Schema({
   emotion: {
     type: String,
     required: true,
-    enum: ['happy', 'sad', 'angry', 'excited', 'neutral']
+    enum: ['happy', 'sad', 'angry', 'excited', 'neutral', 'negative', 'positive']
   },
   notes: String // Additional context about why this score was assigned
 });
@@ -40,4 +40,4 @@ emotionTrackingSchema.index({ sourceId: 1 });
 
 const EmotionTracking = mongoose.model('EmotionTracking', emotionTrackingSchema);
 
-module.exports = EmotionTracking;
+module.exports = EmotionTracking; 

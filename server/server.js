@@ -53,7 +53,7 @@ const {
   treatmentRoutes,
   bookingRoutes,
   uploadRoutes,
-  emotionRoutes // mount emotionRoutes
+  emotionRoutes, // mount emotionRoutes
 } = require("./src/routes");
 
 app.use("/api", userRoutes);

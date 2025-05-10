@@ -177,12 +177,19 @@ function ChatBox() {
           sentiment: response.data.sentiment,
           sentiment_label: response.data.sentiment_label
         };
+
+        // Add message to chat history
         await addMessage({ message: botMessage });
         setMessages((prev) => [...prev, botMessage]);
-        // --- Cập nhật thống kê emotion user ---
-        // Gọi trackUserEmotion sau khi nhận được response từ model
+
+        // Track AI's emotion response
         if (response.data.sentiment !== undefined && response.data.sentiment_label) {
           try {
+            console.log("Tracking AI emotion:", {
+              sentiment: response.data.sentiment,
+              label: response.data.sentiment_label
+            });
+            
             await trackUserEmotion(
               botText,
               'chat',
@@ -191,10 +198,9 @@ function ChatBox() {
               response.data.sentiment
             );
           } catch (emotionError) {
-            console.error("Error tracking emotion:", emotionError);
+            console.error("Error tracking AI emotion:", emotionError);
           }
         }
-        // --- END cập nhật thống kê ---
       } else {
         throw new Error(response.data?.error || "Invalid response from server");
       }

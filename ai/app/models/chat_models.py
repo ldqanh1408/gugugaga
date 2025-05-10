@@ -17,3 +17,4 @@ class ChatResponse(BaseModel):
     error: Optional[str] = None
     sentiment: Optional[float] = None
     sentiment_label: Optional[str] = None
+    # //này là trả về giá trị cảm xúc này

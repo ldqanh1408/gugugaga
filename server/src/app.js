@@ -13,7 +13,6 @@ const {
   bookingRoutes,
   uploadRoutes
 } = require("./routes");
-const emotionRoutes = require("./emotion.routes");
 
 const app = express();
 
@@ -43,7 +42,6 @@ app.use("/api", scheduleRoutes);
 app.use("/api", treatmentRoutes);
 app.use("/api", bookingRoutes);
 app.use("/api", uploadRoutes);
-app.use("/api/emotions", emotionRoutes); // mount emotionRoutes
 
 // Error handling middleware
 app.use((err, req, res, next) => {
