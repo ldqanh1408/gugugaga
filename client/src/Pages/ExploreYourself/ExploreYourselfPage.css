@@ -94,10 +94,10 @@
 }
 
 .happy {
-  background: #7ed957;
+  background: #7ed957; /* Trả lại màu xanh lá */
 }
 .sad {
-  background: #67c6e3;
+  background: #67c6e3; /* Trả lại màu xanh da trời */
 }
 .angry {
   background: #f15b2a;
@@ -150,13 +150,42 @@
   padding: 10px 24px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
-  font-weight: 600;
+  transition: 0.3s;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 
 .send-button:hover {
   background-image: linear-gradient(to right, #4f46e5, #8b5cf6);
+}
+
+.send-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.send-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.send-button:active::after {
+  width: 200px;
+  height: 200px;
+  opacity: 0;
 }
 
 /* Mail item styles */
@@ -183,6 +212,160 @@
 .mail-details {
   font-size: 0.85em;
   color: #666;
+}
+
+/* Explore Yourself styles */
+.explore-yourself-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.explore-yourself-container h2 {
+  margin-bottom: 30px;
+  color: #333;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.title-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.content-input {
+  width: 100%;
+  min-height: 200px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.date-picker {
+  margin-bottom: 30px;
+}
+
+.date-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.text-muted {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Styling for react-datepicker */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+.react-datepicker {
+  font-family: inherit;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.react-datepicker__header {
+  background-color: #5e5df0;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  color: white;
+}
+
+.react-datepicker__current-month {
+  color: white;
+}
+
+.react-datepicker__day--selected {
+  background-color: #5e5df0;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #4b4acf;
+}
+
+.react-datepicker__day:hover {
+  background-color: #f0f0f0;
+}
+
+/* Loading states and animations */
+.form-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.form-loading * {
+  cursor: not-allowed;
+}
+
+.redirecting-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #f5f5f5;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #5e5df0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.button-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Transition animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive adjustments */
@@ -217,7 +400,81 @@
   background-image: linear-gradient(90deg, #CDACA0, #5e5df0);
   color: transparent;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 700;
   font-size: 30px;
+}
+
+.emotion-stats {
+  margin-top: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stat-header h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.stat-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.stat-item label {
+  color: #666;
+}
+
+.stat-item span {
+  font-weight: 500;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
 }

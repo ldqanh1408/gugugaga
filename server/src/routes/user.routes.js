@@ -11,6 +11,8 @@ const {
   updateTreatment,
   getReceivers,
   getBooking,
+  loadProfile,
+  uploadProfile,
 
 } = require("../controllers/user.controller");
   
@@ -101,6 +103,10 @@ router.post(
   uploadAudio.single("audio"),
   uploadAudioFile
 );
+
+router.get('/v1/users/load-profile', authenticateAndAuthorize(["USER"]), loadProfile)
+
+router.patch('/v1/users/upload-profile', authenticateAndAuthorize(["USER"]), uploadProfile)
 
 // Route for uploading image files
 router.post(
