@@ -15,7 +15,7 @@ const dateHelper = {
     const formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Đảm bảo rằng chỉ có ngày, không có giờ
   
     // Tìm treatment khớp với ngày đó
-    const match = treatments.find((t) => {
+    const match = treatments?.find((t) => {
       const treatmentDate = new Date(t.schedule_id.start_time);
       // Đảm bảo so sánh chỉ phần ngày, không so sánh giờ
       const treatmentDateOnly = new Date(treatmentDate.getFullYear(), treatmentDate.getMonth(), treatmentDate.getDate());

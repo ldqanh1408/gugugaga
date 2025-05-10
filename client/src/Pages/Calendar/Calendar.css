@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: column;
   max-height: 45vh;
-  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
   flex:1;
 }
   
@@ -219,19 +219,20 @@ transform: scale(0.8);
   color: black;
   font-weight: bold;
   font-size: 20px;
-  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1)
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .custom-card {
   border: none;
   background-color: #E8D9D1;
   transition: all 0.3s ease-in-out;
-  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1)
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .custom-card:hover {
   transform: translateY(-3px); /* Đẩy nhẹ lên trên */
-  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng nổi */
+  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .custom-card-content {
@@ -413,12 +414,13 @@ transform: scale(0.8);
   display: none !important; /* Ẩn mũi tên mặc định của Bootstrap */
 }
 
-.dropdown-menu {
+.dropdown-menu-canlendar {
   min-width: 100px !important; /* Đảm bảo kích thước đẹp */
   width: fit-content !important;
   height: fit-content !important;
   background-color: white !important; /* Màu nền menu */
   border: 1px solid #CDACA0 !important; /* Viền menu */
+  z-index: 1;
 }
 .dropdown-item:hover {
   background-color: #E5CAC2 !important; /* Màu nền khi hover */
@@ -436,4 +438,16 @@ transform: scale(0.8);
   color: black; /* Màu dấu chấm */
   margin-top: 1px;
   text-align: center;
+}
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

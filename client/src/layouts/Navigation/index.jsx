@@ -61,9 +61,7 @@ function Navigation() {
             <Nav.Link as={Link} to="/me/therapy" className="nav-item">
               Me
             </Nav.Link>
-            <Nav.Link as={Link} to="/today-mails" className="nav-item">
-              Today Mails
-            </Nav.Link>
+
             <Nav.Link as={Link} to="/explore-yourself" className="nav-item">
               Explore
             </Nav.Link>

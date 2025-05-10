@@ -64,14 +64,7 @@
     width: 100%;
     max-width: 320px;
 }
-
-.member-img{
-    height: 200px;
-    border: 1px solid #DDD;
-    border-radius: 10px;
-    object-fit: cover;
-    width: 100%;
-}   
+   
 
 .description {
     background-color: var(--white-color);
@@ -106,11 +99,49 @@
 }
 
 .member-img {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  object-fit: cover;
+  border: 3px solid #f0f0f0;
+  margin-bottom: 16px;
 }
 
 .member-img:hover {
   transform: scale(1.1);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.description p {
+  margin: 2px 0;
+}
+
+.carousel-control-prev:hover, 
+.carousel-control-next:hover {
+  background-color: transparent; /* Tắt màu nền khi hover */
+  border: none; /* Loại bỏ viền khi hover */
+}
+.carousel-inner img {
+  width: 100%;
+  height: auto; /* Đảm bảo ảnh không bị kéo dãn theo chiều cao */
+  object-fit: cover; /* Đảm bảo ảnh phủ đầy nhưng không bị méo */
+}
+
+.gradient-text {
+  background-image: linear-gradient(90deg, #CDACA0, #4543c6);
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
 }

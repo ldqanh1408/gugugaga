@@ -132,7 +132,7 @@ function ViewInfor() {
           {renderField("Duration", false, [], "duration")}
           {renderField("Status", false, [], "treatmentStatus")}
           {renderField("Description", false, [], "description")}
-          {renderField("Address", false, [], "address")}
+          {renderField("Address", false, [], "business_id.detail_address")}
           {renderField("Summary", false, [], "summary", !isEditing,"textarea")}
 
           <div className="fw-bold mt-4 mb-2">EXPERT</div>

@@ -14,7 +14,7 @@ const ROLE_MODELS = {
     },
     EXPERT: {
         model: Expert
-    }
+    },
 }
 
-module.exports = ROLE_MODELS;
+module.exports = ROLE_MODELS; 

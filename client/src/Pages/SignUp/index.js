@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form, Modal } from "react-bootstrap";
 import "./SignUp.css";
 import { useNavigate } from "react-router-dom";
+import { vietnamProvinces } from "../../utils/signupHelper";
 
 import { useState, useEffect } from "react";
 import { addUser } from "../../services";
@@ -32,6 +33,10 @@ function SignUp() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+  const [districtOptions, setDistrictOptions] = useState([]);
+
   const handleSignUpError = (message) => {
     setErrorMessage(message);
     setShowErrorModal(true);
@@ -55,13 +60,77 @@ function SignUp() {
     checkAuth();
   }, []);
 
+  const handleProvinceChange = (e) => {
+    const selectedProvinceCode = parseInt(e.target.value);
+    setProvince(selectedProvinceCode);
+    const selectedProvince = vietnamProvinces.find(
+      (province) => province.code === selectedProvinceCode
+    );
+    setDistrictOptions(selectedProvince ? selectedProvince.districts : []);
+    setDistrict(""); // Reset district when province changes
+  };
+
+  const isValidAccount = (account) => {
+    const accountRegex = /^[a-zA-Z0-9._]{5,20}$/;
+    return accountRegex.test(account);
+  };
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isValidPassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%,?&#])[A-Za-z\d@$!%,?&#]{8,32}$/;
+    return passwordRegex.test(password) && !/\s/.test(password);
+  };
+
+  const isValidPhoneNumber = (phone) => {
+    const phoneRegex = /^(0|\+84)(\d{9})$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    let flag = false;
+    // Validate inputs
+    if (!isValidAccount(account)) {
+      setAccountError("Invalid account. Please follow the guidelines.");
+      setLoading(false);
+      flag = true;
+    }
+    if (!isValidPassword(password)) {
+      setPasswordError("Invalid password. Please follow the guidelines.");
+      setLoading(false);
+      flag = true;
+
+    }
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      setLoading(false);
+      flag = true;
+    }
+    if (!isValidAccount(userName)) {
+      setUserNameError("Invalid name. Please follow the guidelines.");
+      setLoading(false);
+      flag = true;
+    }
+    if (!isValidEmail(email)) {
+      setEmailError("Invalid email format.");
+      setLoading(false);
+      flag = true;
+    }
+    if (!isValidPhoneNumber(phone)) {
+      setPhoneError("Invalid phone number format.");
+      setLoading(false);
+      flag = true;
+    }
+    if(flag) return;
     try {
       const formData = {
-        email: email,
-        userName: account,
+        email,
+        userName,
         account,
         password,
         phone,
@@ -72,10 +141,10 @@ function SignUp() {
       navigate("/login/enter");
     } catch (error) {
       if (email) {
-        setEmailError("Email can available");
+        setEmailError("Email is already in use.");
       }
       if (phone) {
-        setPhoneError("Phone number can available");
+        setPhoneError("Phone number is already in use.");
       }
       setError("Registration has failed");
       handleSignUpError(
@@ -228,11 +297,7 @@ function SignUp() {
               ></Form.Control>
               <Form.Text className="text-danger">{userNameError}</Form.Text>
             </Form.Group>
-          </Form>
-
-          <Form className="">
-            <div className="d-flex flex-column form-2 additional">
-              <Form.Group className="mt-4">
+            <Form.Group className="mt-4">
                 <Form.Label className="signup-custom-h2-label">
                   Email:
                 </Form.Label>
@@ -255,7 +320,10 @@ function SignUp() {
                 ></Form.Control>
                 <Form.Text className="text-danger">{phoneError}</Form.Text>
               </Form.Group>
-            </div>
+             
+          </Form>
+
+            
             {error && <p className="text-danger">{error}</p>}
             <div className="d-flex justify-content-end">
               <Button
@@ -278,7 +346,6 @@ function SignUp() {
                 </Button>
               </Modal.Footer>
             </Modal>
-          </Form>
         </div>
       </div>
     </div>

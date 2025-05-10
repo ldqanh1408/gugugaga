@@ -26,7 +26,7 @@ function Profile() {
             dispatch(fetchConsecutiveDays());
         }
     }, [dispatch]);
-
+    console.log('profile', profile);
     if (loading) return <Loading />;
 
     if (isEditing) {

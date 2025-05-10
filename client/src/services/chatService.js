@@ -40,16 +40,23 @@ export const addMessage = async (newMessage) => {
     if (!chatId) {
       throw new Error("Chat ID không tồn tại");
     }
+
+    // Ensure media is an array and has correct format
+    const message = {
+      ...newMessage.message,
+      media: Array.isArray(newMessage.message.media) ? newMessage.message.media : []
+    };
+
     const url = `${API_URL}${chatId}/messages`;
-    const response = await axios.post(url, newMessage, {
+    const response = await axios.post(url, { message }, {
       headers: {
-        Authorization: `Bearer ${token}`, // Gửi token trong header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching notes:",
+      "Error sending message:",
       error.response ? error.response.data : error.message
     );
     throw error;

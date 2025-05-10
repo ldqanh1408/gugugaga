@@ -28,17 +28,16 @@ function EnterLogin() {
         password,
         role: tempRole,
       };
-      const response = await dispatch(loggingThunk(formData));
-      if (response.payload?.data?.data) {
-        await dispatch(setIsAuthenticated(true));
-        navigate("/");
-      } else if (error) {
-        setShowErrorModal(true);
-      }
+    
+      const data = await dispatch(loggingThunk(formData)).unwrap(); // sẽ throw nếu login thất bại
+    
+      await dispatch(setIsAuthenticated(true));
+      navigate("/");
     } catch (error) {
       console.error(error.message);
       setShowErrorModal(true);
     }
+    
   };
 
   const closeErrorModal = () => {

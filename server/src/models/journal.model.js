@@ -9,9 +9,18 @@ const noteSchema = new mongoose.Schema(
       enum: ["happy", "sad", "neutral", "excited", "angry"],
     },
     header: { type: String, required: true, trim: true, maxlength: 100 },
-    text: { type: String, required: true, trim: true },
+    text: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    media: [{
+      type: { type: String, enum: ['audio', 'image', 'video'] },
+      url: { type: String, required: true },
+      name: { type: String }
+    }]
   },
-  { timestamps: true } // Theo dõi thời gian chỉnh sửa từng note
+  { timestamps: true }
 );
 
 const journalSchema = new mongoose.Schema(

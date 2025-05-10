@@ -1,13 +1,19 @@
 import "./NoteEditor.css";
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { DropdownToggle, Dropdown, DropdownMenu, Modal, Form } from "react-bootstrap";
+import {
+  DropdownToggle,
+  Dropdown,
+  DropdownMenu,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import ImageButton from "../../assets/imgs/ImageButton.svg";
 import RecordButton from "../../assets/imgs/RecordButton.svg";
 import VideoButton from "../../assets/imgs/VideoButton.svg";
 import { useDispatch, useSelector } from "react-redux";
-import { getPayLoad } from "../../services/authService"; 
+import { getPayLoad } from "../../services/authService";
 import { addMessage } from "../../services";
 import axios from "axios";
 import {
@@ -20,13 +26,14 @@ import {
   addMediaToCurrentNote,
 } from "../../redux/notesSlice";
 import { uploadAudio, uploadImage } from "../../services/userService"; // Import the uploadAudio and uploadImage functions
+import { trackUserEmotion } from "../../services/emotion.service";
 
-function NoteEditor({
-  isFromViewer = false,
-}) {
+function NoteEditor({ isFromViewer = false }) {
   const { isEditing, currentIndex, notes, currentNote } = useSelector(
     (state) => state.notes
   );
+
+  const {entity} = useSelector((state) => state.auth)
   const [messages, setMessages] = useState([]);
   const [header, setHeader] = useState(currentNote.header || "");
   const [date, setDate] = useState(currentNote.date || "");
@@ -34,9 +41,10 @@ function NoteEditor({
   const [mood, setMood] = useState(currentNote.mood || "");
   const [showNameModal, setShowNameModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedMedia, setSelectedMedia] = useState([]);
   const [customFileName, setCustomFileName] = useState("");
   const dispatch = useDispatch();
-  console.error(currentNote); 
+  console.error(currentNote);
 
   function formatDateForInput(dateString) {
     if (!dateString) return ""; // Tránh lỗi khi date là null hoặc undefined
@@ -45,7 +53,16 @@ function NoteEditor({
   }
 
   useEffect(() => {
-    dispatch(setCurrentNote({ _id: currentNote?._id, header, date, text, mood, media: currentNote.media }));
+    dispatch(
+      setCurrentNote({
+        _id: currentNote?._id,
+        header,
+        date,
+        text,
+        mood,
+        media: currentNote.media,
+      })
+    );
   }, [header, date, text, mood]);
 
   const handleSubmit = async () => {
@@ -54,13 +71,13 @@ function NoteEditor({
       return;
     }
 
-    const updatedNote = { 
+    const updatedNote = {
       _id: currentNote?._id || undefined, // Đảm bảo `_id` không bị undefined
       header: header.trim(),
       date: date.trim(),
       text: text.trim(),
       mood: mood.trim(),
-      media: currentNote.media || [] // Use media directly from Redux store
+      media: currentNote.media || [], // Use media directly from Redux store
     };
 
     console.log("Payload being sent to backend:", updatedNote); // Log payload để kiểm tra
@@ -72,7 +89,60 @@ function NoteEditor({
         await dispatch(updateExistingNote(updatedNote));
         dispatch(setIsEditing(false));
       } else {
-        await dispatch(saveNewNote(updatedNote)); // Gửi payload để lưu note mới
+       await dispatch(saveNewNote(updatedNote)); // Gửi payload để lưu note mới
+
+        const journalId = entity?.journalId || "default-chat";
+        const chatId = entity?.chatId || "default-chat";
+        // Không gọi trackUserEmotion ở đây nữa
+        // Gửi message tới AI model
+        const requestData = {
+          chatId: chatId,
+          message: currentNote.text || "",
+          media: currentNote.media?.map((m) => ({
+            type: m.type,
+            url: m.url,
+            name: m.name,
+          })),
+        };
+        // Make API request to backend
+        const response = await axios.post(
+          "http://localhost:4000/api/chats/ai",
+          requestData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("AI response received:", response.data);
+        // Check if response contains expected properties
+        if (response.data && response.data.success) {
+          const botText = response.data.response || "No response";
+        }
+        if (
+          response.data.sentiment !== undefined &&
+          response.data.sentiment_label
+        ) {
+          try {
+            console.log("Tracking AI emotion:", {
+              sentiment: response.data.sentiment,
+              label: response.data.sentiment_label,
+            });
+
+            await trackUserEmotion(
+              currentNote.text,
+              "note",
+              journalId,
+              response.data.sentiment_label,
+              response.data.sentiment
+           
+            );
+            
+          } catch (emotionError) {
+            console.error("Error tracking AI emotion:", emotionError);
+          }
+        }
+
         dispatch(fetchNotes()); // Fetch danh sách notes mới nhất
       }
     } catch (error) {
@@ -82,6 +152,7 @@ function NoteEditor({
   };
 
   const handleFileSelect = (e) => {
+    console.log(e);
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
@@ -89,7 +160,6 @@ function NoteEditor({
       setShowNameModal(true);
     }
   };
-
   const handleUploadWithName = async () => {
     if (!selectedFile || !customFileName) return;
 
@@ -97,37 +167,41 @@ function NoteEditor({
       if (selectedFile.type.startsWith("audio")) {
         const response = await uploadAudio(selectedFile);
         if (response.success) {
-          const mediaItem = { 
-            type: "audio", 
-            url: response.audioUrl, 
-            name: customFileName 
+          const mediaItem = {
+            type: "audio",
+            url: response.audioUrl,
+            name: customFileName,
           };
           dispatch(addMediaToCurrentNote(mediaItem));
+          alert("Audio uploaded successfully!");
         } else {
+          alert(`Failed to upload audio: ${response.message}`);
           console.error("Audio upload failed:", response.message);
         }
       } else if (selectedFile.type.startsWith("image")) {
         const response = await uploadImage(selectedFile);
         if (response.success) {
-          const mediaItem = { 
-            type: "image", 
-            url: response.imageUrl, 
-            name: customFileName 
+          const mediaItem = {
+            type: "image",
+            url: response.imageUrl,
+            name: customFileName,
           };
           dispatch(addMediaToCurrentNote(mediaItem));
+          alert("Image uploaded successfully!");
         } else {
+          alert(`Failed to upload image: ${response.message}`);
           console.error("Image upload failed:", response.message);
         }
       }
+
+      setShowNameModal(false);
+      setSelectedFile(null);
+      setCustomFileName("");
     } catch (error) {
       console.error("Error processing file:", error);
+      alert(`Error uploading file: ${error.message}`);
     }
-
-    setShowNameModal(false);
-    setSelectedFile(null);
-    setCustomFileName("");
   };
-
   const autoResizeTextArea = (event) => {
     event.target.style.height = "auto"; // Reset height trước
     event.target.style.height = event.target.scrollHeight + "px"; // Gán chiều cao theo nội dung
@@ -158,11 +232,7 @@ function NoteEditor({
       <hr className="note-line"></hr>
 
       <div className="date-container">
-        <input
-          className="note-date"
-          type=""
-          value={formatDateForInput(date)}
-        />
+        <input className="note-date" type="" value={formatDateForInput(date)} />
       </div>
       <Dropdown className="d-none d-lg-block">
         <DropdownToggle as="div" className="p-0 border-0 bg-transparent">
@@ -190,23 +260,36 @@ function NoteEditor({
         }}
         placeholder="Enter content"
       ></textarea>
-      <div className="media-toolbar" style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+      <div
+        className="media-toolbar"
+        style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
+      >
         <label className="btn p-0">
           <img src={ImageButton} alt="Add Image" width="24" />
-          <input type="file" accept="image/*" hidden onChange={handleFileSelect} />
-        </label>
-        <label className="btn p-0">
-          <img src={VideoButton} alt="Add Video" width="24" />
-          <input type="file" accept="video/*" hidden onChange={handleFileSelect} />
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFileSelect}
+          />
         </label>
         <label className="btn p-0">
           <img src={RecordButton} alt="Add Audio" width="24" />
-          <input type="file" accept="audio/*" hidden onChange={handleFileSelect} />
+          <input
+            type="file"
+            accept="audio/*"
+            hidden
+            onChange={handleFileSelect}
+          />
         </label>
       </div>
-      
+
       {/* File Name Modal */}
-      <Modal show={showNameModal} onHide={() => setShowNameModal(false)} centered>
+      <Modal
+        show={showNameModal}
+        onHide={() => setShowNameModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Name your file</Modal.Title>
         </Modal.Header>
@@ -222,7 +305,10 @@ function NoteEditor({
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-secondary" onClick={() => setShowNameModal(false)}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowNameModal(false)}
+          >
             Cancel
           </button>
           <button className="btn btn-primary" onClick={handleUploadWithName}>
@@ -237,7 +323,7 @@ function NoteEditor({
           if (!m || !m.type) return null;
           return (
             <div key={idx} className="media-item">
-              <button 
+              <button
                 className="delete-media-btn"
                 onClick={() => handleDeleteMedia(idx)}
                 title="Remove"
@@ -247,12 +333,16 @@ function NoteEditor({
               {m.type === "image" && (
                 <div className="media-content">
                   <img src={m.url} alt={m.name} />
-                  <span className="media-filename" title={m.name}>{m.name}</span>
+                  <span className="media-filename" title={m.name}>
+                    {m.name}
+                  </span>
                 </div>
               )}
               {m.type === "audio" && (
                 <div className="audio-container">
-                  <span className="audio-filename" title={m.name}>{m.name}</span>
+                  <span className="audio-filename" title={m.name}>
+                    {m.name}
+                  </span>
                   <audio src={m.url} controls className="audio-player" />
                 </div>
               )}

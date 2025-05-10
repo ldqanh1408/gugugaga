@@ -7,8 +7,9 @@ const treatmentRoutes = require("./treatment.route");
 const businessRoutes = require("./business.route");
 const scheduleRoutes = require("./schedule.route");
 const expertRoutes = require("./expert.route");
-const bookingRoutes = require("./booking.routes")
-const uploadRoutes = require("./upload.routes")
+const bookingRoutes = require("./booking.routes");
+const uploadRoutes = require("./upload.routes");
+const emotionRoutes = require("./emotion.routes");
 module.exports = {
   userRoutes,
   chatRoutes,
@@ -20,5 +21,6 @@ module.exports = {
   scheduleRoutes,
   treatmentRoutes,
   bookingRoutes,
-  uploadRoutes
+  uploadRoutes,
+  emotionRoutes,
 };

@@ -52,7 +52,8 @@ const {
   businessRoutes,
   treatmentRoutes,
   bookingRoutes,
-  uploadRoutes
+  uploadRoutes,
+  emotionRoutes
 } = require("./src/routes");
 
 app.use("/api", userRoutes);
@@ -65,6 +66,7 @@ app.use("/api", businessRoutes);
 app.use("/api", treatmentRoutes);
 app.use("/api", bookingRoutes)
 app.use("/api", uploadRoutes)
+app.use("/api/emotions", emotionRoutes)
 // Middleware xử lý lỗi
 app.use(require("./src/middleware/errorHandler"));
 // Chạy server
