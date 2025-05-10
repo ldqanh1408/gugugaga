@@ -93,7 +93,6 @@ const uploadAudioFile = async (req, res) => {
         message: "No audio file uploaded"
       });
     }
-
     if (!req.file.mimetype.startsWith('audio/')) {
       console.error("Invalid file type for audio upload. File details:", req.file);
       return res.status(400).json({
@@ -110,7 +109,7 @@ const uploadAudioFile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in uploadAudioFile:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Error uploading audio file: " + (error.message || "Unknown error")
     });

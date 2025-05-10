@@ -319,14 +319,16 @@ const uploadAudio = async (audioFile) => {
 
     const formData = new FormData();
     formData.append("file", audioFile);
+    console.log(audioFile)
 
-    const response = await axios.post(`${API_URL}media`, formData, {
+    const response = await axios.post(`${API_URL}media/audio`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
       withCredentials: true,
     });
+
 
     if (response.data && response.data.success) {
       return { success: true, audioUrl: response.data.url || response.data.audioUrl }; 
@@ -348,8 +350,8 @@ const uploadImage = async (imageFile) => {
 
     const formData = new FormData();
     formData.append("file", imageFile);
-
-    const response = await axios.post(`${API_URL}media`, formData, {
+    console.log(imageFile)
+    const response = await axios.post(`${API_URL}media/img`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,

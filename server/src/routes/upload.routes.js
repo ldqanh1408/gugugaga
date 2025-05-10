@@ -11,10 +11,16 @@ router.post("/v1/upload",
 );
 
 // Media upload route for notes (handles both image and audio)
-router.post('/v1/media', 
+router.post('/v1/media/audio', 
   jwt.authenticateAndAuthorize(["USER"]), 
   upload.upload.single('file'), 
   upload.uploadAudioFile
 );
 
+// Media upload route for notes (handles both image and audio)
+router.post('/v1/media/img', 
+  jwt.authenticateAndAuthorize(["USER"]), 
+  upload.upload.single('file'), 
+  upload.uploadImageFile
+);
 module.exports = router;

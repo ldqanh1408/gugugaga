@@ -184,7 +184,7 @@ export const getEmotionStats = async (timeRange) => {
     );
 
     console.log('Emotion stats response:', response.data);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error fetching emotion stats:', error);
     throw error.response?.data || error;
