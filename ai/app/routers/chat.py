@@ -4,6 +4,7 @@ from app.models.chat_models import ChatRequest, ChatResponse
 from app.services.llama_service import call_llama
 from app.utils.retrieval import save_message, create_prompt, save_media_caption
 from app.services.chat_handler import process_all_media
+from app.services.sentiment_service import analyze_sentiment
 import logging
 import traceback
 
@@ -20,7 +21,7 @@ async def chat_api(req: ChatRequest, background_tasks: BackgroundTasks):
         background_tasks: FastAPI background tasks for async processing
         
     Returns:
-        JSON response containing AI's reply
+        JSON response containing AI's reply and sentiment analysis
     """
     try:
         # Validate input
@@ -50,7 +51,6 @@ async def chat_api(req: ChatRequest, background_tasks: BackgroundTasks):
             
         prompt += f"<|assistant|>\n"
         
-        print(prompt)
         # Get response from LLM
         logger.info("Calling LLM with combined context")
         try:
@@ -61,19 +61,29 @@ async def chat_api(req: ChatRequest, background_tasks: BackgroundTasks):
         
         # Clean up extra newlines for readability
         cleaned_reply = re.sub(r'\n\s*\n+', '\n\n', reply)
-        print(reply)
+        
+        # Analyze sentiment of user message
+        sentiment_analysis = analyze_sentiment(req.message)
+        logger.info(f"Sentiment analysis: {sentiment_analysis}")
+        
         # Save message and media captions in background to not block response
         background_tasks.add_task(
             save_processed_data, 
             req.chatId, 
             req.message, 
             cleaned_reply, 
-            media_context if media_context else None
+            media_context if media_context else None,
+            sentiment_analysis
         )
         logger.info("Message and media saving scheduled in background")
         
-        # Return standardized response format
-        return {"success": True, "response": cleaned_reply}
+        # Return standardized response format with sentiment data
+        return {
+            "success": True, 
+            "response": cleaned_reply,
+            "sentiment": sentiment_analysis["score"],
+            "sentiment_label": sentiment_analysis["label"]
+        }
         
     except HTTPException:
         raise
@@ -82,7 +92,7 @@ async def chat_api(req: ChatRequest, background_tasks: BackgroundTasks):
         return {"success": False, "error": f"An unexpected error occurred: {str(e)}"}
 
 
-async def save_processed_data(chatId: str, user_message: str, ai_reply: str, media_context: str = None):
+async def save_processed_data(chatId: str, user_message: str, ai_reply: str, media_context: str = None, sentiment_data: dict = None):
     """
     Save messages and media context to database after processing
     
@@ -91,10 +101,11 @@ async def save_processed_data(chatId: str, user_message: str, ai_reply: str, med
         user_message: The user's message
         ai_reply: The AI's response
         media_context: Media analysis context if available
+        sentiment_data: Sentiment analysis results if available
     """
     try:
         # Save the chat messages
-        save_message(chatId, user_message, ai_reply)
+        save_message(chatId, user_message, ai_reply, sentiment_data)
         logger.info(f"Message saved for chat {chatId}")
         
         # If media was processed, save it as a separate entry

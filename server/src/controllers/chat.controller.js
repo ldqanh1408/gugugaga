@@ -1,4 +1,5 @@
 const Chat = require("../models/chat.model");
+const Emotion = require('../models/emotion.model');
 
 exports.getMessages = async (req, res) => {
   try {
@@ -105,23 +106,35 @@ exports.addMessage = async (req, res) => {
         success: false,
         message: "Không tìm thấy chat với ID đã cung cấp",
       });
-    }
-
-    // Create message object with proper media handling
+    }    // Create message object with proper media handling
     const newMessage = {
       role: message.role,
       text: message.text,
       media: Array.isArray(message.media) ? message.media : []
     };
-
-    // Thêm message mới vào mảng messages
+    
+    // Thêm message mới vào mảng messages và lưu để lấy ID
     chat.messages.push(newMessage);
-    await chat.save();
+    const savedChat = await chat.save();
+    const savedMessage = savedChat.messages[savedChat.messages.length - 1];
+    
+    // Add emotion tracking with proper ObjectId
+    const emotionData = {
+      userId: req.payload._id,
+      emotion: message.emotion || 'neutral',
+      emotionScore: message.emotionScore || 0.5,
+      source: 'chat',
+      sourceId: savedMessage._id,  // This is now properly created after save
+      notes: savedMessage.text.substring(0, 100)
+    };
+    
+    const emotionResponse = await Emotion.create(emotionData);
 
     // Trả về response thành công
     return res.status(200).json({
       success: true,
-      message: newMessage
+      message: newMessage,
+      emotion: emotionResponse
     });
   } catch (error) {
     console.error("Error in addMessage:", error);

@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchNotes } from "../../redux/notesSlice";
 import { Modal, Form } from "react-bootstrap";
 import { uploadAudio, uploadImage } from "../../services/userService";
+import { trackUserEmotion } from "../../services/emotion.service";
 
 function ChatBox() {
   const location = useLocation();
@@ -21,16 +22,18 @@ function ChatBox() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [customFileName, setCustomFileName] = useState("");
   const [showNameModal, setShowNameModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const chatReference = useRef(null);
   
-  const {notes} = useSelector((state) => state.notes);
+  const { notes } = useSelector((state) => state.notes);
   const dispatch = useDispatch();
-const { entity } = useSelector((state) => state.auth);
+  const { entity } = useSelector((state) => state.auth);
+
   useEffect(() => {
     if(!notes) {
       dispatch(fetchNotes());
     }
-  }, [dispatch]);
+  }, [dispatch, notes]);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -115,7 +118,6 @@ const { entity } = useSelector((state) => state.auth);
     textarea.style.height = `${newHeight}px`;
   };
 
-  // Modified sendMessage function for ChatBox.js
   const sendMessage = async () => {
     // Don't send if both input and media are empty
     if (input.trim() === "" && selectedMedia.length === 0) return;
@@ -138,25 +140,23 @@ const { entity } = useSelector((state) => state.auth);
     // Clear input fields
     setInput("");
     setSelectedMedia([]);
+    setIsLoading(true);
 
     try {
-      console.log(entity)
-      const { chatId } = entity.chatId;
-      
-      // Create proper request payload for API
+      // Get chatId from entity
+      const chatId = entity?.chatId || "default-chat";
+      // Không gọi trackUserEmotion ở đây nữa
+      // Gửi message tới AI model
       const requestData = {
         chatId: chatId,
-        message: userInput || "", // Ensure message is never undefined
+        message: userInput || "",
         media: userMedia.map(m => ({
           type: m.type,
           url: m.url,
           name: m.name
         }))
       };
-      
-      console.log("Sending request to AI:", requestData);
-      
-      // Send request to API endpoint
+      // Make API request to backend
       const response = await axios.post(
         "http://localhost:4000/api/chats/ai",
         requestData,
@@ -166,37 +166,52 @@ const { entity } = useSelector((state) => state.auth);
           },
         }
       );
-
       console.log("AI response received:", response.data);
-
-      // Handle successful response
+      // Check if response contains expected properties
       if (response.data && response.data.success) {
         const botText = response.data.response || "No response";
-        const botMessage = { text: botText, role: "ai", media: [] };
-
+        const botMessage = {
+          text: botText,
+          role: "ai",
+          media: [],
+          sentiment: response.data.sentiment,
+          sentiment_label: response.data.sentiment_label
+        };
         await addMessage({ message: botMessage });
         setMessages((prev) => [...prev, botMessage]);
+        // --- Cập nhật thống kê emotion user ---
+        // Gọi trackUserEmotion sau khi nhận được response từ model
+        if (response.data.sentiment !== undefined && response.data.sentiment_label) {
+          try {
+            await trackUserEmotion(
+              botText,
+              'chat',
+              chatId,
+              response.data.sentiment_label,
+              response.data.sentiment
+            );
+          } catch (emotionError) {
+            console.error("Error tracking emotion:", emotionError);
+          }
+        }
+        // --- END cập nhật thống kê ---
       } else {
-        console.error("AI response error:", response.data);
-        // Add a user-friendly error message
-        const errorMessage = { 
-          text: "Sorry, I couldn't process your message. Please try again later. 🥺", 
-          role: "ai", 
-          media: [] 
-        };
-        await addMessage({ message: errorMessage });
-        setMessages((prev) => [...prev, errorMessage]);
+        throw new Error(response.data?.error || "Invalid response from server");
       }
     } catch (error) {
-      console.error("Failed to send message:", error.message);
+      console.error("Failed to send message:", error);
+      
       // Add a user-friendly error message on exception
       const errorMessage = { 
         text: "Sorry, there was a problem connecting to the AI. Please check your connection and try again. 🥺", 
         role: "ai", 
         media: [] 
       };
+      
       await addMessage({ message: errorMessage });
       setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -211,7 +226,7 @@ const { entity } = useSelector((state) => state.auth);
           {messages.map((msg, index) => (
             <div key={index} className={`message ${msg.role}`}>
               <div className="message-text">{msg.text}</div>
-              {msg.media && msg.media.map((m, idx) => (
+              {msg.media && msg.media.length > 0 && msg.media.map((m, idx) => (
                 <div key={idx} className="message-media">
                   {m.type === "image" && (
                     <div className="media-content">
@@ -229,6 +244,11 @@ const { entity } = useSelector((state) => state.auth);
               ))}
             </div>
           ))}
+          {isLoading && (
+            <div className="message ai">
+              <div className="message-text">Thinking... 🤔</div>
+            </div>
+          )}
         </div>
 
         <div className="chat-toolbar bottom">
@@ -282,12 +302,14 @@ const { entity } = useSelector((state) => state.auth);
                     sendMessage();
                   }
                 }}
+                disabled={isLoading}
               />
 
               <button 
                 className="send-btn" 
                 onClick={sendMessage}
                 title="Send message"
+                disabled={isLoading}
               >
                 <img src={SaveButton} alt="Send" className="send-icon" />
               </button>

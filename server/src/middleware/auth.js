@@ -16,6 +16,9 @@ exports.authToken = async (req, res, next) => {
         .json({ success: false, message: "Invalid token format" });
     }
 
+    console.log("Token received in Authorization header:", token);
+    console.log("JWT_SECRET used for verification:", process.env.JWT_SECRET);
+
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "your-secret-key"

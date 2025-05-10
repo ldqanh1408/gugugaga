@@ -1,6 +1,7 @@
 const Journal = require("../models/journal.model");
 const { findJournalByUserId } = require("../services/journal.service");
 const mongoose = require("mongoose");
+const Emotion = require('../models/emotion.model');
 
 // Lấy danh sách users
 exports.getNotes = async (req, res) => {
@@ -40,7 +41,7 @@ exports.getNotes = async (req, res) => {
 exports.addNote = async (req, res) => {
   try {
     const { journalId } = req.params;
-    const { header, date, text, mood, media } = req.body;
+    const { header, date, text, mood, media, emotion, emotionScore } = req.body;
 
     console.log("Received payload:", req.body); // Log payload để kiểm tra
 
@@ -65,10 +66,20 @@ exports.addNote = async (req, res) => {
     // Save the journal
     const savedJournal = await journal.save();
 
-    // Get the newly created note (last note in the ar  ray)
+    // Get the newly created note (last note in the array)
     const createdNote = savedJournal.notes[savedJournal.notes.length - 1];
 
-    res.status(201).json({ success: true, note: createdNote });
+    // Add emotion tracking
+    const emotionResponse = await Emotion.create({
+      userId: req.user._id,
+      emotion: emotion,
+      emotionScore: emotionScore,
+      source: 'note',
+      sourceId: createdNote._id,
+      notes: createdNote.text.substring(0, 100)
+    });
+
+    res.status(201).json({ success: true, note: createdNote, emotion: emotionResponse });
   } catch (error) {
     console.error("Error adding note:", error);
     res.status(500).json({ success: false, message: "Server error", error: error.message });
@@ -115,9 +126,19 @@ exports.updateNote = async (req, res) => {
     }
     const updatedNote = journal.notes.find(n => n._id.toString() === noteId);
 
+    // Add emotion tracking
+    const emotionResponse = await Emotion.create({
+      userId: req.user._id,
+      emotion: updateData.emotion,
+      emotionScore: updateData.emotionScore,
+      source: 'note',
+      sourceId: updatedNote._id,
+      notes: updatedNote.text.substring(0, 100)
+    });
+
     return res
       .status(200)
-      .json({ success: true, message: "Sửa note thành công", note: updatedNote });
+      .json({ success: true, message: "Sửa note thành công", note: updatedNote, emotion: emotionResponse });
   } catch (error) {
     console.error("Lỗi khi cập nhật note:", error);
     return res

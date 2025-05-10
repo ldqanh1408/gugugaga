@@ -14,6 +14,7 @@ import {
   setIsEditing,
   setCurrentNote,
 } from "../../redux/notesSlice";
+import { trackUserEmotion } from '../../services/emotion.service';
 
 function Note() {
   const dispatch = useDispatch();
@@ -27,8 +28,24 @@ function Note() {
     }
   }, [currentIndex, notes, dispatch]);
   
-  const handleSave = (newNote) => {
-    dispatch(saveNewNote(newNote));
+  const handleSave = async (newNote) => {
+    try {
+      const trimmedContent = newNote.content.trim();
+      if (!trimmedContent) return;
+
+      // First analyze emotion from note content
+      const { emotion, emotionScore } = await trackUserEmotion(trimmedContent, 'note', newNote._id);
+
+      // Save note with emotion data
+      dispatch(saveNewNote({
+        ...newNote,
+        content: trimmedContent,
+        emotion,
+        emotionScore,
+      }));
+    } catch (error) {
+      console.error('Error saving note:', error);
+    }
   };
 
   const handleUpdate = (updatedNote) => {

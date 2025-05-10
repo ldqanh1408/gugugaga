@@ -83,40 +83,46 @@ def process_image(media_item: MediaItem, message_context: str = "") -> str:
         logger.error(f"Error processing image: {str(e)}")
         return f"Image analysis ({media_item.name}): [Failed to analyze this image]"
 
-def process_all_media(req: ChatRequest) -> str:
+def process_all_media(req):
     """
-    Process all media items in the request and return combined context
+    Process all media items in a request
     
     Args:
-        req: Chat request with message and media items
+        req: ChatRequest object containing message and media items
         
     Returns:
-        Combined results of all media processing
+        str: Combined results of all media processing
     """
     if not req.media:
         return ""
     
-    media_results = []
-    
+    captions = []
     for media_item in req.media:
         try:
             if media_item.type == "image":
-                result = process_image(media_item, req.message)
+                # Load and process image
+                img = load_image(media_item.url)
+                caption = _generate_image_caption(img)
+                captions.append(f"Image analysis ({media_item.name}): {caption}")
+                save_media_caption(req.chatId, f"image-{media_item.name}", caption)
+                
             elif media_item.type == "audio":
-                # Fix: Use process_audio with only the URL
-                result = process_audio(str(media_item.url))
-                # Format the audio transcription result
-                result = f"Audio transcription ({media_item.name}): {result.get('text', '[Failed to transcribe audio]')}"
+                # Process audio
+                transcript = process_audio(media_item.url, media_item.name)
+                if isinstance(transcript, dict) and "text" in transcript:
+                    text = transcript["text"]
+                else:
+                    text = str(transcript)
+                captions.append(f"Audio transcription ({media_item.name}): {text}")
+                save_media_caption(req.chatId, f"audio-{media_item.name}", text)
             else:
                 logger.warning(f"Unsupported media type: {media_item.type}")
-                continue
                 
-            media_results.append(result)
         except Exception as e:
             logger.error(f"Error processing {media_item.type}: {str(e)}")
-            media_results.append(f"Failed to process {media_item.type} ({media_item.name})")
-    
-    return "\n\n".join(media_results) if media_results else ""
+            captions.append(f"Failed to process {media_item.type} ({media_item.name})")
+            
+    return "\n\n".join(captions) if captions else ""
 
 # Keep backward compatibility for handle_chat_request
 def handle_chat_request(req: ChatRequest) -> str:

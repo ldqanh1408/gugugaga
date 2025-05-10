@@ -109,9 +109,7 @@ exports.authenticateAndAuthorize = (allowedRoles) => {
       const token = authHeader.split(" ")[1];
       // Verify token
       const decoded = jwtHelper.verifyAccessToken(token, process.env.ACCESS_TOKEN_SECRET);
-
       // Kiểm tra role nếu có
-      console.log("Decoded token:", decoded);
       if (allowedRoles && allowedRoles.length > 0) {
         if (!allowedRoles.includes(decoded.role)) {
           return res.status(403).json({

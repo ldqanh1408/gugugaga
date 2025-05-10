@@ -453,9 +453,14 @@ const uploadAudio = async (audioFile) => {
 
 const uploadImage = async (imageFile) => {
   try {
+    // Validate file type
+    if (!imageFile || !imageFile.type.startsWith('image/')) {
+      return { success: false, message: "Invalid file type. Please select an image file." };
+    }
+
     const token = await getToken();
     if (!token) {
-      return { success: false, message: "Token not found" };
+      return { success: false, message: "Not authenticated. Please log in again." };
     }
 
     const formData = new FormData();
@@ -467,6 +472,8 @@ const uploadImage = async (imageFile) => {
         Authorization: `Bearer ${token}`,
       },
       withCredentials: true,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
     });
 
     if (response.data && response.data.success) {

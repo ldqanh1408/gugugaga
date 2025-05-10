@@ -9,6 +9,7 @@ const scheduleRoutes = require("./schedule.route");
 const expertRoutes = require("./expert.route");
 const bookingRoutes = require("./booking.routes")
 const uploadRoutes = require("./upload.routes")
+const emotionRoutes = require("./emotion.routes")
 module.exports = {
   userRoutes,
   chatRoutes,
@@ -20,5 +21,6 @@ module.exports = {
   scheduleRoutes,
   treatmentRoutes,
   bookingRoutes,
-  uploadRoutes
+  uploadRoutes,
+  emotionRoutes
 };
