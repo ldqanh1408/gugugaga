@@ -48,9 +48,13 @@ const upload = multer({ storage });
 const audioStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "audio", // Folder for audio files on Cloudinary
-    allowed_formats: ["mp3", "wav"], // Allowed audio formats
-    resource_type: "video", // Cloudinary treats audio as "video" resource type
+    folder: "audio",
+    allowed_formats: ["mp3", "wav", "m4a", "ogg", "aac"], // Extended audio formats
+    resource_type: "raw", // Changed to raw to handle various audio formats better
+    public_id: (req, file) => {
+      const fileName = file.originalname.replace(/\.[^/.]+$/, ""); // Remove extension
+      return `audio/${fileName}-${Date.now()}`; // Generate unique name
+    }
   },
 });
 
@@ -86,32 +90,44 @@ const uploadAvatar = (req, res) => {
 // API to handle audio upload
 const uploadAudioFile = async (req, res) => {
   try {
+    console.log('Received audio upload request:', {
+      file: req.file,
+      body: req.body
+    });
+
     if (!req.file) {
-      console.error("No audio file uploaded. Request details:", req.body);
+      console.error("No audio file received in request");
       return res.status(400).json({
         success: false,
         message: "No audio file uploaded"
       });
     }
-    if (!req.file.mimetype.startsWith('audio/')) {
-      console.error("Invalid file type for audio upload. File details:", req.file);
-      return res.status(400).json({
+
+    // Check if we have the file path from Cloudinary
+    if (!req.file.path) {
+      console.error("No file path received from Cloudinary:", req.file);
+      return res.status(500).json({
         success: false,
-        message: "Invalid file type. Only audio files are allowed."
+        message: "File upload failed - no URL received"
       });
     }
 
+    // Send success response with file URL
     res.status(200).json({
       success: true,
       message: "Audio uploaded successfully",
       url: req.file.path,
-      audioUrl: req.file.path // For backwards compatibility
+      audioUrl: req.file.path,
+      fileName: req.file.originalname,
+      fileType: req.file.mimetype
     });
+
   } catch (error) {
     console.error("Error in uploadAudioFile:", error);
     return res.status(500).json({
       success: false,
-      message: "Error uploading audio file: " + (error.message || "Unknown error")
+      message: "Error uploading audio file",
+      error: error.message
     });
   }
 };

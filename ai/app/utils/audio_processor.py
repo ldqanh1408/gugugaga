@@ -68,13 +68,16 @@ def download_audio(url: str) -> str:
         Path to the downloaded temporary file
     """
     try:
-        if url.startswith(('http://', 'https://')):
-            resp = requests.get(url, stream=True, timeout=60)
+        # Convert the URL to a string regardless of type to prevent attribute errors
+        url_str = str(url)
+        
+        if url_str.startswith(('http://', 'https://')):
+            resp = requests.get(url_str, stream=True, timeout=60)
             resp.raise_for_status()
             
             # Create a temporary file with the appropriate extension
             # Try to determine extension from URL
-            ext = os.path.splitext(url)[1]
+            ext = os.path.splitext(url_str)[1]
             if not ext:
                 ext = ".mp3"  # Default to mp3 if no extension
             
@@ -86,9 +89,9 @@ def download_audio(url: str) -> str:
             return temp_file.name
         else:
             # Handle local file path
-            path = Path(url)
+            path = Path(url_str)
             if not path.exists():
-                raise FileNotFoundError(f"Audio file not found: {url}")
+                raise FileNotFoundError(f"Audio file not found: {url_str}")
             return str(path)
     except Exception as e:
         logger.error(f"Error downloading audio from {url}: {str(e)}")

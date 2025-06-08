@@ -50,7 +50,7 @@ async def chat_api(req: ChatRequest, background_tasks: BackgroundTasks):
             logger.info("Added media context to the prompt")
             
         prompt += f"<|assistant|>\n"
-        
+        print(prompt)
         # Get response from LLM
         logger.info("Calling LLM with combined context")
         try:

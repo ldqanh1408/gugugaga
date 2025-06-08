@@ -10,10 +10,10 @@ router.post("/v1/upload",
   upload.uploadImg
 );
 
-// Media upload route for notes (handles both image and audio)
+// Audio upload route
 router.post('/v1/media/audio', 
   jwt.authenticateAndAuthorize(["USER"]), 
-  upload.upload.single('file'), 
+  upload.uploadAudio.single('file'), 
   upload.uploadAudioFile
 );
 

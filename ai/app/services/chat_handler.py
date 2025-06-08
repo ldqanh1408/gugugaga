@@ -83,6 +83,36 @@ def process_image(media_item: MediaItem, message_context: str = "") -> str:
         logger.error(f"Error processing image: {str(e)}")
         return f"Image analysis ({media_item.name}): [Failed to analyze this image]"
 
+def _generate_image_caption(img):
+    """
+    Generate caption for an image using the BLIP model
+    
+    Args:
+        img: PIL Image object
+        
+    Returns:
+        str: Generated caption
+    """
+    try:
+        # Get model and processor
+        model, processor = _get_blip_model_and_processor()
+        
+        # Create a default prompt
+        prompt = "a photo of"
+        
+        # Process image
+        device = "cuda" if CUDA_AVAILABLE else "cpu"
+        inputs = processor(img, prompt, return_tensors="pt").to(device)
+        
+        # Generate caption
+        out = model.generate(**inputs, max_new_tokens=100)
+        caption = processor.decode(out[0], skip_special_tokens=True)
+        
+        return caption
+    except Exception as e:
+        logger.error(f"Error generating image caption: {str(e)}")
+        return "Could not generate a caption for this image"
+
 def process_all_media(req):
     """
     Process all media items in a request
