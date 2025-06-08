@@ -160,9 +160,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s;
-  box-shadow:
-    inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
-    inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.23);
   display: inline-block;
   width: auto; /* Không bị kéo dài */
   max-width: fit-content; /* Chỉ rộng theo nội dung */
@@ -171,26 +169,141 @@
 
 .save-btn:hover {
   background: #e5cac2;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+  box-shadow:
+    inset 0px 8px 10px -5px rgba(0, 0, 0, 0.23),
+    inset 0px 4px 6px -6px rgba(0, 0, 0, 0.2);
   transform: translateY(-2px); /* Nhấc nút lên một chút */
 }
 .media-preview {
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
   margin-top: 12px;
-  padding-right: 10px;
-  padding-left: 5px;
+  padding: 0 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  max-height: 300px; /* Set maximum height for scroll */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  padding-right: 16px; /* Add padding for scrollbar */
 }
 
-.media-preview img,
-.media-preview video,
-.media-preview audio {
-  max-width: 100%;
-  max-height: 250px;
+/* Customize scrollbar for better visibility */
+.media-preview::-webkit-scrollbar {
+  width: 8px;
+}
+
+.media-preview::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.media-preview::-webkit-scrollbar-thumb {
+  background: #cdaca0;
+  border-radius: 4px;
+}
+
+.media-preview::-webkit-scrollbar-thumb:hover {
+  background: #e5cac2;
+}
+
+.media-item {
+  position: relative;
+  background: #f8f9fa;
   border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-shadow: none !important;
+  height: fit-content;
+}
+
+.media-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.media-content,
+.audio-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.media-item img {
+  width: 100%;
+  height: 180px;
   object-fit: cover;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.media-filename,
+.audio-filename {
+  font-size: 14px;
+  color: #666;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 4px 0;
+  width: 100%;
+}
+
+.audio-player {
+  width: 100%;
+  height: 36px;
+  margin-top: 4px;
+}
+
+.delete-media-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #dc3545;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.media-item:hover .delete-media-btn {
+  opacity: 0.7;
+}
+
+.delete-media-btn:hover {
+  opacity: 1 !important;
+  background: #dc3545;
+  color: white;
+}
+
+/* Style for the file name modal */
+.modal-content {
+  border-radius: 12px;
+  border: none;
+}
+
+.modal-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-footer {
+  border-top: 1px solid #eee;
+  padding: 1rem;
+}
+
+.modal-footer button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
 }

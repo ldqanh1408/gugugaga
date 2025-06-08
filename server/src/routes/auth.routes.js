@@ -219,51 +219,48 @@ router.get("/v1/me", jwt.authenticateAndAuthorize(["USER"]), (req, res) => {
   }
 });
 
-router.post("/v1/change-password", async (req, res) => {
-  const token = req.cookies.accessToken;
-  if (!token) {
-    return res.status(401).json({ message: "Chưa đăng nhập" });
+router.post(
+  "/v1/change-password",
+  jwt.authenticateAndAuthorize(["USER"]),
+  async (req, res) => {
+    try {
+      const payload = req.payload;
+      const { newPassword, currentPassword } = req.body;
+      if (!newPassword || !currentPassword || !payload.role) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Thiếu thông tin" });
+      }
+      if (!ROLE_MODELS[payload.role]) {
+        return res.status(400).json({ message: "Vai trò không hợp lệ" });
+      }
+      const { model } = ROLE_MODELS[payload.role];
+      console.log(model);
+      const user = await model.findById(payload._id);
+      if (!user) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Không tìm thấy người dùng" });
+      }
+
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Mật khẩu không khớp" });
+      }
+
+      user.password = await hashPassword(newPassword);
+      await user.save();
+
+      return res
+        .status(200)
+        .json({ success: true, message: "Đổi mật khẩu thành công" });
+    } catch (error) {
+      return res.status(401).json({ message: error.message });
+    }
   }
-  try {
-    const payload = jwtHelper.verifyAccessToken(token);
-    const { newPassword, currentPassword, role } = req.body;
-
-    if (!newPassword || !currentPassword || !role) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Thiếu thông tin" });
-    }
-
-    if (!ROLE_MODELS[role]) {
-      return res.status(400).json({ message: "Vai trò không hợp lệ" });
-    }
-
-    const { model } = ROLE_MODELS[role];
-    const user = await model.findById(payload._id);
-
-    if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Không tìm thấy người dùng" });
-    }
-
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Mật khẩu không khớp" });
-    }
-
-    user.password = await hashPassword(newPassword);
-    await user.save();
-
-    return res
-      .status(200)
-      .json({ success: true, message: "Đổi mật khẩu thành công" });
-  } catch (error) {
-    return res.status(401).json({ message: error.message });
-  }
-});
+);
 
 router.post("/v2/register", async (req, res) => {
   try {
@@ -310,7 +307,16 @@ router.post("/v2/register", async (req, res) => {
       await chat.save();
       await journal.save();
     } else if (role === "BUSINESS") {
-      let { account, password, business_name, business_email, role } = req.body;
+      let {
+        account,
+        password,
+        business_name,
+        business_email,
+        role,
+        province,
+        district,
+        detail_address,
+      } = req.body;
 
       password = await hashPassword(password);
 
@@ -320,6 +326,9 @@ router.post("/v2/register", async (req, res) => {
         business_name,
         business_email,
         role,
+        province,
+        district,
+        detail_address,
       });
 
       await newBusiness.save();
@@ -434,7 +443,6 @@ router.post(
     }
 
     // Kiểm tra xem refresh token có bị blacklist không
-  
 
     try {
       // Xác minh refresh token

@@ -31,7 +31,7 @@ function ChangePassword() {
     }
   };
   return (
-    <div className="container change-password-container">
+    <div className="container change-password-container fade-in">
       <h1 className="change-password-header">Change Your Password</h1>
       <hr className="change-password-line"></hr>
 

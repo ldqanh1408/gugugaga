@@ -9,6 +9,8 @@ const pubSub = require("../utils/pubSubHelper");
 const constants = require("../constants");
 const Booking = require("../models/booking.model");
 const Schedule = require("../models/schedule.model");
+const { ObjectId } = require("mongodb");
+
 async function hashPassword(password) {
   const saltRounds = 10; // Số lần hash (càng cao càng an toàn nhưng chậm)
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -54,12 +56,9 @@ exports.deleteUser = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const keyCache = constants.USER_CACHE_KEY;
-    const dataCache = await redis.get(`${keyCache}${userId}`);
-    if (dataCache) {
-      return res.status(200).json({ success: true, user: dataCache });
-    }
+    const { _id } = req.payload;
+    const userId = _id;
+  
     // Kiểm tra xem user có tồn tại không
     const user = await User.findById(userId);
     if (!user) {
@@ -67,7 +66,6 @@ exports.getUser = async (req, res) => {
         .status(404)
         .json({ success: false, message: "❌ Người dùng không tồn tại." });
     }
-    await redis.set(`${keyCache}${userId}`, user);
 
     return res.status(200).json({ success: true, user: user });
   } catch (error) {
@@ -101,6 +99,7 @@ exports.loadProfile = async (req, res) => {
 exports.uploadProfile = async (req, res) => {
   try {
     const { _id } = req.payload;
+    console.log(req.payload)
     const userId = _id;
     // Kiểm tra xem user có tồn tại không
     const user = await User.findOne({ _id: userId });
@@ -112,21 +111,22 @@ exports.uploadProfile = async (req, res) => {
 
     const { nickName, userName, bio, dob, gender, phone, email, avatar } =
       req.body;
-    console.error(req.body);
+    console.error("errror", req.body.bio);
 
     // Kiểm tra và upload ảnh lên Cloudinary nếu có file được tải lên
 
     // Cập nhật thông tin khác của user (và avatar mới nếu có)
     user.avatar = avatar || user.avatar;
-    user.userName = nickName || user.userName;
+    user.userName = userName || user.userName;
     user.bio = bio || user.bio;
     user.dob = dob || user.dob;
     user.gender = gender || user.gender;
     user.phone = phone || user.phone;
     user.email = email || user.email;
-
+    
     await user.save();
-
+    console.log("newUser",user
+    )
     return res.status(200).json({
       success: true,
       message: "✅ Hồ sơ đã được cập nhật thành công.",
@@ -137,65 +137,6 @@ exports.uploadProfile = async (req, res) => {
   }
 };
 
-exports.addFutureMail = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { title, content, sendDate, receiveDate, notified, read } = req.body;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-
-    const newMail = {
-      title,
-      content,
-      sendDate,
-      receiveDate,
-      notified: notified || false,
-      read: read || false,
-    };
-
-    user.futureMails.push(newMail);
-    await user.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Future mail added successfully.",
-      futureMail: newMail,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-exports.getFutureMails = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const dueMails = user.futureMails.filter((mail) => {
-      const receiveDate = new Date(mail.receiveDate);
-      receiveDate.setHours(0, 0, 0, 0);
-      return receiveDate.getTime() === today.getTime();
-    });
-
-    res.status(200).json({ success: true, futureMails: dueMails });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
 exports.getTreatment = async (req, res) => {
   try {
     let { _id } = req.payload;
@@ -309,5 +250,190 @@ exports.getReceivers = async (req, res) => {
   } catch (error) {
     console.error("getReceivers error:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Phần từ file thứ hai - updated future mail functions
+exports.addFutureMail = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { title, content, sendDate, receiveDate } = req.body;
+
+    if (!title || !content || !sendDate || !receiveDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const newMail = {
+      title,
+      content,
+      sendDate: new Date(sendDate),
+      receiveDate: new Date(receiveDate),
+      notified: false,
+      read: false,
+    };
+
+    user.futureMails.push(newMail);
+    await user.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Future mail added successfully",
+      futureMail: newMail,
+    });
+  } catch (error) {
+    console.error("Error adding future mail:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+exports.getFutureMails = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const futureMails = user.futureMails.sort(
+      (a, b) => new Date(b.sendDate) - new Date(a.sendDate)
+    );
+
+    return res.status(200).json({
+      success: true,
+      futureMails,
+    });
+  } catch (error) {
+    console.error("Error fetching future mails:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+exports.updateFutureMail = async (req, res) => {
+  try {
+    const { userId, mailId } = req.params;
+    const updates = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const mail = user.futureMails.id(mailId);
+    if (!mail) {
+      return res.status(404).json({
+        success: false,
+        message: "Mail not found",
+      });
+    }
+
+    Object.assign(mail, updates);
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Future mail updated successfully",
+      mail,
+    });
+  } catch (error) {
+    console.error("Error updating future mail:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+exports.getTodayMails = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const todayMails = user.futureMails.filter((mail) => {
+      const receiveDate = new Date(mail.receiveDate);
+      return receiveDate >= today && receiveDate < tomorrow;
+    });
+
+    return res.status(200).json({
+      success: true,
+      todayMails,
+    });
+  } catch (error) {
+    console.error("Error fetching today's mails:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+exports.markMailNotified = async (req, res) => {
+  try {
+    const { userId, mailId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const mail = user.futureMails.id(mailId);
+    if (!mail) {
+      return res.status(404).json({
+        success: false,
+        message: "Mail not found",
+      });
+    }
+
+    mail.notified = true;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Mail marked as notified",
+      mail,
+    });
+  } catch (error) {
+    console.error("Error marking mail as notified:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };

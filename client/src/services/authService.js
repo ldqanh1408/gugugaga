@@ -31,9 +31,8 @@ export const register = async (payload) => {
 
 export const logging = async (payload) => {
   try {
-
     const response = await api_3.post("/login", payload);
-    console.log(response)
+    console.log(response);
     return response;
   } catch (error) {
     console.error("Error during login:", error);
@@ -64,7 +63,7 @@ export const checkAuth = async () => {
 
 export const getToken = async () => {
   try {
-   let accessToken = JSON.parse(localStorage.getItem("accessToken")); // Hoặc chỗ bạn lưu token
+    let accessToken = JSON.parse(localStorage.getItem("accessToken")); // Hoặc chỗ bạn lưu token
     const response = await api.get("/get-token", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -112,21 +111,20 @@ export async function changePassword({
   setError,
 }) {
   try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error("Không tìm thấy token");
+    }
     if (newPassword !== confirmNewPassword) {
       setError("Change password has failed");
-      return {
-        success: false,
-        message: "Mật khẩu mới và mật khẩu xác nhận không khớp",
-      };
     }
-    const response = await axios.post(
-      `${API_URL}/change-password`,
+    const response = await api.post(
+      `change-password`,
       { currentPassword, newPassword },
       {
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Gửi token trong header
         },
-        withCredentials: true, // Nếu backend dùng cookie
       }
     );
     return response.data;

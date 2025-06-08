@@ -25,8 +25,7 @@ const getUser = async () => {
       console.error("Token không tồn tại");
       return null;
     }
-    const { userId } = await getPayLoad();
-    const response = await axios.get(`${API_URL}users/${userId}`);
+    const response = await axios.get(`${API_URL}users/me`);
     return response.data.user;
   } catch (error) {
     console.error(`Error fetching user with id :`, error);
@@ -90,7 +89,8 @@ const loadProfile = async () => {
     });
     return response.data;
   } catch (error) {
-    return { success: false, message: true };
+    console.log("Error fetching user profile:", error);
+    return { message: true };
   }
 };
 
@@ -318,9 +318,10 @@ const uploadAudio = async (audioFile) => {
     }
 
     const formData = new FormData();
-    formData.append("audio", audioFile);
+    formData.append("file", audioFile);
+    console.log(audioFile)
 
-    const response = await axios.post(`${API_URL}users/upload-audio`, formData, {
+    const response = await axios.post(`${API_URL}media/audio`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
@@ -328,8 +329,9 @@ const uploadAudio = async (audioFile) => {
       withCredentials: true,
     });
 
+
     if (response.data && response.data.success) {
-      return { success: true, audioUrl: response.data.audioUrl }; // Trả về URL audio
+      return { success: true, audioUrl: response.data.url || response.data.audioUrl }; 
     } else {
       return { success: false, message: "Audio upload failed" };
     }
@@ -347,9 +349,9 @@ const uploadImage = async (imageFile) => {
     }
 
     const formData = new FormData();
-    formData.append("image", imageFile);
-
-    const response = await axios.post(`${API_URL}users/upload-image`, formData, {
+    formData.append("file", imageFile);
+    console.log(imageFile)
+    const response = await axios.post(`${API_URL}media/img`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
@@ -358,7 +360,7 @@ const uploadImage = async (imageFile) => {
     });
 
     if (response.data && response.data.success) {
-      return { success: true, imageUrl: response.data.imageUrl };
+      return { success: true, imageUrl: response.data.url || response.data.imageUrl };
     } else {
       return { success: false, message: "Image upload failed" };
     }
@@ -376,7 +378,8 @@ export {
   uploadAvatar,
   loadProfile,
   uploadProfile,
-  addFutureMail,
-  getFutureMails,uploadAudio,
   uploadImage,
+  addFutureMail,
+  getFutureMails,
+  uploadAudio,
 };

@@ -48,9 +48,13 @@ const upload = multer({ storage });
 const audioStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "audio", // Folder for audio files on Cloudinary
-    allowed_formats: ["mp3", "wav"], // Allowed audio formats
-    resource_type: "video", // Cloudinary treats audio as "video" resource type
+    folder: "audio",
+    allowed_formats: ["mp3", "wav", "m4a", "ogg", "aac"], // Extended audio formats
+    resource_type: "raw", // Changed to raw to handle various audio formats better
+    public_id: (req, file) => {
+      const fileName = file.originalname.replace(/\.[^/.]+$/, ""); // Remove extension
+      return `audio/${fileName}-${Date.now()}`; // Generate unique name
+    }
   },
 });
 
@@ -69,7 +73,7 @@ const imageStorage = new CloudinaryStorage({
 const uploadImage = multer({ storage: imageStorage });
 
 // API xử lý upload
-uploadAvatar = (req, res) => {
+const uploadAvatar = (req, res) => {
   if (!req.file || !req.file.path) {
     return res
       .status(400)
@@ -84,20 +88,47 @@ uploadAvatar = (req, res) => {
 };
 
 // API to handle audio upload
-const uploadAudioFile = (req, res) => {
+const uploadAudioFile = async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ success: false, message: "No file uploaded or path missing" });
+    console.log('Received audio upload request:', {
+      file: req.file,
+      body: req.body
+    });
+
+    if (!req.file) {
+      console.error("No audio file received in request");
+      return res.status(400).json({
+        success: false,
+        message: "No audio file uploaded"
+      });
     }
 
+    // Check if we have the file path from Cloudinary
+    if (!req.file.path) {
+      console.error("No file path received from Cloudinary:", req.file);
+      return res.status(500).json({
+        success: false,
+        message: "File upload failed - no URL received"
+      });
+    }
+
+    // Send success response with file URL
     res.status(200).json({
       success: true,
-      message: "Audio file uploaded successfully!",
-      audioUrl: req.file.path || req.file.secure_url, // Return secure_url
+      message: "Audio uploaded successfully",
+      url: req.file.path,
+      audioUrl: req.file.path,
+      fileName: req.file.originalname,
+      fileType: req.file.mimetype
     });
+
   } catch (error) {
-    console.error("Error uploading audio:", error);
-    res.status(500).json({ success: false, message: "Server error during audio upload" });
+    console.error("Error in uploadAudioFile:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error uploading audio file",
+      error: error.message
+    });
   }
 };
 
@@ -117,20 +148,36 @@ const uploadImg = (req, res) => {
 
 
 // API to handle image upload
-const uploadImageFile = (req, res) => {
+const uploadImageFile = async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ success: false, message: "No file uploaded or path missing" });
+    if (!req.file) {
+      console.error("No image file uploaded. Request details:", req.body);
+      return res.status(400).json({
+        success: false,
+        message: "No image file uploaded"
+      });
+    }
+
+    if (!req.file.mimetype.startsWith('image/')) {
+      console.error("Invalid file type for image upload. File details:", req.file);
+      return res.status(400).json({
+        success: false,
+        message: "Invalid file type. Only image files are allowed."
+      });
     }
 
     res.status(200).json({
       success: true,
-      message: "Image file uploaded successfully!",
-      imageUrl: req.file.path || req.file.secure_url, // Return secure_url
+      message: "Image uploaded successfully",
+      url: req.file.path,
+      imageUrl: req.file.path // For backwards compatibility
     });
   } catch (error) {
-    console.error("Error uploading image:", error);
-    res.status(500).json({ success: false, message: "Server error during image upload" });
+    console.error("Error in uploadImageFile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error uploading image file: " + (error.message || "Unknown error")
+    });
   }
 };
 
