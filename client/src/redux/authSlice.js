@@ -42,50 +42,22 @@ export const loggingThunk = createAsyncThunk(
   }
 );
 
-const entity = (() => {
-  const rawEntity = localStorage.getItem("entity");
-  if (!rawEntity || rawEntity === "undefined" || rawEntity === "null") {
-    console.warn("Entity is missing, invalid, or null in localStorage.");
-    return null;
-  }
+function safeJSONParse(item) {
   try {
-    return JSON.parse(rawEntity);
-  } catch (error) {
-    console.error("Error parsing entity:", error);
-    return null;
-  }
-})();
-
-// Ensure token is refreshed or cleared if invalid
-const accessToken = (() => {
-  const token = localStorage.getItem("accessToken");
-  if (!token || token === "undefined" || token === "null") {
-    console.warn("Access token is missing, invalid, or null in localStorage.");
-    localStorage.removeItem("accessToken");
-    return null;
-  }
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      console.error("Invalid token format.");
-      localStorage.removeItem("accessToken");
+    if (item === undefined || item === null || item === "undefined")
       return null;
-    }
-
-    const payload = JSON.parse(atob(parts[1]));
-    if (payload.exp && Date.now() >= payload.exp * 1000) {
-      console.warn("Access token has expired.");
-      localStorage.removeItem("accessToken");
-      return null;
-    }
-
-    return token;
-  } catch (error) {
-    console.error("Error validating token:", error);
-    localStorage.removeItem("accessToken");
+    return JSON.parse(item);
+  } catch {
     return null;
   }
-})();
+}
+
+const entity = safeJSONParse(localStorage.getItem("entity"));
+const accessTokenRaw = safeJSONParse(localStorage.getItem("accessToken"));
+const accessToken =
+  typeof accessTokenRaw === "string"
+    ? accessTokenRaw.replace(/"/g, "")
+    : accessTokenRaw;
 
 const authSlice = createSlice({
   name: "auth",
