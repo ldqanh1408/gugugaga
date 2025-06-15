@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getToken, register, logging } from "../services/";
-import { act } from "react";
 // Tạo Thunk để kiểm tra token
 export const checkToken = createAsyncThunk(
   "auth/checkToken",
@@ -43,8 +42,25 @@ export const loggingThunk = createAsyncThunk(
   }
 );
 
-const entity = JSON.parse(localStorage.getItem("entity"));
-const accessToken = JSON.parse(localStorage.getItem("accessToken"))?.replace(/"/g, "");
+// Updated to handle invalid JSON or undefined values
+const entity = (() => {
+  try {
+    return JSON.parse(localStorage.getItem("entity")) || null;
+  } catch {
+    return null;
+  }
+})();
+
+const accessToken = (() => {
+  try {
+    return (
+      JSON.parse(localStorage.getItem("accessToken"))?.replace(/"/g, "") || null
+    );
+  } catch {
+    return null;
+  }
+})();
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -108,7 +124,7 @@ const authSlice = createSlice({
       .addCase(loggingThunk.fulfilled, (state, action) => {
         const entity = action?.payload?.data?.data;
         const token = action?.payload?.data?.accessToken;
-        console.warn(entity)
+        console.warn(entity);
         state.loading = false;
         state.success = true;
         state.isAuthenticated = true;
@@ -126,5 +142,6 @@ const authSlice = createSlice({
       });
   },
 });
-export const { setRole, setIsAuthenticated, setTempRole, logout } = authSlice.actions;
+export const { setRole, setIsAuthenticated, setTempRole, logout } =
+  authSlice.actions;
 export default authSlice.reducer;
